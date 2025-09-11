@@ -1,0 +1,347 @@
+---
+title: "Effets du mélange EPX & IMD sur la reproduction de *A. caliginosa*"
+subtitle: "Protocole de référence"
+date: "09-09-2024"
+lang: en
+format: 
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    toc-depth: 3
+    toc-title: "Table des matières"
+    lof: false
+    lot: false
+    tbl-colwidths: auto
+    df-print: tibble
+    number-sections: true
+    fontsize: large
+    linestretch: 1.2
+    fig-pos: H
+    layout: 
+      - header=1cm
+    geometry: 
+      - top=2cm
+      - bottom=2cm
+      - left=2cm
+      - right=2cm
+    include-in-header: 
+      text: 
+        \usepackage{pdfpages}
+editor: 
+    markdown:
+      canonical: true
+execute: 
+  cache: false
+---
+
+\newpage
+
+```{r, include=F, warning=F}
+library(tidyverse); library(here); library(ggthemes)
+library(viridis); library(tidybayes); library(wesanderson)
+library(ggdist); library(patchwork); library(extrafont)
+library(scales); library(ggdist); library(ggsci)
+library(parallel); library(deSolve); library(tmvtnorm)
+library(fdrtool); library(readxl); library(here); library(bayestestR)
+library(RColorBrewer); library(devtools); library(car)
+library(knitr); library(Hmisc); library(nlstools); library(lsmeans)
+pal_conti <- wes_palette("Zissou1", 12, type = "continuous")
+pal_dis_2 <- c("#3c9bb3", "#f42404")
+pal_dis_6 <- c("#f42404", "#e89707", "#DCB940", "#bccb84","#93bcb4","#3c9bb3")
+pal_dis_12 <- as.array(wes_palette("Zissou1", 12, type = "continuous"))
+getwd()
+```
+
+# Généralités
+
+L'objectif des ces expériences est de construire la surface dose-réponse du mélange EPX & IMD.
+
+## Vers de terre, sol et crottin
+
+Les vers de terre utilisés ici sont des *A. caliginosa* issus d'un élevage dont les individus fondateurs ont été récupérés dans une prairie à Versailles (les Closeaux).
+
+Le sol utilisé est le sol des Closeaux séché et broyé à 2 mm.
+
+Le crottin utilisé comme nourriture est congélé/décongelé par deux fois avant d'être broyé à 2 mm, tamisé à 0,5 mm pour enlever les résidus de sable, et enfin broyé à 0,5 mm.
+
+L'eau utilisée est de la Volvic (surtout pas l'eau du robinet !!!).
+
+## Design
+
+```{r, include=F}
+# Préparation primaire de sol contaminé à l'EPX (non soluble dans l'eau)
+EPX_sol_prim <- 1.5*1000 # mg/kg
+
+# Solution primaire d'IMD dans de l'eau
+IMD_sol_prim <- 200 # mg/L
+
+# Quantité de sol utilisée pour un cosme
+q_clx_cosm <- 200 # g
+# Quantité de sol utilisée pour faire un échantillon de sol pour chaque
+# concentration au début de l'expérience
+q_clx_sample <- 200 # g
+
+# Quantité de crottin pour un ver et pour 14 j
+q_crottin_ind_14j <- 3 # g/ind/14j
+
+# Nombre de réplicats par couple de concentration
+nb_rep_repro <- 2
+
+# Durée de l'expérience
+tot_time_repro <- 28 # days
+
+# Nombre d'individus par réplicat (et donc par cosme)
+nb_ind_rep_repro <- 2
+
+```
+
+-   Les cosmes contiennent l'équivalent de `r q_clx_cosm` g de sol des Closeaux sec et sont nourris avec `r q_crottin_ind_14j` g/ind/14j.
+-   Chaque modalité est réalisée `r nb_rep_repro` en réplicats.
+-   Chaque réplicat correspond à `r nb_ind_rep_repro` dans un cosme.
+-   La durée de l'expérience est de `r tot_time_repro` jours avec un suivi ultérieur des cocons pendant au moins 28 jours.
+
+```{r, echo=F}
+#| tbl-cap: Tested concentrations (mg/kg)
+#| label: tbl-concmolec
+
+# Concentrations
+
+# !!!!!!!!!!!!!!!!!!!!!! A CHANGER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+df_conc <- read.csv("data/Design_mixture.csv")[,c(2,3,4)]
+df_conc$line <- rep(c(5, 1, 2, 3, 4, 6, 7), each = 5)
+df_conc$ratio_letter <- c(rep(c("I","H","G","F","E"), 7))
+
+
+nb_conc <- length(df_conc$IMD)
+
+df_conc <- df_conc |> arrange(ratio_letter, line)
+
+kable(df_conc, digits=c(4,4,2), col.names = c("Tested concentrations of EPX (mg/kg)", "Tested concentrations of IMD (mg/kg)", "Ratio", "Line n°", "ratio letter"))
+
+```
+
+## Besoins
+
+```{r, include=F}
+# Nb total d'individus
+nb_ind_repro <- nb_ind_rep_repro*(nb_conc)*nb_rep_repro
+
+# Nombre de cosmes
+nb_cosms <- nb_ind_repro/2
+
+# Quantité de sol des Closeaux à utiliser
+q_clx_tot <- (q_clx_cosm*nb_rep_repro+q_clx_sample)*nb_conc/1000 # kg
+
+# Quantité de crottin à utiliser
+q_crottin_tot <- q_crottin_ind_14j*(nb_ind_repro*tot_time_repro/14) # g
+```
+
+-   `r nb_ind_repro` adultes *A. caliginosa*,
+-   `r q_clx_tot` kg de sol des Closeaux,
+-   `r q_crottin_tot` g de crottin.
+
+# Protocole
+
+## Calculs
+
+Le but est d'abord de contaminer le sol avec l'EPX en gardant un sol avec seulement une CRE de 20% puis de contaminer le sol avec l'IMD grâce à l'eau restante à ajouter.
+
+```{r, echo=F}
+#| tbl-cap: Soil preparation for each EPX concentration
+#| label: tbl-calcEPX
+
+# CRE du sol
+CRE_clx <- 39.14 # mL/100g 100%
+CRE_clx_70 <- 0.7*CRE_clx
+CRE_clx_20 <- 0.2*CRE_clx
+
+# Quantité de sol pour les cosmes d'une concentration testée
+q_clx_1conc <- nb_rep_repro*q_clx_cosm # g
+# Quantité de sol pour une concentration
+q_sol_a_prep <- q_clx_1conc+q_clx_sample # g
+
+# Volume d'eau à ajouter pour une concentration pour atteindre une CRE de 70%
+V_eau=round(CRE_clx_70*q_sol_a_prep/100,1) # mL
+
+# Quantité de sol frais à mettre dans un cosme
+q_clx_cosm_wet <- round(q_clx_cosm * (1+CRE_clx_70/100),1)
+
+```
+
+```{r, echo=F}
+
+# Calculs pour la contamination à l'EPX 
+
+df_calc <- data.frame(conc_EPX=df_conc$EPX,
+                      conc_IMD=df_conc$IMD,
+                      ratio_letter=df_conc$ratio_letter,
+                      line=df_conc$line)
+
+################### sélectionner que les lettre et n° pour l'affichage
+
+df_calc <- df_calc%>%
+  # Quantité de sol (g) à contaminer pour une concentration donnée
+  mutate(q_sol_a_prep = q_sol_a_prep)%>%
+  # Quantité d'eau (mL) totale à ajoutée pour une concentration donnée
+  mutate(V_eau=CRE_clx_70*q_sol_a_prep/100)%>%
+  # Quantité d'EPX (mg) à ajouter dans ce sol pour avoir la concentration en EPX souhaitée
+  mutate(q_EPX_conc=round((q_clx_1conc+q_clx_sample)*conc_EPX/1000,2))%>% 
+  # Quantité de la préparation de sol primaire contaminé en EPX à ajouter (équivalent sec, g)
+  mutate(Q_sol_prim_EPX = round(q_EPX_conc/EPX_sol_prim*1000,2))%>%
+  # Quantité de la préparation de sol primaire contaminé en EPX à ajouter (frais, g)
+  mutate(Q_sol_prim_wet_EPX = Q_sol_prim_EPX*(1+CRE_clx_20/100))%>% # doit être > 10-20 g
+  # Quantité de sol non contaminé à ajouter (g)
+  mutate(Q_sol_nc = round(q_sol_a_prep-Q_sol_prim_EPX, 2))%>% # Qtity of non contaminated soil to prepare (g)
+  # Quantité d'eau (mL) à ajouter dans le sol non contaminé pour qu'il ait une CRE de 20%
+  mutate(V_eau_20nc = round(Q_sol_nc*CRE_clx_20/100,2))%>%
+  # Quantité d'IMD (mg) à ajouter dans ce sol pour avoir la concentration en IMD souhaitée
+  mutate(q_IMD_conc=(q_clx_1conc+q_clx_sample)*conc_IMD/1000)%>%
+  # Volume de la solution primaire d'IMD à ajouter (mL)
+  mutate(vol_sol_prim_IMD = q_IMD_conc/IMD_sol_prim*1000)%>%
+  # Quantité d'eau restante à ajouter (doit être supérieure à 0 mL)
+  mutate(V_eau_2070 = (q_sol_a_prep*CRE_clx/100*(0.7-0.2))-vol_sol_prim_IMD)
+
+df_calc_show <- df_calc |> select(ratio_letter, line, Q_sol_prim_wet_EPX, Q_sol_nc, V_eau_20nc, vol_sol_prim_IMD, V_eau_2070)
+
+
+kable(df_calc_show, digits=c(4, 1, 4, 4, 4, 4, 4), 
+      format.args = list(scientific = FALSE),
+      col.names =c("Ratio", "Line","Q$_{primEPX}$ wet (g)", "Q$_{nc}$ (g)", "V$_{eau,nc}$ to 20% (mL)",  "V$_{primIMD}$ (mL)", "V$_{eauReste}$ (mL)"))
+```
+
+```{r, echo=F}
+# Quantité totale de la préparation primaire de sol contaminé à l'EPX (g) 
+Q_sol_prim_EPX_t <- sum(df_calc$Q_sol_prim_EPX)
+#Q_sol_prim_EPX_67 <- sum(subset(df_calc, line == 6 | line==7)$Q_sol_prim_EPX)
+# Quantité totale d'EPX utilisée
+m_tot_EPX <- Q_sol_prim_EPX_t/1000*EPX_sol_prim
+#m_67_EPX <- Q_sol_prim_EPX_67/1000*EPX_sol_prim
+
+# Volume total de la solution primaire en IMD utilisé (mL)
+V_sol_prim_IMD_t <- sum(df_calc$vol_sol_prim_IMD)
+# Quantité totale d'IMD utilisée
+m_tot_IMD <- V_sol_prim_IMD_t/1000*IMD_sol_prim
+
+# Quantité pragmatique de sol primaire contaminé à l'EPX à préparer (g)
+Q_sol_prim_EPX_aprep <- ceiling(Q_sol_prim_EPX_t/100)*100
+# Volume d'eau à ajouter pour que cette préparation ait une CRE de 20% (mL)
+V_eau_sol_prim_EPX <- Q_sol_prim_EPX_aprep*CRE_clx_20/100
+
+m_prep_EPX <- Q_sol_prim_EPX_aprep/1000*EPX_sol_prim
+```
+
+Besoins :
+
+-   `r Q_sol_prim_EPX_t` g donc `r Q_sol_prim_EPX_aprep` g de la préparation de sol primaire contaminé à l'EPX,
+-   `r m_tot_EPX` mg donc `r m_prep_EPX` mg d'EPX,
+-   `r V_sol_prim_IMD_t` mL de la solution primaire d'IMD,
+-   `r m_tot_IMD` mg d'IMD.
+
+```{r, echo=F}
+# CRE 70% du crottin
+CRE_hd_70 <- 320.1 # mL/100g 70%
+
+# Quantité de crottin sec pour un nourrissage (g)
+Q_crottin_nour <- nb_ind_repro*q_crottin_ind_14j
+
+# Quantité de crottin sec à préparer pour un nourrissage (g) 
+Q_crottin_nour_aprep <- ceiling(Q_crottin_nour/10)*10
+# Volume d'eau à ajouter pour atteindre une CRE de 70 % (mL)
+V_eau_crottin_nourr_aprep <- Q_crottin_nour_aprep/100*CRE_hd_70
+
+# Quantité de crottin frais pour un cosme lors d'un nourrissage (g)
+q_cosm_repro_hd <- round(nb_ind_rep_repro*q_crottin_ind_14j*(1+CRE_hd_70/100),1)
+
+
+```
+
+## J-1 - Contamination des sols
+
+Préparation du sol primaire contaminé à l'EPX dans un petit bac en inox :
+
+-   Dans un petit bac en inox :
+    -   Peser `r Q_sol_prim_EPX_aprep` g de sol des Closeaux,
+    -   Ajouter `r V_eau_sol_prim_EPX` mL d'eau,
+    -   Mélanger,
+-   Dans une coupelle, peser `r m_prep_EPX` mg d'EPX,
+-   Dans un autre petit bac en inox,
+    -   Verser une petite quantité du sol du premier bac,
+    -   Verser la quantité d'EPX pesée,
+        -   Au besoin, du sol est mis dans la coupelle puis versé dans le bac plusieurs fois pour récupérer les résidus d'EPX collés aux parois de la coupelle.
+    -   Mélanger,
+    -   Ajouter graduellement la quantité de sol restante du premier bac tout en mélangeant,
+    -   Mélanger pendant encore au moins 5-10 min.
+
+Pour préparer 100 mL de la solution primaire d'IMD à 200 mg/L (eau = eau MilliQ) :
+
+-   20 mg d'IMD sont pesés dans une coupelle,
+-   Ces 20 mg sont introduits dans une fiole jaugée de 100 mL à l'aide d'un entonnoir et de petits volumes d'eau mis dans la coupelle,
+-   La fiole est complétée jusqu'au trait de jauge avec de l'eau,
+-   Elle est ensuite mise dans un bain à ultrason pendant des cycles de 10 min jusqu'à dissolution complète de l'IMD (solution limpide), attention à ne pas faire surchauffer la fiole pour ne pas dégrader l'IMD,
+-   La solution peut être garder au frigo à 4°C dans une bouteille en verre recouverte d'aluminium.
+
+Contamination des sols pour chaque concentration :
+
+-   Dans un petit bac en inox,
+-   $Q_{nc}$ g de sol des Closeaux sont pesés,
+-   V$_{eau,nc}$ mL d'eau y est ajouté pour atteindre une CRE de 20%,
+-   Le sol est mélangé.
+-   Q$_{primEPX, wet}$ g de la préparation primaire d'EPX y sont ajoutés,
+-   Cette préparation est mélangée pendant au moins 10 min,
+-   Dans un bécher, V$_{primIMD}$ mL de la solution primaire d'IMD sont ajoutés avant de compléter ce volume jusqu'à 100 mL,
+-   Ces 100 mL sont répartis à la surface du sol (ne pas mélanger),
+-   V$_{eau\ restante}$ - 100 mL sont ensuite ajoutés de manière homogène à la surface du sol (ne pas mélanger),
+-   Couvrir le bac avec de l'aluminium.
+
+Préparation du crottin :
+
+-   `r Q_crottin_nour_aprep` g sont préparés avec `r V_eau_crottin_nourr_aprep` mL d'eau,
+-   `r nb_cosms` $\times$ `r q_cosm_repro_hd` g de cette préparation sont pesés dans des petites boites.
+
+## J0 - Préparation des cosmes et introduction des vers de terre
+
+Pour chaque concentration :
+
+-   Le bac correspondant est mélangé pendant 5 min,
+-   Cette préparation est utilisée pour préparer `r nb_rep_repro` cosmes avec `r q_clx_cosm_wet` g de la préparation chacun,
+-   Le reste de la préparation est mise dans un pot en plastique de 125 mL puis mis dans la chambre thermorégulée à -20°C,
+-   Dans chaque cosme, un petit pot de crottin préparé la veille est ajouté et mélangé au cosme.
+
+Introduction des vers de terre :
+
+-   Les vers sont pesés par 2 et mis dans leur cosme respectif,
+-   Chaque cosme est pesé (avec le couvercle) et le poids est ensuite noté sur l'étiquette du cosme pour pouvoir suivre l'humidité du sol,
+-   Tous les cosmes sont gardés dans un incubateur à 18°C.
+
+Nettoyage : Les bacs en inox doivent être rincé à l'eau puis au mélange eau-éthanol. Le reste de terre est à mettre dans un sceau "sol contaminé aux pesticides".
+
+## Maintenance
+
+A J7, J14 et J21, l'humidité du sol est vérifiée : Le cosme est pesé puis de l'eau est ajoutée pour revenir au poids initial du cosme.
+
+A J14, les vers sont nourris comme à J0. Les cosmes doivent être mélangés avec précaution pour ne pas écraser les éventuels cocons produits.
+
+Attention : A J14, il faut d'abord vérifier l'humidité des cosmes puis nourrir les vers puis peser à nouveau le cosme et noté la nouvelle masse du cosme sur l'étiquette pour avoir une nouvelle masse de référence correcte.
+
+## J28 - Fin de l'exposition
+
+A J28, les vers sont pesés et mis à jeûner dans des boites de Pétri sur des papiers filtres humides (une boite par cosme) remises dans l'incubateur à 18°C. Pour chaque concentrations, des échantillons de sol sont pris dans des pots de 125 mL.
+
+Lors de la pesée des vers, le contenu des cosmes est gardé pour ensuite récupérer les cocons en lavant le sol avec de l'eau sur un tamis à 2 mm. Les cocons sont regroupés par cosme sur du papier filtre humide dans des petites boites de Pétri. Le nombre de cocons produits par cosme est noté.
+
+Nettoyage : Les cosmes sont à jeter dans un sceau à déchet "Pesticides".
+
+## J29 - Congélation des individus
+
+Le matin, les boites de Pétri sont nettoyées.
+
+L'après-midi, les vers sont ensuite pesés et mis dans des tubes falcons sur lesquels leur poids est noté. L'étiquette des falcon est protégé en rajoutant un couche de scotch. Les tubes sont ensuite mis à -80°C.
+
+Nettoyage : Les papiers filtres sont à jeter dans un sceau à déchet "Pesticides" et les boites de Pétri peuvent être lavée avec eau + éthanol avant d'être mise de coté en indiquant qu'elles sont réservées pour des vers exposés à ces deux pesticides.
+
+## J30-56 - Suivi des éclosions
+
+Pendant au moins 4 semaines suivant la récupération des cocons, un suivi des éclosions est fait tous les jours de la semaine.
+
+Nettoyage : Les papiers filtres sont à jeter dans un sceau à déchet "Pesticides" et les boites de Pétri peuvent être lavée avec eau + éthanol.

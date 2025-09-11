@@ -1,0 +1,37 @@
+﻿{
+  "id": 1880,
+  "version": 26,
+  "versionId": 4881,
+  "title": "Global data on earthworm abundance, biomass, diversity and corresponding environmental properties",
+  "description": "Earthworm biodiversity and soil properties",
+  "dataStructureId": 0,
+  "metadataStructureId": 14,
+  "isPublic": true,
+  "publicationDate": "1/1/0001 12:00:00 AM",
+  "versionName": null,
+  "versionPublicAccess": false,
+  "versionPublicAccessDate": "1/1/0001 12:00:00 AM",
+  "additionalInformations": {
+    "author": "Helen Phillips,Nico Eisenhauer,Erin Cameron",
+    "description": "Earthworm biodiversity and soil properties",
+    "title": "Global data on earthworm abundance, biomass, diversity and corresponding environmental properties",
+    "email": "helen.phillips@idiv.de,nico.eisenhauer@idiv.de,Erin.Cameron@smu.ca",
+    "subject": "earthworm, biomass, abundance, diversity, richness, soil"
+  },
+  "parties": {},
+  "versionDate": "2/22/2021 11:09:45 PM",
+  "names": {
+    "helen Phillips": {
+      "givenName": "Helen",
+      "familyName": "Phillips"
+    },
+    "nico Eisenhauer": {
+      "givenName": "Nico",
+      "familyName": "Eisenhauer"
+    },
+    "erin Cameron": {
+      "givenName": "Erin",
+      "familyName": "Cameron"
+    }
+  }
+}

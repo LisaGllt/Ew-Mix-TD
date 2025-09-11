@@ -1,0 +1,8 @@
+"0","#| tbl-cap: Result of the interaction estimation."
+"0","#| label: tbl-resSAinter"
+"0",""
+"0","df_res <- data.frame(`Simulated interaction parameter`=interaction_a,"
+"0","                     `Estimated interaction parameter`=round(df_data_fit$a,3),"
+"0","                     Ratio=ratio_interaction_a,"
+"0","                     LL = LL_data_fit_SA)"
+"0","df_res |> datatable(options = list(dom = 't'), class=""hover"") "

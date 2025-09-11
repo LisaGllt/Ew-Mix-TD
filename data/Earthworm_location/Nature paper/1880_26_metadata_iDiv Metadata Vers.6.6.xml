@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mstns:Metadata xmlns="http://tempuri.org/XMLSchema.xsd" xmlns:mstns="http://tempuri.org/XMLSchema.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <mstns:Data_Provider_Contact_Details>
+    <mstns:Name>Helen Phillips</mstns:Name>
+    <mstns:Email>helen.phillips@idiv.de</mstns:Email>
+    <mstns:Role>
+      <mstns:Data_Creator>true</mstns:Data_Creator>
+      <mstns:Data_Manager>true</mstns:Data_Manager>
+      <mstns:Data_Owner>true</mstns:Data_Owner>
+      <mstns:Primary_Contact>true</mstns:Primary_Contact>
+    </mstns:Role>
+    <mstns:Affiliation>iDiv</mstns:Affiliation>
+    <mstns:Country>Germany</mstns:Country>
+    <mstns:Research_Group>
+      <mstns:Research_Group>Experimental Interaction Ecology</mstns:Research_Group>
+      <mstns:Other-Specify>sDiv</mstns:Other-Specify>
+    </mstns:Research_Group>
+  </mstns:Data_Provider_Contact_Details>
+  <mstns:Dataset>
+    <mstns:Project_or_Workshop_or_Thesis_Title>sWorm</mstns:Project_or_Workshop_or_Thesis_Title>
+    <mstns:Dataset_Title>Global data on earthworm abundance, biomass, diversity and corresponding environmental properties</mstns:Dataset_Title>
+    <mstns:Short_Abstract>Earthworm biodiversity and soil properties</mstns:Short_Abstract>
+    <mstns:Keywords>earthworm, biomass, abundance, diversity, richness, soil</mstns:Keywords>
+    <mstns:Data_Access_Policy>Open (CC BY 4.0)</mstns:Data_Access_Policy>
+    <mstns:Extensive_Description_Of_The_Dataset>Data collated from data provided by original data collectors or from data provided within published articles. 
+The MetaData.csv provides information on each of the original data sources, including bibliographic information about the original article and information on how many sites were sampled. The SiteData.csv gives site-level variables, such as geographic coordinates, the environmental parameters as well as site-level community metrics (species richness, total abundance and total biomass). The SppOccData.csv provides the observation level data - the occurrence, abundance and/or biomass of individual species/morpho-species/life-stage at a particular site. Not every data source contained such observation level data. Metadata information about the variables in each file are provided in the files MetaData_info.csv, SiteData_info.csv and SppOccData_info.csv, respectively. All files provided use the character encoding UTF-8, and missing values are represented by "NA".</mstns:Extensive_Description_Of_The_Dataset>
+    <mstns:Data_Origin>Data Compilation</mstns:Data_Origin>
+    <mstns:Status_Of_The_Data_Collection>Completed</mstns:Status_Of_The_Data_Collection>
+  </mstns:Dataset>
+  <mstns:Persons_Associated_With_Dataset>
+    <mstns:Name>Nico Eisenhauer</mstns:Name>
+    <mstns:Email>nico.eisenhauer@idiv.de</mstns:Email>
+    <mstns:Role>
+      <mstns:Primary_Contact>true</mstns:Primary_Contact>
+    </mstns:Role>
+    <mstns:Affiliation>iDiv</mstns:Affiliation>
+    <mstns:Country>Germany</mstns:Country>
+    <mstns:Research_Group>
+      <mstns:Research_Group>Experimental Interaction Ecology</mstns:Research_Group>
+    </mstns:Research_Group>
+  </mstns:Persons_Associated_With_Dataset>
+  <mstns:Persons_Associated_With_Dataset>
+    <mstns:Name>Erin Cameron</mstns:Name>
+    <mstns:Email>Erin.Cameron@smu.ca</mstns:Email>
+    <mstns:Affiliation>Saint Mary's University</mstns:Affiliation>
+    <mstns:Country>Canada</mstns:Country>
+  </mstns:Persons_Associated_With_Dataset>
+  <mstns:Habitat>
+    <mstns:Terrestrial>true</mstns:Terrestrial>
+  </mstns:Habitat>
+  <mstns:Taxonomic_Scope>
+    <mstns:Animalia>true</mstns:Animalia>
+  </mstns:Taxonomic_Scope>
+  <mstns:Spatial_Cover>
+    <mstns:Coverage>Global</mstns:Coverage>
+  </mstns:Spatial_Cover>
+  <mstns:Additional_Information>
+    <mstns:How_To_Cite_Dataset>Phillips, H.R.P. et al. (2020) Global data on earthworm abundance, biomass, diversity and corresponding environmental properties. Available at the iDiv Data Repository, DOI: https://doi.org/10.25829/idiv.1880-17-3189</mstns:How_To_Cite_Dataset>
+    <mstns:Dataset_DOI_or_URL>https://doi.org/10.25829/idiv.1880-17-3189</mstns:Dataset_DOI_or_URL>
+    <mstns:Publications_Based_On_This_Dataset>Phillips, H.R.P. et al. (in review) Global data on earthworm abundance, biomass, diversity and corresponding environmental properties. Scientific Data.</mstns:Publications_Based_On_This_Dataset>
+    <mstns:Publications_Based_On_This_Dataset>Phillips, H.R.P. et al. (2020) Erratum for the Report “Global distribution of earthworm diversity” by Phillips, H.R.P. et al. (2019). Science, 369(6503): eabd9834. DOI: 10.1126/science.abd9834. The corrected data set is available on the iDiv Data Repository at: at the iDiv Data Repository: https://idata.idiv.de/ddm/Data/ShowData/1818.</mstns:Publications_Based_On_This_Dataset>
+    <mstns:Publications_Based_On_This_Dataset>Phillips, H.R.P. et al. (2020) Erratum for the Report “Global distribution of earthworm diversity” by Phillips, H.R.P. et al. (2019). Science, 369(6503): eabd9834. DOI: 10.1126/science.abd9834.</mstns:Publications_Based_On_This_Dataset>
+    <mstns:Projects_That_Are_Related_To_This_Dataset>sWorm project</mstns:Projects_That_Are_Related_To_This_Dataset>
+    <mstns:Comments>The associated R script is available at the GitHub repository: https://github.com/helenphillips/sWormDatabaseRelease.</mstns:Comments>
+  </mstns:Additional_Information>
+</mstns:Metadata>

@@ -1,0 +1,17 @@
+﻿Online-only Table 1: Information captured in the data template relating to meta-data,,,
+,,,
+Field,Format,Information,Required field (*)
+File,Text,Unique ID for each article,*
+Article_Title,Text,Title of the article the data was published in. If unpublished then NA or “Unpublished”,
+Article_Year,Integer,The year the article was published (NA if unpublished),
+Article_FirstAuthorSurname,Text,The surname of the first author of the article,*
+PaperContact_Surname,Text,The surname of the corresponding author of the article,
+Article_Journal,Text,The journal the article was published in (NA if unpublished),
+Article_DOI,Text,The DOI of the article (NA if not available or unpublished),
+Data_DOI,Text,"The DOI of the data (if different from the article, NA if not available)",
+Number_of_Studies,Integer,The total number of studies in the file,*
+Total_Number_ofSites,Integer,The total number of sites across all studies in the file,*
+Total_Number_ofSpecies,Integer,The total number of species in the dataset (if given),
+Entire.Community,Yes/no,"Was the entire earthworm community sampled, or just selected species. If this information is unknown or unclear NA is given",*
+Data.From.Paper,Yes/no,"Was the data taken from the paper, or did the author provide raw values",*
+Other.soil.organisms.sampled,Yes/no,Were any other soil organisms sampled at the same sites,*

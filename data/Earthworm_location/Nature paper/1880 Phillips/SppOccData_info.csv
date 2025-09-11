@@ -1,0 +1,18 @@
+﻿"Online-only Table 3: The information captured in the “species occurrence” data sheet. An observation could refer to a species (either with a scientific binomial or a morphospecies identification), or a genus, life stage, ecological group, or native/non-native group. For each dataset, this datasheet was only used if species occurrence data were available.",,,,
+,,,,
+Field,Format,Possible Values,Information,Required field (*)
+File,Text,,Unique ID for each article. Assigned to all studies within a single publication,*
+Study_Name,Text,,Unique ID for each study. Assigned to all sites within a single study,*
+Site_Name,Text,,Unique ID given to each site. A site that is sampled in different studies will have the same ID,*
+OriginalSpeciesBinomial,Text,,"The species binomial of the observation as given by the data collector, prior to revision by earthworm experts",
+SpeciesBinomial,Text,,The species binomial of the observation (following revision by earthworm experts),"At least one of the following columns is required: SpeciesBinomial, MorphospeciesID, Genus, or Family"
+MorphospeciesID,Text,,"An indicator (i.e., number or letter) of a observation that has been only identified to morphospecies","At least one of the following columns is required: SpeciesBinomial, MorphospeciesID, Genus, or Family"
+Genus,Text,,The genus of the observation,"At least one of the following columns is required: SpeciesBinomial, MorphospeciesID, Genus, or Family"
+Family,Text,,The family of the observation,"At least one of the following columns is required: SpeciesBinomial, MorphospeciesID, Genus, or Family"
+Ecological_group,Multiple choice,"Epigeic, Anecic, Endogeic, Epi-Endogeic, Unknown",The ecological group of the observation (following revision by earthworm experts),
+LifeStage,Multiple choice,"Adult, Juvenile, Unknown",The life stage of the observation,
+Native/Non-native,Multiple choice,"Native, Non-native, Unknown",Whether the observation is native or non-native in the sampled region,
+Abundance,Numerical,,The total abundance of the observation at a specific site,
+Abundance Unit,Multiple choice,"Number of individuals, Individuals per cm2, Individuals per cm3, Individuals per m2, Individuals per m3",The units of the abundance value,
+WetBiomass,Numerical,,The total biomass of the observation at a specific site,
+WetBiomassUnits,Multiple choice,"g, g/m2",The units of the biomass value,

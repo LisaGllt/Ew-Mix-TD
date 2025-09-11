@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">jquery[3.6.0];shiny-css[1.8.1.1];shiny-javascript[1.8.1.1];ionrangeslider-javascript[2.3.1];strftime[0.9.2];ionrangeslider-css[2.3.1];htmltools-fill[0.5.8.1];htmlwidgets[1.6.4];plotly-binding[4.10.4];leaflet[1.3.1];leafletfix[1.0.0];proj4[2.6.2];Proj4Leaflet[1.0.1];rstudio_leaflet[1.3.1];leaflet-binding[2.2.2];selectize[0.15.2];font-awesome[6.4.2];bootstrap[3.4.1]</script>
+<script src="jquery-3.6.0/jquery.min.js"></script>
+<link href="shiny-css-1.8.1.1/shiny.min.css" rel="stylesheet" />
+<script src="shiny-javascript-1.8.1.1/shiny.min.js"></script>
+<script src="ionrangeslider-javascript-2.3.1/js/ion.rangeSlider.min.js"></script>
+<script src="strftime-0.9.2/strftime-min.js"></script>
+<link href="ionrangeslider-css-2.3.1/css/ion.rangeSlider.css" rel="stylesheet" />
+<link href="htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="plotly-binding-4.10.4/plotly.js"></script>
+<link href="leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="leaflet-1.3.1/leaflet.js"></script>
+<link href="leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="proj4-2.6.2/proj4.min.js"></script>
+<script src="Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="leaflet-binding-2.2.2/leaflet.js"></script>
+<link href="selectize-0.15.2/css/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="selectize-0.15.2/js/selectize.min.js"></script>
+<script src="selectize-0.15.2/accessibility/js/selectize-plugin-a11y.min.js"></script>
+<link href="font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="bootstrap-3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+<link href="bootstrap-3.4.1/accessibility/css/bootstrap-accessibility.min.css" rel="stylesheet" />
+<script src="bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script src="bootstrap-3.4.1/accessibility/js/bootstrap-accessibility.min.js"></script>  <link rel="stylesheet" type="text/css" href="sandstone.css"/>
+</head>
+<body>
+  <div class="container-fluid">
+    <h3>EGrowth</h3>
+    <h3>A Database on Earthworm Body Growth Curves across the globe</h3>
+    <br/>
+    <a>Contact: Jerome Mathieu , jerome.mathieu[at]upmc.fr</a>
+    <br/>
+    <br/>
+    <div class="tabbable">
+      <ul class="nav nav-tabs" data-tabsetid="7918">
+        <li class="active">
+          <a href="#tab-7918-1" data-toggle="tab" data-bs-toggle="tab" data-value="Home">Home</a>
+        </li>
+        <li>
+          <a href="#tab-7918-2" data-toggle="tab" data-bs-toggle="tab" data-value="Metadata">Metadata</a>
+        </li>
+        <li>
+          <a href="#tab-7918-3" data-toggle="tab" data-bs-toggle="tab" data-value="Compare Curves">Compare Curves</a>
+        </li>
+        <li>
+          <a href="#tab-7918-4" data-toggle="tab" data-bs-toggle="tab" data-value="Explore Curves">Explore Curves</a>
+        </li>
+        <li>
+          <a href="#tab-7918-5" data-toggle="tab" data-bs-toggle="tab" data-value="Export Data">Export Data</a>
+        </li>
+        <li>
+          <a href="#tab-7918-6" data-toggle="tab" data-bs-toggle="tab" data-value="Help">Help</a>
+        </li>
+        <li>
+          <a href="#tab-7918-7" data-toggle="tab" data-bs-toggle="tab" data-value="Contribute">Contribute</a>
+        </li>
+        <li>
+          <a href="#tab-7918-8" data-toggle="tab" data-bs-toggle="tab" data-value="Citation">Citation</a>
+        </li>
+      </ul>
+      <div class="tab-content" data-tabsetid="7918">
+        <div class="tab-pane active" data-value="Home" id="tab-7918-1">
+          <div class="row">
+            <div class="col-sm-8 offset-md-2 col-sm-offset-2">
+              <br/>
+              <br/>
+              <img src="logo2.gif" height="200px" width="530px"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-7 offset-md-2 col-sm-offset-2">
+              <br/>
+              <strong>
+                <em>Welcome to the EGrowth database GUI v.1</em>
+              </strong>
+              <br/>
+              <h5>The EGrowth database is designed to make comparative analysis of body size in the earthworm group, and to model Intraspecific
+               body size variability (IBSV) in relation to environmental predictors.</h5>
+              <h5>Most species' traits beeing proportional to body size, the EGrowth database should help tackling the role of Intraspecific Trait variability (ITV) in earthworm.</h5>
+              <br/>
+              <h5>The EGrowth database comprises more than 1000 body growth curves -- biomass of individuals at several dates -- of earthworm and covers more than 50 from species across the globe. Data
+             are compiled from a combination of published literature and other sources such as PhD thesis and reports.
+             Each curve is given with metadata that contains the experimental and environmental conditions in which the curves were produced.</h5>
+              <br/>
+              <h5>The database has been published in 2018 in Soil Biology and Biochemistry: </h5>
+              <p>
+                <a>https://doi.org/10.1016/j.soilbio.2018.04.004</a>
+              </p>
+              <h5>The database can also be browsed from the R console. To do so please refer to the detailed User Guide published as as a supplementary material of the paper in SBB.</h5>
+              <br/>
+              <h5>You will find four panels to explore the database:</h5>
+              <br/>
+              <strong>Metadata</strong>
+              <ul>
+                <h5>This panel summarizes the data available in the database: 
+                 environmental conditions studied, location of the studies, and so on.</h5>
+              </ul>
+              <br/>
+              <strong>Compare curves</strong>
+              <ul>
+                <h5>This panels allows you to compare growth curves within species: Intraspecific
+               body size variability (IBSV).</h5>
+                <h5>You can compare species by treatment level.</h5>
+                <h5>Curves can be grouped by treatment type or by publication.</h5>
+              </ul>
+              <br/>
+              <strong>Explore curves</strong>
+              <ul>
+                <h5>This panel allows you to explore individual growth curves by species. You can select the   
+                  environmental conditions in which the curves were produced.</h5>
+              </ul>
+              <br/>
+              <strong>Export Data</strong>
+              <ul>
+                <h5>In this panel you can export the data selected in the explore curves panel.</h5>
+              </ul>
+              <br/>
+              <strong>Any question?</strong>
+              <h5>See the help section or send me an email!</h5>
+              <h5>Remember to read the paper in SBB and the User Guide</h5>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Metadata" id="tab-7918-2">
+          <div class="row">
+            <div class="col-sm-3">
+              <form class="well" role="complementary">
+                <h5></h5>
+                <div id="SelectClimateMD" class="form-group shiny-input-checkboxgroup shiny-input-container" role="group" aria-labelledby="SelectClimateMD-label">
+                  <label class="control-label" id="SelectClimateMD-label" for="SelectClimateMD">Climate</label>
+                  <div class="shiny-options-group">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateMD" value="temperate" checked="checked"/>
+                        <span>temperate</span>
+                      </label>
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateMD" value="tropical" checked="checked"/>
+                        <span>tropical</span>
+                      </label>
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateMD" value="mediteranean" checked="checked"/>
+                        <span>mediteranean</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" id="YearMD-label" for="YearMD">Year</label>
+                  <input class="js-range-slider" id="YearMD" data-skin="shiny" data-type="double" data-min="1950" data-max="2016" data-from="1950" data-to="2016" data-step="1" data-grid="true" data-grid-num="9.42857142857143" data-grid-snap="false" data-prettify-separator="" data-prettify-enabled="false" data-keyboard="true" data-drag-interval="true" data-data-type="number"/>
+                </div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" id="TemperatureMD-label" for="TemperatureMD">Temperature</label>
+                  <input class="js-range-slider" id="TemperatureMD" data-skin="shiny" data-type="double" data-min="0" data-max="40" data-from="0" data-to="40" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="" data-prettify-enabled="false" data-keyboard="true" data-drag-interval="true" data-data-type="number"/>
+                </div>
+              </form>
+            </div>
+            <div class="col-sm-8" role="main">
+              <h5>This tab summarizes the studies included in the EGrowth database.</h5>
+              <h5>You can select studies with the checkboxs and sliders on the left.</h5>
+              <hr/>
+              <div class="shiny-split-layout" cellHeights="50">
+                <div style="width: 33%;">
+                  <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="plotYear" style="width:100%;height:200px;"></div>
+                </div>
+                <div style="width: 33%;">
+                  <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="plotTemp" style="width:100%;height:200px;"></div>
+                </div>
+                <div style="width: 33%;">
+                  <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="plotPh" style="width:100%;height:200px;"></div>
+                </div>
+              </div>
+              <br/>
+              <hr/>
+              <div class="row">
+                <div class="shiny-split-layout">
+                  <div style="width: 33%;">
+                    <h5>
+                      <strong>Number of Species selected</strong>
+                    </h5>
+                  </div>
+                  <div style="width: 33%;">
+                    <h5>
+                      <strong>Number of corresponding curves</strong>
+                    </h5>
+                  </div>
+                  <div style="width: 33%;">
+                    <h5>
+                      <strong>Number of body mass data points</strong>
+                    </h5>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="shiny-split-layout">
+                  <div style="width: 33%;">
+                    <div id="NbSp" class="shiny-text-output"></div>
+                  </div>
+                  <div style="width: 33%;">
+                    <div id="NbCurves" class="shiny-text-output"></div>
+                  </div>
+                  <div style="width: 33%;">
+                    <div id="NbPoints" class="shiny-text-output"></div>
+                  </div>
+                </div>
+              </div>
+              <hr/>
+              <h4>Origin of the growth curves</h4>
+              <div class="leaflet html-widget html-widget-output shiny-report-size html-fill-item" id="mymap" style="width:700px;height:400px;"></div>
+              <a>click on the markers to get information about the data</a>
+              <br/>
+              <hr/>
+              <div class="row">
+                <div class="shiny-split-layout">
+                  <div style="width: 45%;">
+                    <h5>Number of curves per species</h5>
+                  </div>
+                  <div style="width: 55%;">
+                    <h5>Number of curves per treatment type</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="shiny-split-layout">
+                  <div style="width: 45%;">
+                    <div style="font-size:70%">
+                      <div id="TableNsp" class="shiny-html-output"></div>
+                    </div>
+                  </div>
+                  <div style="width: 55%;">
+                    <div style="font-size:70%">
+                      <div id="TableTrtType" class="shiny-html-output"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Compare Curves" id="tab-7918-3">
+          <div class="row">
+            <div class="row">
+              <div class="col-sm-3">
+                <form class="well" role="complementary">
+                  <br/>
+                  <div id="speciesCurves" class="shiny-html-output"></div>
+                  <div class="form-group shiny-input-container">
+                    <label class="control-label" id="ColorCurve-label" for="ColorCurve">Colour of the curves</label>
+                    <div>
+                      <select id="ColorCurve" class="shiny-input-select"><option value="temperature" selected>temperature</option>
+<option value="pH">pH</option></select>
+                      <script type="application/json" data-for="ColorCurve" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+                    </div>
+                  </div>
+                  <div class="form-group shiny-input-container">
+                    <label class="control-label" id="plotHeight-label" for="plotHeight">Height of plots (in pixels)</label>
+                    <input class="js-range-slider" id="plotHeight" data-skin="shiny" data-min="100" data-max="800" data-from="400" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
+                  </div>
+                  <div class="form-group shiny-input-container">
+                    <label class="control-label" id="plotWidth-label" for="plotWidth">Width of plots (in pixels)</label>
+                    <input class="js-range-slider" id="plotWidth" data-skin="shiny" data-min="100" data-max="1000" data-from="600" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number"/>
+                  </div>
+                </form>
+              </div>
+              <div class="col-sm-8" role="main">
+                <h5>This tab allows you to compare growth curves within species.</h5>
+                <h5>You can zoom in and manipulate the plots and change their size.</h5>
+                <h5>First choose a species, then a criteria to separate the curves. The separate plots are at the bottom of the page.</h5>
+                <br/>
+                <h4>All Curves Together</h4>
+                <hr/>
+                <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="plotAllCurves" style="width:100%;height:400px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="row">
+              <div class="col-sm-3">
+                <form class="well" role="complementary">
+                  <div class="form-group shiny-input-container">
+                    <label class="control-label" id="facet_row-label" for="facet_row">Separate curves by</label>
+                    <div>
+                      <select id="facet_row" class="shiny-input-select"><option value="REF_ID">Reference</option>
+<option value="treatment_type" selected>Treatment type</option></select>
+                      <script type="application/json" data-for="facet_row" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="col-sm-8" role="main">
+                <h4>
+                  <div id="FacetCurve" class="shiny-text-output"></div>
+                </h4>
+                <hr/>
+                <div id="plotsComp" class="shiny-html-output"></div>
+                <br/>
+                <br/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Explore Curves" id="tab-7918-4">
+          <div class="row">
+            <div class="col-sm-3">
+              <form class="well" role="complementary">
+                <h5></h5>
+                <div id="SelectClimateCurves" class="form-group shiny-input-checkboxgroup shiny-input-container" role="group" aria-labelledby="SelectClimateCurves-label">
+                  <label class="control-label" id="SelectClimateCurves-label" for="SelectClimateCurves">Climate</label>
+                  <div class="shiny-options-group">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateCurves" value="temperate" checked="checked"/>
+                        <span>temperate</span>
+                      </label>
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateCurves" value="tropical" checked="checked"/>
+                        <span>tropical</span>
+                      </label>
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="SelectClimateCurves" value="mediteranean" checked="checked"/>
+                        <span>mediteranean</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div id="species" class="shiny-html-output"></div>
+                <div class="form-group shiny-input-container">
+                  <label class="control-label" id="TemperatureMDCurves-label" for="TemperatureMDCurves">Temperature</label>
+                  <input class="js-range-slider" id="TemperatureMDCurves" data-skin="shiny" data-type="double" data-min="0" data-max="40" data-from="0" data-to="40" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="" data-prettify-enabled="false" data-keyboard="true" data-drag-interval="true" data-data-type="number"/>
+                </div>
+                <div id="Select_trt" class="shiny-html-output"></div>
+              </form>
+            </div>
+            <div class="col-sm-8" role="main">
+              <br/>
+              <h5>This tab shows each body growth curve separatly, with SE when available. You can export the selected data from the Export Data table.</h5>
+              <h5>Above 10 growth curves, expect a significant delay before plots are rendered.</h5>
+              <pre class="shiny-text-output noplaceholder" id="my_sp"></pre>
+              <div id="curveNb" class="shiny-text-output"></div>
+              <br/>
+              <div id="plots" class="shiny-html-output"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Export Data" id="tab-7918-5">
+          <br/>
+          <h5>Export data selected in the 'Explore Curves' Tab.</h5>
+          <div class="shiny-split-layout">
+            <div style="width: 25%;">
+              <a id="DLselectedCurves" class="btn btn-default shiny-download-link " href="" target="_blank" download>
+                <i class="fas fa-download" role="presentation" aria-label="download icon"></i>
+                Growth Curves (.csv)
+              </a>
+            </div>
+            <div style="width: 5%;">
+              <h5> </h5>
+            </div>
+            <div style="width: 70%;">
+              <a id="DLselectedMD" class="btn btn-default shiny-download-link " href="" target="_blank" download>
+                <i class="fas fa-download" role="presentation" aria-label="download icon"></i>
+                metadata (.csv)
+              </a>
+            </div>
+          </div>
+          <br/>
+          <div class="shiny-split-layout">
+            <div style="width: 25%;">
+              <div id="dfselectedCurves" class="shiny-html-output"></div>
+            </div>
+            <div style="width: 5%;">
+              <h5> </h5>
+            </div>
+            <div style="width: 70%;">
+              <div id="selectedMD" class="shiny-html-output"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Help" id="tab-7918-6">
+          <div class="row">
+            <div class="col-sm-8 offset-md-1 col-sm-offset-1">
+              <br/>
+              <h5>In this App you will find different panels to explore the database</h5>
+              <br/>
+              <strong>Panel 'Metadata'</strong>
+              <ul>
+                <h5>This panels summarizes the data available in the database: 
+            environmental conditions studied, location of the studies, and so on</h5>
+                <h5>On the left you can select the conditions in which the curves were produced</h5>
+                <h5>Below that you will find a contingency table that summarizes the treatment that were studied
+           in the corresponding curves</h5>
+                <h5>The first column describes the type of treatment, the second tells the number of curves that
+           studied this kind of treatment</h5>
+                <h5>On the right, you will find three plots on the first row. The are histogramms of the year
+           of publication, temperature and ph of the substrate in the selected growth curves</h5>
+                <h5>Second line tells the number of species selected, and the number of curves selected</h5>
+                <h5>Last, you will find a map of the location of the specimens used to produce the curves. 
+            You can zoom and pan the map.</h5>
+                <h5>You can also click on the markers to get information on the curves</h5>
+              </ul>
+              <br/>
+              <strong>Panel 'Compare Curves' </strong>
+              <ul>
+                <h5>This panels allows you to compare body growth curve within species.</h5>
+                <h5>Growth curves can be grouped by type of treatment or by publication. </h5>
+                <h5>Growth curves can be colored by type of temperature of pH. They appear in gray
+           if the information is missing. </h5>
+              </ul>
+              <br/>
+              <strong>Panel 'Explore curves'</strong>
+              <ul>
+                <h5>This panel allows you to explore individual growth curves
+            -- biomass of individuals at several dates -- 
+            in a variety of conditions and environmental conditions, for different species.</h5>
+                <br/>
+                <h5>You can select the growth curves either by selecting</h5>
+                <h5>- The climate from which the individuals come from</h5>
+                <h5>- The species studied (mandatory)</h5>
+                <h5>- The type of treatment that was studied</h5>
+                <br/>
+                <h5>Please note that when there are many curves selected, typically above 10,
+            it will take time for the application to draw the plots. 
+            Please be patient and do not click on any buttons, otherwise it will make it worse!</h5>
+                <br/>
+                <h5>The panel shows the following information:</h5>
+                <h5>- The number of growth curves corresponding to you criteria</h5>
+                <h5>- The species that you selected</h5>
+                <h5>- The left column shows the raw data, with a loess fit in red. The ID of the curve is mentionned,
+           as well as the treatment type</h5>
+                <h5>- The right column shows a map with the origin of the individuals used to produce the curve
+           (this is not necessary were the exeperiment was performed)</h5>
+                <h5>- Below the map, environmental conditions used to produce the curve, 
+            and the source of the curve, are summarized.</h5>
+              </ul>
+              <br/>
+              <br/>
+              <strong>Panel 'Export data'</strong>
+              <ul>
+                <h5>This tab allows you to export the curves selected in the Explore curves panel</h5>
+              </ul>
+              <br/>
+              <strong>WARNINGS</strong>
+              <ul>
+                <h5>
+                  <strong>- The 'time' axis should not be interpreted as 'age'.</strong>
+                  
+          The age at time = 0 varies from curve to curve and rarely is the day of birth.
+                </h5>
+                <h5>
+                  <strong>- Species names</strong>
+                  should be interpreted in ligth of recent advances on earthworm taxonomy,
+          particularly regarding
+                  <strong>cryptic species</strong>
+                   in species complexes such as
+                  <em>A. caliginosa</em>
+                  .
+                </h5>
+              </ul>
+              <br/>
+              <strong>USING THE DATABASE FROM R</strong>
+              <ul>
+                <h5>This database can also be browsed from the R console. I actually recommend  to browse the database this way</h5>
+                <h5>- For this you need to install the shiny package</h5>
+                <code>if (!require('shiny')) install.packages('shiny')</code>
+                <h5>- Then load the package</h5>
+                <code>library(shiny)</code>
+                <h5>- Then type:</h5>
+                <code>runGitHub('EGrowth', 'JeromeMathieuEcology')</code>
+                <h5>The GUI should open in you default browser</h5>
+              </ul>
+              <br/>
+              <strong>Code of the Application</strong>
+              <ul>
+                <h5>
+                  The code of this application is available on Zenodo:
+                  <a>https://zenodo.org/record/1039952</a>
+                </h5>
+                <br/>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Contribute" id="tab-7918-7">
+          <div class="row">
+            <div class="col-sm-10 offset-md-2 col-sm-offset-2">
+              <br/>
+              <strong>You want to put your data in EGrowth?</strong>
+              <h5>You are more than welcome to send your data to Contribute the database!</h5>
+              <h5>Please contact me by e-mail and I will give you further instruction.</h5>
+              <br/>
+              <h5>I will enter the data by myself in order to keep the database clean.</h5>
+              <h5>For the moment only published data are integrated in the database.</h5>
+              <br/>
+              <h5>Thanks in advance.</h5>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" data-value="Citation" id="tab-7918-8">
+          <div class="row">
+            <div class="col-sm-10 offset-md-2 col-sm-offset-2">
+              <br/>
+              <strong>How to cite the EGrowth database</strong>
+              <h5>Building this database has been a tremendous work,</h5>
+              <h5>So please cite the database if you use it!</h5>
+              <br/>
+              <ul>
+                <strong>Reference of the paper</strong>
+                <h5>Jerome Mathieu</h5>
+                <h5>EGrowth: A global database on intraspecific body growth variability in earthworm</h5>
+                <h5>Soil Biology and Biochemistry, Volume 122, July 2018, Pages 71-80</h5>
+                <a>https://doi.org/10.1016/j.soilbio.2018.04.004</a>
+              </ul>
+              <br/>
+              <ul>
+                <strong>Code and Reference of the App</strong>
+                <h5>They can be found on Zenodo:</h5>
+                <p>
+                  <a>https://zenodo.org/record/1039952</a>
+                </p>
+                <a href="https://doi.org/10.5281/zenodo.1039952"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1039952.svg" alt="DOI"></a>
+              </ul>
+              <br/>
+              <h5>I will be more than happy to list papers that cite this database.</h5>
+              <h5>Thanks in advance.</h5>
+              <h5>Jerome</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

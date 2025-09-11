@@ -1,0 +1,2004 @@
+```{r, include=F}
+library(here)
+source(file = here::here("functions/fun.R"))
+f_load_libraries_colors()
+```
+
+# Effects of single exposures on earthworms
+
+## Reproduction
+
+### Reproduction experiments
+
+Our earthworm breeding system is described @sec-earthwormsbreeding.
+
+The soil used for all experiments is the same as the culture to be as close as possible to the conditions of the natural population.
+
+For all experiments, Imidacloprid PESTANAL®, analytical standard (ref 37894-100MG) and Epoxiconazole regarder flacon au N1 (ref ) from Sigma-Aldrich were used. Due to the very low water solubility of epoxiconazole and the relatively high tested concentrations, it was not possible to spike the soil with a water solution containing both epoxiconazole and imidacloprid. The alternative use of a co-solvent was avoided, as they are often toxic to earthworms, and the required quantity would have been excessive. One day prior to the start of the tests, the soil contamination was carried out in two stages: first, a dry mixture of epoxiconazole and soil at 20% of its WHC was prepared, followed by spiking the soil with a water solution of imidacloprid.
+
+Reproduction tests were conducted following an adaptation of the OECD Technical Guideline 222 [@oecd_2016] in a two-stage experiment. Each pesticide was first tested individually (Experiment A) before assessing the mixture (Experiment B).
+
+To study the effects of individual pesticides, tested concentrations were selected based on the ecotoxicological data from @lewis_2006. For Eisenia fetida, the reported acute 14-day LC50 values were 10.7 mg/kg for imidacloprid and \>500 mg/kg for epoxiconazole, while the chronic reproduction NOEC values were ≥3.24 mg/kg and ≥0.178 mg/kg, respectively. An initial set of eight concentrations was selected for each pesticide, arranged in a geometric sequence to cover the full response range. For imidacloprid, an additional set of three concentrations, including one already tested, was added to refine the dose-response curve. Each concentration was tested in five replicates.
+
+For each replicate, two earthworms were placed in a cosm consisting of a plastic vessel (11 cm × 7.7 cm × 4.5 cm) containing the equivalent of 200 g of dry soil. The exposure lasted 28 days at 18°C. Earthworms were weighed at the start and end of the experiment and were fed ad libitum with horse dung (3 g per individual every 14 days).
+
+Soil moisture was checked and adjusted weekly. At the end of the experiments, earthworms were starved on wet filter paper in Petri dishes to empty their gut contents before being frozen at -80°C. Cocoons produced during the experiments were retrieved by wet-sieving the soil through a 1-mm mesh [@bart_2018] and incubated at 18°C in Petri dishes on wet filter paper [@holmstrup_1991]. Cocoon hatching was monitored each day of the working week for 96 days for imidacloprid and 55 for epoxiconazole.
+
+A more detailed description of the experiment procedure is available in `protocols\2_EC50_tests` and the temporality of all experiments is described in a GANTT chart @sec-GANTT.
+
+### Experimental results
+
+Variables names :
+
+-   `Date` : Date of the measurement
+-   `ID_cosm` : Identification number of the cosm
+-   `t` : Number of days since the start of the exposition (d)
+-   `w_tot` : Fresh weight of the earthworms in one cosm (mg)
+-   `Nb_ind` : Number of alive individuals in a cosm (#)
+-   `Dose` : concentration in the soil (mg/kg)
+-   `Status` :
+    -   "J" : Juvenile
+    -   "A" : Adulte
+    -   "D" : Dead
+
+#### Data importation
+
+```{r datar, warning=F, message=F}
+
+# Value given to controls for plots
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+df_repro_tot <- read_excel(
+  here::here("data/Data_EC50.xlsx"), 
+  sheet="Repro"
+  ) |> 
+  mutate(                                                  # <1>
+    Dose = as.numeric(Dose),                               # <1>
+    Dose_f = as.factor(round(Dose, 4)),                    # <1>
+    Dose_plot = case_when(                                 # <1>
+      Dose == 0 ~ Val_Ctrl,                                # <1>
+      !(Dose == 0) ~ Dose                                  # <1>
+    ),                                                     # <1>
+    w=w_tot/Nb_ind,                                        # <1>
+    L=w^(1/3)                                              # <1>
+    )                                                      # <1>
+
+df_controls <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
+  aggregate(Nb_cocoons ~ Molec, FUN = mean)
+
+df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |>   
+  mutate(
+    Molecule = "EPX",
+    r_Nb_cocoons = Nb_cocoons/subset(df_controls,Molec == "Ctrl_2")$Nb_cocoons*100
+    )                                                      
+ID_alive_EPX <- subset(df_repro_EPX, t==28 & (!Status=="D"))$ID_cosm    
+df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)   
+
+df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |> 
+  mutate(
+    Molecule = "IMD",
+    r_Nb_cocoons = case_when(
+      Lot == "A" ~ Nb_cocoons/subset(df_controls,Molec == "Ctrl_1")$Nb_cocoons,
+      Lot == "B" ~ Nb_cocoons/subset(df_controls,Molec == "Ctrl_2")$Nb_cocoons
+      )*100
+    )                                                      
+
+ID_alive_IMD <- subset(df_repro_IMD, t==28 & (!Status=="D"))$ID_cosm            
+df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)           
+
+df_repro <- rbind(df_repro_EPX, df_repro_IMD)                                   
+df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)                 
+
+df_repro_alive_mean <- df_repro_alive |>
+  group_by(Dose, Molecule, Dose_plot) |> 
+  summarise(
+    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
+    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
+    .groups = "drop"
+  )
+  
+
+```
+
+1.  Raw data importation and calculation of the mean individual weight and the corresponding structural weight.
+2.  For data analysis, we only keep earthworms alive at the end of the experiment and we attributes the different control batches to the corresponding molecules.
+
+##### Initial state
+
+We can first take a look at the initial weights of individuals (@fig-initRepro).
+
+```{r, warning=F, message=F}
+#| fig-cap: Initial weights of earthworms. 
+#| label: fig-initRepro
+#| fig-width: 6
+#| fig-height: 6
+
+# Weights at t=0
+plot_D0 <- ggplot(
+  data=subset(df_repro,t==0), 
+  aes(
+    x=Dose_f, 
+    y=w, 
+    color=Molecule, 
+    fill=Molecule,
+    shape = Molecule
+    )
+  )+
+
+  geom_boxplot(alpha=0.2)+
+  geom_dotplot(
+    binaxis='y', 
+    stackdir='center', 
+    dotsize=0.7, 
+    alpha=0.7
+    )+
+  facet_wrap(
+    ~Molecule, 
+    ncol=1, 
+    scales="free"
+    )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  scale_shape_manual(values=shape_molec)+
+
+  labs(x="Dose (mg/kg)", y="Weight (mg)")+
+  
+
+  theme_classic(14)+
+  theme(
+    legend.position = "none", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ),
+    legend.text = element_text(
+      size=sizetitle-2,
+      face="plain"
+      ),
+    
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ),
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      ),
+
+    strip.background = element_rect(
+      color="black", 
+      fill=Nord_snow[3], 
+      size=0, 
+      linetype="solid"
+      )
+    )
+plot_D0
+```
+
+```{r, include=F}
+ggsave(
+  filename="Repro_initial_weights.png", 
+  plot=plot_D0, 
+  width=6, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+
+ggsave(
+  filename="Repro_initial_weights.svg", 
+  plot=plot_D0, 
+  width=6, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment. 
+
+We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test. 
+
+```{r lmD0EPXg, warning=F, message=F}
+# lm_D0_EPX <- lm(w~Dose, data=subset(df_repro, Molecule=="EPX" & t==0))
+# summary(lm_D0_EPX)
+
+# ANOVA
+mod_aov <- aov(w ~ Dose_f, data = subset(df_repro, Molecule == "EPX" & t == 0))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+```
+
+```{r lmD0IMDg, warning=F, message=F}
+# lm_D0_IMD <- lm(w~Dose, data=subset(df_repro, Molecule=="IMD" & t==0))
+# summary(lm_D0_IMD)
+
+# ANOVA
+mod_aov <- aov(w ~ Dose_f, data = subset(df_repro, Molecule == "IMD" & t == 0))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+```
+
+There is no effect of the dose on the initial mean weight of earthworms for both pesticides.
+
+#### Dose-response model
+
+Dose-response curves are modeled with the Hill model (@eq-Hill, @fig-drcscheme).
+
+$$
+Y=Y_{min}+\frac{Y_{max}-Y_{min}}{1+\text{exp}(Slope\times [\text{Ln}(Dose)-\text{Ln}(EC_{50})])}
+$$ {#eq-Hill}
+
+With :
+
+-   $Y$ : Response for a given dose,
+-   $Y_{min}$ : Minimal response,
+-   $Y_{max}$ : Maximal response,
+-   $EC_{50}$ : Dose for which the response equals $(Y_{max}-Y_{min})/2$,
+-   $Slope$ : Slope when the dose equals the EC$_{50}$.
+
+```{r, echo=F, message=F, warning=F}
+#| fig-cap: Schematic representation of a dose-response curve with the Hill model 
+#| label: fig-drcscheme
+#| fig-width: 4
+#| fig-height: 3
+
+f_Hill <- function(Dose){
+  
+  Y_min <- 0
+  slope <- 2
+  Y_max <- 20
+  EC50 <- 0.5
+  
+  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(Dose)-log(EC50)))))
+}
+
+x <- c(0,exp(seq(log(0.001),log(100), by=(log(100)-log(0.001))/100)))
+
+plot_drc <- ggplot()+
+  geom_line(
+    aes(
+      x=x,
+      y=f_Hill(x)
+      ), 
+    color = Nord_polar[1], 
+    linewidth=1.1
+    )+
+  
+  annotate(
+    geom="segment", 
+    x=0, 
+    xend=0.5, 
+    y=10, 
+    yend=10, 
+    color=Nord_frost[3], 
+    alpha=1, 
+    size=1
+    )+
+  annotate(
+    geom="segment", 
+    y=0, 
+    yend=10, 
+    x=0.5, 
+    xend=0.5, 
+    color=Nord_aurora[1], 
+    alpha=1, 
+    size=1
+    )+
+  annotate(
+    geom="text", 
+    x=0.5, 
+    y=-0.8, 
+    fontface="bold",
+    label=expression(paste(EC[50])), 
+    color=Nord_aurora[1], 
+    size=5
+    )+
+  annotate(
+    geom="text", 
+    x=0.002, 
+    y=18, 
+    fontface="bold",
+    label=expression(paste(Y[max])), 
+    color=Nord_polar[3], 
+    size=5
+    )+
+  annotate(
+    geom="text", 
+    x=0.002, y=0, fontface="bold",
+    label=expression(paste(Y[min])), 
+    color=Nord_polar[3], 
+    size=5
+    )+
+  annotate(
+    geom="text", 
+    x=0.006, 
+    y=8.5, 
+    fontface="bold",
+    label=expression(paste(1/2(Y[max]-Y[min]))), 
+    color=Nord_frost[3], 
+    size=4
+    )+
+  annotate(
+    geom="text", 
+    x=1.1, 
+    y=10, 
+    label=expression(paste(alpha)), 
+    color=Nord_frost[2], 
+    size=10
+    )+
+  annotate(
+    geom = "segment", 
+    x=0.4, 
+    xend=0.6, 
+    y=12, 
+    yend=8,
+    color=Nord_frost[2], 
+    arrow=arrow(
+      ends="both", 
+      length=unit(0.1, "inches"), 
+      angle=30
+      ), 
+    size=1.2
+    )+
+  geom_point(
+    aes(
+      x=0.5, 
+      y=10
+      ), 
+    color=Nord_polar[3], 
+    size=4
+    )+
+  scale_x_log10()+
+  labs(
+    x="Dose", 
+    y="Response")+
+  theme_minimal(14)+
+  theme(
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank()
+    )
+plot_drc
+
+```
+
+#### Effect on cocoon production
+
+For reproduction, the minimal response is obviously 0. Therefore, we set $Y_{min}$ to 0 in our model.
+
+```{r drcr, warning=F, message=F}
+drc.mod.r <- drm(
+  Nb_cocoons~Dose, 
+  curveid = Molecule,                           # <1>
+  data = df_repro_alive,                               # <2>
+  type="Poisson",                                      # <3>
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),        # <4>
+    fixed=c(NA, 0, NA, NA)                             # <5>
+    ),
+  pmodels=data.frame(Molecule, Molecule, Molecule),     # <6>
+  #lowerl = c(-Inf,0,1e-4)
+  )
+summary(drc.mod.r)
+
+Dose_x <- expand.grid(
+  exp(
+    seq(
+      log(Val_Ctrl),log(5000), 
+      by=(log(5000)-log(Val_Ctrl))/100
+      )
+    )
+  )
+
+CI.r <- data.frame(
+  Dose=c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+  )
+
+pm.r <- predict(drc.mod.r, newdata=CI.r, interval="confidence")
+CI.r$p <- pm.r[,1]
+CI.r$pmin <- pm.r[,2]
+CI.r$pmax <- pm.r[,3]
+
+```
+
+1.  Dose-response relationship and grouping variable
+2.  Data to be used
+3.  Distribution type
+4.  Setting up the parameters names
+5.  $Y_{min}$ is fixed to 0
+6.  All parameters depend on the molecule but $Y_{max}$
+
+```{r, warning=F, message=F}
+
+est <- coef(drc.mod.r)
+ci <- confint(drc.mod.r)
+params_tab <- data.frame(
+  estimate  = unname(est),
+  CI_lower  = ci[,1],
+  CI_upper  = ci[,2]
+)
+
+params_tab
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves for the cocoon production  
+#| label: fig-reprodrc
+#| fig-width: 6
+#| fig-height: 5
+
+plot_drc_r <- ggplot()+
+  geom_ribbon_interactive(
+    data=CI.r, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule,
+      tooltip = Molecule, 
+      data_id = Molecule,
+      ), 
+    alpha=0.2)+
+  geom_line_interactive(
+    data = CI.r,
+    aes(
+      x=Dose,
+      y=p,
+      color=Molecule,
+      tooltip = Molecule,
+      data_id = Molecule,
+      color=Molecule,
+      shape = Molecule
+      ),
+    linewidth = 1.2
+    )+
+  geom_point_interactive(
+    data=df_repro_alive, 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      shape=Molecule,
+      tooltip = Molecule, 
+      data_id = Molecule, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    cex=2, 
+    alpha=0.4
+    )+
+  geom_point_interactive(
+    data=df_repro_alive_mean, 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      shape=Molecule,
+      tooltip = Molecule, 
+      data_id = Molecule, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    alpha=1,
+    size = 3
+    )+
+  scale_color_manual(name="",values=col_molec)+
+  scale_shape_manual(name = "", values=shape_molec)+
+  scale_fill_manual(name="",values=col_molec)+
+  theme_minimal()+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
+    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
+  )+
+  labs(
+    x="Dose (mg/kg)",
+    y="Number of cocoons produced per cosm (#)",
+    )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ), 
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ), 
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      )
+    )
+
+tooltip_css <- "
+  border-radius: 12px;
+  color: #333;
+  background-color: white;
+  padding: 10px;
+  font-size: 14px;
+  transition: all 0.5s ease-out;
+"
+
+hover_css <- "
+  filter: brightness(75%);
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+  filter: brightness(1.15);
+"
+
+interactive_plot <- girafe(ggobj=plot_drc_r)%>%
+  girafe_options(opts_sizing(rescale = FALSE))
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = hover_css),
+    opts_tooltip(css = tooltip_css),
+    opts_hover_inv(css = "opacity:0.3; transition: all 0.2s ease-out;")
+  )
+
+interactive_plot
+
+plot_drc_r_f <- plot_drc_r+
+  labs(title = "A. Effects on cocoon production")
+```
+
+```{r, include=F}
+ggsave(
+  filename="Repro_drc_single.png", 
+  plot=plot_drc, 
+  width=6, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+ggsave(
+  filename="Repro_drc_single.svg", 
+  plot=plot_drc, 
+  width=6, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Diagnostic graphs
+#| label: fig-drcdiagg
+#| fig-width: 8
+#| fig-height: 4
+
+col_diag <- Nord_polar[4]
+
+plot_QQ <- ggplot(mapping=aes(sample=residuals(drc.mod.r)))+
+  
+  stat_qq(alpha=0.3)+
+  stat_qq_line(color=col_diag)+
+  
+  labs(
+    x="Normal quantiles", 
+    y="Residuals"
+    )+
+  theme_bw()
+
+plot_resfit <- ggplot()+
+  
+  geom_point(
+    mapping=aes(
+      x=fitted(drc.mod.r), 
+      y=residuals(drc.mod.r)
+      ), 
+    color=col_diag, 
+    alpha=0.3
+    )+
+  
+  scale_x_log10()+
+  
+  labs(
+    x="Fitted", 
+    y="Residuals"
+    )+
+  
+  theme_bw()
+
+plot <- plot_resfit + plot_QQ + plot_layout(ncol=2)
+plot
+```
+
+#### Effect on hatchlings
+
+```{r}
+df_hatchlings_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet="Hatchlings") |>
+  mutate(ID_cosm = ID_cosm) |> 
+  group_by(ID_cosm) %>%
+  arrange(Date) %>%  # S'assurer que les dates sont triées
+  mutate(Nb_juv_cum = cumsum(Nb_juv))  # Calcul du cumul
+
+t0_dates <- df_repro_tot %>%
+  filter(t == 0) %>%
+  dplyr::select(ID_cosm, Date) %>%
+  rename(t0_date = Date)
+
+nb_cocoons_t28 <- df_repro_tot %>%
+  filter(t == 28) %>%
+  dplyr::select(ID_cosm, Nb_cocoons)
+
+
+df_hatchlings_tot <- df_hatchlings_tot |> 
+  left_join(t0_dates, by = "ID_cosm") |> 
+  mutate(t = as.numeric(difftime(Date, t0_date, units = "days"))) |>   # Calcul du temps relatif
+  left_join(nb_cocoons_t28, by = "ID_cosm") |> 
+  mutate(Percent_Juv = (Nb_juv_cum / Nb_cocoons) * 100) |>   # Calcul du pourcentage
+  left_join(
+    df_repro_tot |>  
+      dplyr::select(ID_cosm, Dose) |>  
+      distinct(), 
+    by = "ID_cosm"
+    )
+
+df_hatchlings_f <- df_hatchlings_tot |> 
+  group_by(ID_cosm) |>           # Grouper par individu
+  slice_max(Nb_juv_cum, n = 1) |>   # Sélectionner la ligne avec le maximum
+  ungroup() |>                       # Supprimer le groupement
+  aggregate(Nb_juv_cum ~ Dose+Molec, FUN = mean) |> 
+  mutate(Molecule = Molec)
+
+```
+
+```{r, warning = F, message = F}
+#| fig-cap: Mean cumulated number of juveniles produced determined with the monitoring of hatchlings (after 69 days for IMD and after 55 days for EPX)
+#| label: fig-hatchlings
+#| fig-width: 8
+#| fig-height: 4
+
+# p <- ggplot(data = df_hatchlings_tot)+
+#   geom_line(
+#     aes(
+#       x = t,
+#       y = Percent_Juv,
+#       group = ID_cosm,
+#       color = as.factor(Dose)
+#     )
+#   )+
+#   facet_wrap(~Molec)+
+#   theme_minimal()
+# p
+
+p <- ggplot(data = df_hatchlings_f)+
+  geom_col(
+    aes(
+      x = as.factor(Dose),
+      y = Nb_juv_cum,
+      color = Molecule,
+      fill = Molecule
+    ),
+    alpha = 0.5
+  )+
+  labs(
+    x = "Concentration (mg/kg)",
+    y = "Mean cumulated number of juveniles produced (#)"
+  )+
+  facet_wrap(~Molec, scales = "free")+
+  scale_color_manual(values = col_molec)+
+  scale_fill_manual(values = col_molec)+
+  theme_minimal()
+p
+```
+
+#### Effect on adult growth
+
+```{r, warning=F, message=F}
+#| fig-cap: Earthworms growth according to their exposition. 
+#| label: fig-growthplotadults
+#| fig-width: 6
+#| fig-height: 10
+
+nb_dose_EPX <- n_distinct(subset(df_repro, Molecule=="EPX")$Dose)
+nb_dose_IMD <- n_distinct(subset(df_repro, Molecule=="IMD")$Dose)
+
+pal_dose_EPX <- nord(palette = "aurora", nb_dose_EPX+2, 
+                     alpha = 1, reverse = T)[-c(1,2)]
+pal_dose_IMD <- nord(palette = "aurora", nb_dose_IMD+2, 
+                     alpha = 1, reverse = T)[-c(1,2)]
+
+plot_growth_EPX <- ggplot(
+  data=subset(df_repro, Molecule=="EPX"), 
+  aes(
+    x=t, 
+    y=w, 
+    group=ID_cosm, 
+    color=as.factor(Dose)
+    )
+  )+
+  geom_point(shape=shape_EPX)+
+  scale_color_manual(name="Dose (mg/kg)",values=pal_dose_EPX)+
+  geom_line()+
+  facet_wrap(~Dose, ncol=3)+
+  labs(
+    x="Time (d)", 
+    y="Weight (mg)", 
+    title="Growth of earthworms exposed to epoxiconazole"
+    )+
+  theme_bw()+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"),
+    strip.background = element_rect(colour="black", fill="white", 
+                                    linetype="solid"),
+    title=element_text(size=sizetitle, face="bold"), 
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+    )
+
+plot_growth_IMD <- ggplot(
+  data=subset(df_repro, Molecule=="IMD"),
+  aes(
+    x=t, 
+    y=w, 
+    group=ID_cosm, 
+    color=as.factor(Dose)
+    )
+  )+
+  geom_point(shape = shape_IMD)+
+  geom_line()+
+  facet_wrap(~Dose, ncol=3)+
+  scale_color_manual(name="Dose (mg/kg)",values=pal_dose_IMD)+
+  labs(
+    x="Time (d)", 
+    y="Weight (mg)", 
+    title="Growth of earthworms exposed to imidacloprid"
+    )+
+  theme_bw()+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"),
+    strip.background = element_rect(colour="black", fill="white", 
+                                    linetype="solid"),
+    title=element_text(size=sizetitle, face="bold"), 
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+    )
+
+plot <- plot_growth_EPX+plot_growth_IMD+plot_layout(ncol=1, heights=c(1, 4/3))
+plot
+```
+
+```{r, include=F}
+ggsave(
+  filename="Repro_growth_curves.png", 
+  plot=plot, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+
+ggsave(
+  filename="Repro_growth_curves.svg", 
+  plot=plot, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+```{r growthratesfuncr}
+
+df_repro_grate <- df_repro |> 
+  dplyr::select(ID_cosm, t, L, Dose, Dose_plot, Molecule) |> 
+  pivot_wider(names_from = t, values_from = L, names_prefix = "L_t") |> 
+  mutate(a_i = (L_t28 - L_t0)/28)
+
+df_repro_grate_mean <- df_repro_grate |> 
+  aggregate(a_i ~ Molecule + Dose + Dose_plot, FUN = "mean")
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Mean growth rates of each cosm and per condition. 
+#| label: fig-growthrates
+#| fig-width: 8
+#| fig-height: 4
+
+
+p <- ggplot()+
+  geom_point(
+    data = df_repro_grate, 
+    aes(
+      x = Dose_plot, 
+      y = a_i,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha=0.5,
+  )+
+  geom_point(
+    data = df_repro_grate_mean, 
+    aes(
+      x = Dose_plot, 
+      y = a_i,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha=1,
+    size = 3
+  )+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  facet_wrap(~Molecule, scales = "free_x")+
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  scale_shape_manual(values=shape_molec)+
+  labs(
+    x = "Dose (mg/kg)",
+    y = "Growth rate",
+    title = "Effect of the pesticides on adult growth rates"
+    )+
+  ylim(NA, 0.05)+
+  theme_minimal(base_size = 15) +  # Thème minimaliste
+  theme(
+    plot.title = element_text(
+      # hjust = 0.5, 
+      face = "bold"
+      ),
+    legend.position = "none",
+    strip.background = element_rect(
+      color="black", 
+      fill=Nord_snow[3], 
+      size=0, 
+      linetype="solid"
+      ),
+    strip.text = element_text(face = "bold")
+  )
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Repro_growth_rates.png", 
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+
+ggsave(
+  filename="Repro_growth_rates.svg", 
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+```{r, warning=F, message=F}
+
+df_repro_grate$Dose_f <- as.factor(df_repro_grate$Dose)
+df_repro_grate$Dose_f <- relevel(df_repro_grate$Dose_f, ref = "0")
+
+cat("IMD - Determination of NOEC and LOEC\n")
+mod_aov <- aov(a_i ~ Dose_f, data = subset(df_repro_grate, Molecule == "IMD"))
+summary(mod_aov)
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+cat("EPX - Determination of NOEC and LOEC\n")
+mod_aov <- aov(a_i ~ Dose_f, data = subset(df_repro_grate, Molecule == "EPX"))
+summary(mod_aov)
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+# lm.repro.grates.IMD <- lm(a_i ~ as.factor(Dose), subset(df_repro_grate, Molecule == "IMD"))
+# cat("IMD - Determination of NOEC and LOEC\n")
+# lsmeans(lm.repro.grates.IMD, pairwise~as.factor(Dose), adjust='bonferroni')
+# 
+# lm.repro.grates.EPX <- lm(a_i ~ as.factor(Dose), subset(df_repro_grate, Molecule == "EPX"))
+# cat("EPX - Determination of NOEC and LOEC\n")
+# lsmeans(lm.repro.grates.EPX, pairwise~as.factor(Dose), adjust='bonferroni')
+```
+
+### Comparison to environmental concentrations
+
+```{r envconc}
+# Environmental concentrations (Froger et al. 2023)
+EPX_Cmin <- 1.1 / 1000
+EPX_Cmax <- 23.6/ 1000
+EPX_median <- 5.8/ 1000
+EPX_Q25 <- 2.8/ 1000
+EPX_Q75 <- 10.9/ 1000
+
+EPX_Cmax_pelosi <- 283/ 1000
+
+IMD_Cmin <- 2/ 1000
+IMD_Cmax <- 13.8/ 1000
+IMD_median <- 2.9/ 1000
+IMD_Q25 <- 2.5/ 1000
+IMD_Q75 <- 5.8/ 1000
+
+IMD_Cmax_pelosi <- 283/ 1000
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated effect on cocoon production for environmental concentrations
+#| label: fig-reprodrcenv
+#| fig-width: 6
+#| fig-height: 6
+
+
+p_IMD <- ggplot()+
+  annotate(
+    "rect", 
+    xmin = IMD_Cmin, xmax = IMD_Cmax, 
+    ymin = -Inf, ymax = Inf,
+    alpha = 0.2, 
+    fill = col_IMD,
+    color = col_IMD
+    )+
+  annotate(
+    "rect", 
+    xmin = IMD_Q25, xmax = IMD_Q75, 
+    ymin = -Inf, ymax = Inf,
+    color = col_IMD,
+    fill = col_IMD,
+    alpha=0.1
+    )+
+  geom_vline(
+    xintercept = IMD_median,
+    color = col_IMD,
+    linetype = "dotted",
+    linewidth = 1.2
+  )+
+  geom_vline(
+    xintercept = IMD_Cmax_pelosi,
+    color = col_red,
+    linetype = "dashed",
+    linewidth = 1.2
+  )+
+  geom_ribbon(
+    data=subset(CI.r, Molecule == "IMD"), 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+      ), 
+    alpha=0.2)+
+  geom_line(
+    data = subset(CI.r, Molecule == "IMD"),
+    aes(
+      x=Dose,
+      y=p,
+      color=Molecule,
+      shape = Molecule
+      ),
+    linewidth = 1.2
+    )+
+  geom_point(
+    data=subset(df_repro_alive, Molecule == "IMD"), 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    cex=2, 
+    alpha=0.4
+    )+
+  geom_point(
+    data=subset(df_repro_alive_mean, Molecule == "IMD"), 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    alpha=1,
+    size = 3
+    )+
+
+  scale_color_manual(name="",values=rev(col_molec))+
+  scale_shape_manual(name = "", values=rev(shape_molec))+
+  scale_fill_manual(name="",values=rev(col_molec))+
+  theme_minimal()+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
+    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
+  )+
+  labs(
+    x="Dose (mg/kg)",
+    y="Number of cocoons produced per cosm (#)"
+    )+
+  theme(
+    legend.position = "right"
+    )
+
+p_EPX <- ggplot()+
+  annotate(
+    "rect", 
+    xmin = EPX_Cmin, xmax = EPX_Cmax, 
+    ymin = -Inf, ymax = Inf,
+    alpha = 0.2, 
+    fill = col_EPX,
+    color = col_EPX
+    )+
+  annotate(
+    "rect", 
+    xmin = EPX_Q25, xmax = EPX_Q75, 
+    ymin = -Inf, ymax = Inf,
+    color = col_EPX,
+    fill = col_EPX,
+    alpha=0.1
+    )+
+  geom_vline(
+    xintercept = EPX_median,
+    color = col_EPX,
+    linetype = "dotted",
+    linewidth = 1.2
+  )+
+  geom_vline(
+    xintercept = EPX_Cmax_pelosi,
+    color = col_red,
+    linetype = "dashed",
+    linewidth = 1.2
+  )+
+  geom_ribbon(
+    data=subset(CI.r, Molecule == "EPX"), 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+      ), 
+    alpha=0.2)+
+  geom_line(
+    data = subset(CI.r, Molecule == "EPX"),
+    aes(
+      x=Dose,
+      y=p,
+      color=Molecule,
+      shape = Molecule
+      ),
+    linewidth = 1.2
+    )+
+  geom_point(
+    data=subset(df_repro_alive, Molecule == "EPX"), 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    cex=2, 
+    alpha=0.4
+    )+
+  geom_point(
+    data=subset(df_repro_alive_mean, Molecule == "EPX"), 
+    aes(
+      x=Dose_plot, 
+      y=Nb_cocoons, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    alpha=1,
+    size = 3
+    )+
+
+  scale_color_manual(name="",values=col_molec)+
+  scale_shape_manual(name = "", values=shape_molec)+
+  scale_fill_manual(name="",values=col_molec)+
+  theme_minimal()+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
+    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
+  )+
+  labs(
+    x="Dose (mg/kg)",
+    y="Number of cocoons produced per cosm (#)"
+    )+
+  theme(
+    legend.position = "right"
+    )
+
+p <- p_EPX/p_IMD
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Repro_drc_single_env_froger.png", 
+  plot=p, 
+  width=6, 
+  height = 7, 
+  path=here::here("fig/Single_expo")
+  )
+ggsave(
+  filename="Repro_drc_single_env_froger.svg", 
+  plot=p, 
+  width=6, 
+  height = 7, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+## Juvenile growth
+
+### Growth experiment
+
+Juveniles used in these tests were collected in the culture with similar body weights. Juvenile growth tests followed the same pattern as reproduction tests. The study of the effects of individual pesticides was performed using the same doses as in the reproduction tests.
+
+For each replicate, one earthworm was placed in a cosm consisting of a plastic vessel (11 cm × 7.7 cm × 4.5 cm) containing the equivalent of 200 g of dry soil. The exposure lasted 28 days at 18°C. Earthworms were weighed at the start, after 14 days and at the end of the experiment (28 days) and were fed ad libitum with horse dung (3 g per individual every 14 days). Soil moisture was checked and adjusted weekly. At the end of the experiments, earthworms were starved on wet filter paper in Petri dishes to empty their gut contents before being frozen at -80°C.
+
+### Experimental results
+
+Variables names :
+
+-   `Date` : Date of the measurement
+-   `ID` : Identification number of the earthworm
+-   `t` : Number of days since the start of the exposition
+-   `w` : Fresh weight of the earthworm (mg)
+-   `Dose` : concentration in the soil (mg/kg)
+-   `status` :
+    -   "J" : Juvenile
+    -   "A" : Adulte
+    -   "D" : Dead
+
+#### Data importation
+
+```{r datag, warning=F, message=F}
+
+# Value given to controls for plots
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+df_growth_tot <- read_excel(
+  here::here("data/Data_EC50.xlsx"), 
+  sheet="Growth"
+  ) |>                                          # <1>
+  mutate(                                       # <1>
+    Dose = as.numeric(Dose),                    # <1>
+    Dose_f = as.factor(round(Dose, 4)),         # <1>
+    Dose_plot = case_when(                      # <1>
+      Dose == 0 ~ Val_Ctrl,                     # <1>
+      !(Dose == 0) ~ Dose                       # <1>
+    ),                                          # <1>
+    L=w^(1/3)                                   # <1>
+    )                                           # <1>
+
+# df_controls <- subset(df_growth_tot, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
+#   aggregate(Nb_cocoons ~ Molec, FUN = mean)
+
+df_growth_EPX <- subset(df_growth_tot, Molec %in% c("Ctrl_2", "EPX")) |> # <2>
+  mutate(Molecule = "EPX")                                               # <2>
+ID_alive_EPX <- subset(df_growth_EPX, t==28 & (!Status=="D"))$ID         # <2>
+df_growth_EPX_alive <- subset(df_growth_EPX, ID %in% ID_alive_EPX)       # <2>
+
+df_growth_IMD <- subset(df_growth_tot, Molec %in%                        # <2>
+                          c("Ctrl_1", "Ctrl_2", "IMD")) |>               # <2>
+  mutate(Molecule = "IMD")                                               # <2>
+ID_alive_IMD <- subset(df_growth_IMD, t==28 & (!Status=="D"))$ID         # <2>
+df_growth_IMD_alive <- subset(df_growth_IMD, ID %in% ID_alive_IMD)       # <2>
+
+df_growth <- rbind(df_growth_EPX, df_growth_IMD)                         # <2>
+df_growth_alive <- rbind(df_growth_EPX_alive, df_growth_IMD_alive)       # <2>
+
+```
+
+1.  Raw data importation and calculation of the mean individual weight and the corresponding structural weight.
+2.  For data analysis, we only keep earthworms alive at the end of the experiment and we attributes the different control batches to the corresponding molecules.
+
+##### Initial state
+
+We can first take a look at the initial weights of individuals (@fig-initGrowth).
+
+```{r, warning=F, message=F}
+#| fig-cap: Initial weights of earthworms. 
+#| label: fig-initGrowth
+#| fig-width: 6
+#| fig-height: 6
+
+plot_D0 <- ggplot(
+  data=subset(df_growth,t==0),
+  aes(
+    x=Dose_f, 
+    y=w, 
+    color=Molecule, 
+    fill=Molecule
+    )
+  )+
+  geom_boxplot(alpha=0.2)+
+  geom_dotplot(
+    binaxis='y', 
+    stackdir='center', 
+    dotsize=0.7, 
+    alpha=0.7
+    )+
+  labs(
+    x="Dose (mg/kg)", 
+    y="Weight (mg)"
+    )+
+  facet_wrap(
+    ~Molecule, 
+    ncol=1, 
+    scales="free"
+    )+
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  theme_classic(14)+
+  theme(
+    legend.position = "none", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ),
+    legend.text = element_text(
+      size=sizetitle-2,
+      face="plain"
+      ),
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ),
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      ),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+    )
+plot_D0
+```
+
+```{r, include=F}
+ggsave(
+  filename="Growth_initial_weights.png", 
+  plot=plot_D0, 
+  width=6, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment.
+
+We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test. 
+
+```{r lmD0EPXr, warning=F, message=F}
+
+# ANOVA
+mod_aov <- aov(w ~ Dose_f, data = subset(df_growth, Molecule == "EPX" & t == 0))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+```
+
+```{r lmD0IMDr, warning=F, message=F}
+# ANOVA
+mod_aov <- aov(w ~ Dose_f, data = subset(df_growth, Molecule == "IMD" & t == 0))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+```
+
+For IMD, there is a significant effect of the dose on earthworm initial weights.
+
+-   ANOVA : pval(IMD) = 9.66e-05,
+-   All concentrations are not significatively different from the control (post hoc Dunett test).
+
+However, earthworms were non the less randomly attributed to conditions and the growth model allows to take the differences in initial weight into account.
+
+For EPX, there is no significant effect of the dose on the initial weight of earthworms (Student test : pval(IMD) = 0.125).
+
+##### Earthworms growth
+
+```{r, warning=F, message=F}
+#| fig-cap: Earthworms growth according to their exposition. 
+#| label: fig-growthplotjuv
+#| fig-width: 6
+#| fig-height: 10
+
+nb_dose_EPX <- n_distinct(subset(df_growth, Molecule=="EPX")$Dose)
+nb_dose_IMD <- n_distinct(subset(df_growth, Molecule=="IMD")$Dose)
+
+pal_dose_EPX <- nord(
+  palette = "aurora", 
+  nb_dose_EPX+2,
+  alpha = 1, 
+  reverse = T
+  )[-c(1,2)]
+pal_dose_IMD <- nord(
+  palette = "aurora", 
+  nb_dose_IMD+2, 
+  alpha = 1, 
+  reverse = T
+  )[-c(1,2)]
+
+plot_growth_EPX <- ggplot(
+  data=subset(df_growth, Molecule=="EPX"),
+  aes(
+    x=t, 
+    y=w, 
+    group=ID, 
+    color=as.factor(Dose)
+    ),
+  shape = shape_EPX
+  )+
+  geom_point()+
+  scale_color_manual(
+    name="Dose (mg/kg)",
+    values=pal_dose_EPX
+    )+
+  geom_line()+
+  facet_wrap(
+    ~Dose, 
+    ncol=3
+    )+
+  labs(
+    x="Time (d)", 
+    y="Weight (mg)", 
+    title="Epoxiconazole"
+    )+
+  theme_bw()+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ),
+    strip.background = element_rect(
+      colour="black", 
+      fill="white", 
+      linetype="solid"
+      ),
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ), 
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      )
+    )
+
+plot_growth_IMD <- ggplot(
+  data=subset(df_growth, Molecule=="IMD"), 
+  aes(
+    x=t, 
+    y=w, 
+    group=ID, 
+    color=as.factor(Dose)
+    ),
+  shape = shape_IMD
+  )+
+  geom_point()+
+  
+  geom_line()+
+  facet_wrap(
+    ~Dose, 
+    ncol=3
+    )+
+  scale_color_manual(name="Dose (mg/kg)", values=pal_dose_IMD)+
+  labs(
+    x="Time (d)", 
+    y="Weight (mg)", 
+    title="Imidacloprid"
+    )+
+  theme_bw()+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ),
+    strip.background = element_rect(
+      colour="black", 
+      fill="white", 
+      linetype="solid"
+      ),
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ), 
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      )
+    )
+
+plot <- plot_growth_EPX+plot_growth_IMD+plot_layout(ncol=1, heights=c(1, 4/3))
+plot
+```
+
+```{r, include=F}
+ggsave(
+  filename="Growth_curves_juveniles_IMD.png", 
+  plot=plot_growth_IMD, 
+  width=6, 
+  height = 6.6, 
+  path=here::here("fig/Single_expo")
+  )
+
+ggsave(
+  filename="Growth_curves_juveniles_EPX.png", 
+  plot=plot_growth_EPX, 
+  width=6, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+### Effect on juvenile growth
+
+#### Growth model - Growth rates calculation
+
+The growth model is the following :
+
+$$
+\frac{dL}{dt}=a \Rightarrow L(t)=L_0 + a\times t
+$$
+
+With :
+
+-   L : The structural volumetric length of the earthworm ($= \sqrt[3]{w}$) (mg$^{1/3}$)
+-   a : Growth rate (mg$^{1/3}$/d)
+
+For each earthworm, the growth rate is estimated using `nls` from the "stats" package.
+
+```{r growthratesfuncg}
+f_growth_rate <- function(data){
+  a_init <- 0.1
+  a_i <- c()
+  
+  # Calculation of the growth rate for each individual
+  for(i in subset(data, t==0)$ID){
+    data_i <- data.frame(
+      L = subset(data, ID==i)$L,
+      t = subset(data, ID==i)$t
+      )
+    L0_i <- subset(data, ID==i & t==0)$L
+    
+    if(length(na.omit(data_i$L))==2){ # If only 2 data points
+      a.Est <- (subset(data_i, !t==0)$L-subset(data_i, t==0)$L)/
+        subset(data_i, !t==0)$t
+    }else{ # If 3 data points (or more)
+      EPX.nlsHill=nls(
+        L ~ L0_i+t*a,
+        start = list(a=a_init), 
+        trace=T, 
+        data=data_i
+        ) 
+      a.Est <- EPX.nlsHill$m$getPars()[1]
+    }
+    a_i <- rbind(a_i, a.Est)
+  }
+
+  return(a_i)
+}
+```
+
+```{r growhratescalc, warning=F, message=F, output=F}
+# Growth rate calculation for individuals alive at the end of the experiment
+a_i <- f_growth_rate(df_growth_alive) |> as.data.frame()
+
+df_rates_alive <- cbind(subset(df_growth_alive, t==0), a_i) |> 
+  as.data.frame()
+
+df_rates_controls <- subset(df_rates_alive, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
+  aggregate(a ~ Molec, FUN = mean)
+
+df_rates_alive <- df_rates_alive |> 
+  mutate(
+    r_a = case_when(
+      Lot == "A" ~ a/subset(df_rates_controls,Molec == "Ctrl_1")$a,
+      Lot == "B" ~ a/subset(df_rates_controls,Molec == "Ctrl_2")$a
+      )*100
+  )
+
+df_rates_alive_mean <- df_rates_alive |>
+  group_by(Dose, Molecule, Dose_plot) |> 
+  summarise(
+    r_a = mean(r_a, na.rm = TRUE),
+    a = mean(a, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+```
+
+#### Dose response curve
+
+```{r drcg, warning=F, message=F}
+drc.mod.g<- drm(
+  a~Dose, Molecule,
+  data = df_rates_alive,
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed=c(NA, NA, NA, NA)
+    ),
+  pmodels=data.frame(Molecule, 1, 1, Molecule),
+  lowerl = c(-Inf,-Inf, -Inf, 1e-4)
+  )
+summary(drc.mod.g)
+
+Dose_x <- expand.grid(
+  exp(
+    seq(
+      log(0.000001),log(5000), 
+      by=(log(5000)-log(0.000001))/100
+      )
+    )
+  )
+
+CI.g <- data.frame(
+  Dose=c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+  )
+
+pm.g <- predict(drc.mod.g, newdata=CI.g, interval="confidence")
+CI.g$p <- pm.g[,1]
+CI.g$pmin <- pm.g[,2]
+CI.g$pmax <- pm.g[,3]
+
+```
+
+```{r, warning=F, message=F}
+plot_drc_g <- ggplot()+
+  # geom_ribbon_interactive(
+  #   data=CI.g, 
+  #   aes(
+  #     x=Dose, 
+  #     y=p, 
+  #     ymin=pmin, ymax=pmax, 
+  #     group=Molecule, 
+  #     fill=Molecule,
+  #     tooltip = Molecule, 
+  #     data_id = Molecule,
+  #     ), 
+  #   alpha=0.2)+
+  # geom_line_interactive(
+  #   data = CI.g, 
+  #   aes(
+  #     x=Dose, 
+  #     y=p, 
+  #     color=Molecule,
+  #     tooltip = Molecule, 
+  #     data_id = Molecule, 
+  #     color=Molecule,
+  #     shape = Molecule
+  #     ),
+  #   linewidth = 1.2
+  #   )+
+  geom_point_interactive(
+    data=df_rates_alive, 
+    aes(
+      x=Dose_plot, 
+      y=a, 
+      shape=Molecule,
+      tooltip = Molecule, 
+      data_id = Molecule, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    cex=2, 
+    alpha=0.4
+    )+
+  geom_point_interactive(
+    data=df_rates_alive_mean, 
+    aes(
+      x=Dose_plot, 
+      y=a, 
+      shape=Molecule,
+      tooltip = Molecule, 
+      data_id = Molecule, 
+      color=Molecule,
+      shape = Molecule
+      ), 
+    alpha=1,
+    size = 3
+    )+
+  scale_color_manual(name="",values=col_molec)+
+  scale_shape_manual(name = "", values=shape_molec)+
+  scale_fill_manual(name="",values=col_molec)+
+  theme_minimal()+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
+    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
+  )+
+  labs(
+    x="Dose (mg/kg)",
+    y=expression(paste("Growth rate (", mg^{1/3}, "/day)")),
+    #y = "Relative growth rate (%)",
+    #title = "B. Effects on juvenile growth"
+    )+
+  theme(
+    legend.position = "none", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ), 
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    axis.title.x = element_text(
+      size=sizetitle,
+      face="plain"
+      ), 
+    axis.title.y = element_text(
+      size=sizetitle,
+      face="plain"
+      )
+    )
+
+tooltip_css <- "
+  border-radius: 12px;
+  color: #333;
+  background-color: white;
+  padding: 10px;
+  font-size: 14px;
+  transition: all 0.5s ease-out;
+"
+
+hover_css <- "
+  filter: brightness(75%);
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+  filter: brightness(1.15);
+"
+
+interactive_plot <- girafe(ggobj=plot_drc_g)%>%
+  girafe_options(opts_sizing(rescale = FALSE))
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = hover_css),
+    opts_tooltip(css = tooltip_css),
+    opts_hover_inv(css = "opacity:0.3; transition: all 0.2s ease-out;")
+  )
+
+plot_drc_g_f <- plot_drc_g +
+  labs(title = "B. Effects on juvenile growth")
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves for growth. 
+#| label: fig-growthdrc
+#| fig-width: 8
+#| fig-height: 4
+
+p <- ggplot()+
+  # geom_ribbon_interactive(
+  #   data=CI.g, 
+  #   aes(
+  #     x=Dose, 
+  #     y=p, 
+  #     ymin=pmin, ymax=pmax, 
+  #     group=Molecule, 
+  #     fill=Molecule,
+  #     tooltip = Molecule, 
+  #     data_id = Molecule,
+  #     ), 
+  #   alpha=0.2)+
+  # geom_line_interactive(
+  #   data = CI.g, 
+  #   aes(
+  #     x=Dose, 
+  #     y=p, 
+  #     color=Molecule,
+  #     tooltip = Molecule, 
+  #     data_id = Molecule, 
+  #     color=Molecule,
+  #     shape = Molecule
+  #     ),
+  #   linewidth = 1.2
+  #   )+
+  geom_point(
+    data = df_rates_alive, 
+    aes(
+      x = Dose_plot, 
+      y = a,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha=0.5,
+  )+
+  geom_point(
+    data = df_rates_alive_mean, 
+    aes(
+      x = Dose_plot, 
+      y = a,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha=1,
+    size = 3
+  )+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  facet_wrap(~Molecule, scales = "free_x")+
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  scale_shape_manual(values=shape_molec)+
+  labs(
+    x = "Dose (mg/kg)",
+    y=expression(paste("Growth rate (", mg^{1/3}, "/day)")),
+    title = "Effect of the pesticides on juvenile growth rates"
+    )+
+  ylim(NA, 0.15)+
+  theme_minimal(base_size = 15) +  # Thème minimaliste
+  theme(
+    plot.title = element_text(
+      # hjust = 0.5, 
+      face = "bold"
+      ),
+    legend.position = "none",
+    strip.background = element_rect(
+      color="black", 
+      fill=Nord_snow[3], 
+      size=0, 
+      linetype="solid"
+      ),
+    strip.text = element_text(face = "bold")
+  )
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Growth_drc_single.png",
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+ggsave(
+  filename="Growth_drc_single.svg",
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Diagnostic graphs
+#| label: fig-drcdiagr
+#| fig-width: 8
+#| fig-height: 4
+
+col_diag <- Nord_polar[4]
+
+plot_QQ <- ggplot(
+  mapping=aes(
+    sample=residuals(drc.mod.g)
+    )
+  )+
+  stat_qq(alpha=0.3)+
+  stat_qq_line(color=col_diag)+
+  labs(
+    x="Normal quantiles", 
+    y="Residuals"
+    )+
+  theme_minimal()
+
+plot_resfit <- ggplot()+
+  geom_point(
+    mapping=aes(
+      x=fitted(drc.mod.g), 
+      y=residuals(drc.mod.g)
+      ), 
+    color=col_diag, 
+    alpha=0.3
+    )+
+  labs(
+    x="Fitted", 
+    y="Residuals"
+    )+
+  scale_x_log10()+
+  theme_minimal()
+
+plot <- plot_resfit + plot_QQ + plot_layout(ncol=2)
+plot
+```
+
+```{r, warning=F, message=F}
+
+# ANOVA
+cat("IMD - Determination of NOEC and LOEC\n")
+mod_aov <- aov(a ~ Dose_f, data = subset(df_rates_alive, Molecule == "IMD"))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+cat("EPX - Determination of NOEC and LOEC\n")
+mod_aov <- aov(a ~ Dose_f, data = subset(df_rates_alive, Molecule == "EPX"))
+summary(mod_aov)
+
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+# lm.growth.grates.IMD <- lm(a ~ as.factor(Dose), subset(df_rates_alive, Molecule == "IMD"))
+# cat("IMD - Determination of NOEC and LOEC\n")
+# lsmeans(lm.growth.grates.IMD, pairwise~as.factor(Dose), adjust='bonferroni')
+# 
+# lm.growth.grates.EPX <- lm(a ~ as.factor(Dose), subset(df_rates_alive, Molecule == "EPX"))
+# cat("EPX - Determination of NOEC and LOEC\n")
+# lsmeans(lm.growth.grates.EPX, pairwise~as.factor(Dose), adjust='bonferroni')
+```
+
+We can also say that there is an effect of the dose on juveniles growth.
+
+### Observed mortality
+
+```{r, warning=F, message=F}
+#| fig-cap: Mortality observed in each condition. 
+#| label: fig-growthdrcmortality
+#| fig-width: 6
+#| fig-height: 5
+
+df_dead_g <- df_growth |> 
+  filter(t==28) |> 
+  group_by(Dose_f, Molecule) |> 
+  summarise(
+    n_D = sum(Status == "D", na.rm = TRUE),  # compte lignes avec Status "D"
+    n_total = n(),                           # total lignes par condition
+    .groups = "drop"
+  )
+
+p <- ggplot(
+  data=df_dead_g,
+  aes(
+    x=Dose_f, 
+    y=n_D, 
+    color=Molecule, 
+    fill=Molecule
+    )
+  )+
+  geom_col(
+    alpha=0.5
+    )+
+  geom_text(
+    aes(label = round(n_D)), 
+    vjust = -0.5, 
+    size=4
+    )+
+  labs(
+    x="Dose (mg/kg)", 
+    y="Number of dead individuals (#)"
+    )+
+  facet_wrap(
+    ~Molecule, 
+    ncol=1, 
+    scales="free"
+    )+
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  lims(y=c(0,4.5))+
+  theme_classic(12)+
+  theme(
+    legend.position = "none", 
+    legend.title=element_text(
+      size=sizetitle-2,
+      face="bold"
+      ),
+    legend.text = element_text(
+      size=sizetitle-2,
+      face="plain"
+      ),
+    title=element_text(
+      size=sizetitle, 
+      face="bold"
+      ), 
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+    )
+p
+  
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Growth_single_dead.png",
+  plot=p, 
+  width=5, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+ggsave(
+  filename="Growth_single_dead.svg",
+  plot=p, 
+  width=5, 
+  height = 5, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+## Conclusion
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated effect on cocoon production for environmental concentrations
+#| label: fig-drcccl
+#| fig-width: 8
+#| fig-height: 4
+
+p <- plot_drc_r_f + plot_drc_g_f+
+  plot_layout(ncol=2, guides="collect")
+p
+```
+
+```{r, include=F}
+ggsave(
+  filename="Article_drc.png", 
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+ggsave(
+  filename="Article_drc.svg", 
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+
+<b> Session Information </b>
+
+</button>
+
+:::: {#collapseOne .accordion-collapse .collapse}
+<div>
+
+```{r}
+sessionInfo()
+```
+
+</div>
+::::

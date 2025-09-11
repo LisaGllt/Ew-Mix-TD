@@ -1,0 +1,398 @@
+---
+title: "EGrowth"
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-tools: true
+    code-block-bg: true
+    theme:
+      - cosmo
+editor: 
+    markdown:
+      canonical: true
+execute:
+  cache: true
+---
+
+```{r, include=F}
+library(here)
+source(file = here::here("functions/fun.R"))
+
+f_load_libraries_colors()
+#knitr::opts_knit$set(root.dir=rprojroot::find_rstudio_root_file())
+```
+
+# 0. Data importation
+
+```{r}
+# setwd("..")
+# setwd("..")
+getwd()
+df_metadata <- read.csv("EGgrowth_curves_md.csv") |> 
+  mutate(species = fct_relevel(species, sort(levels(species))))
+
+df_data <- read.csv("EGgrowth_curves.csv", header=T)
+
+head(df_metadata)
+
+L_Species <- unique(df_metadata$species)
+L_Species
+
+s```
+
+# 1. Number of growth curves per country
+
+count_by_country <- df_metadata %>%
+  group_by(country) %>%
+  summarise(ID_count = n())
+
+# Charger les contours des pays
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Joindre les données des ID au shapefile des pays
+world_data <- world %>%
+  left_join(count_by_country, by = c("admin" = "country"))
+
+# Extraire les centroids des pays
+world_data_centroids <- st_centroid(world_data)
+
+# Extraire les coordonnées des centroids
+world_data_centroids <- cbind(world_data_centroids, st_coordinates(world_data_centroids))
+```
+
+```{r}
+# Créer la carte avec ggplot2
+ggplot(data = world_data) +
+  geom_sf(
+    fill = Nord_snow[1], 
+    color = Nord_snow[3]
+    ) +  # Dessiner les pays
+  geom_point(
+    aes(
+      x = X, 
+      y = Y, 
+      size = ID_count
+      ),  # Utiliser les coordonnées X et Y pour les points
+   data = world_data_centroids,  # Utiliser les centroids des pays
+   color = col_red, 
+   alpha = 0.6
+   ) +  # Cercles rouges avec transparence
+  
+  scale_size(range = c(3, 15), name = "Nombre de courbes") +  # Ajuster la taille des cercles
+  
+  theme_void() +
+  labs(
+    title = "Répartition des courbes par pays",
+    subtitle = "La taille des cercles représente le nombre de courbe"
+    )
+```
+
+# 2. Growth curves per species
+
+```{r}
+count_by_species <- df_metadata %>%
+  group_by(species) %>%
+  summarise(ID_count = n())%>%
+  arrange(ID_count) |> 
+  mutate(species = fct_reorder(species, -ID_count))
+```
+
+```{r}
+ggplot()+
+  geom_col(
+    data=count_by_species, 
+    aes(
+      x=species, 
+      y=ID_count
+      ),
+    color=Nord_frost[4],
+    fill=Nord_frost[4],
+    alpha=0.7
+    )+
+  geom_col(
+    data=subset(
+      count_by_species,
+      species=="Aporrectodea caliginosa"
+      ), 
+    aes(
+      x=species, 
+      y=ID_count
+      ),
+    color=col_red,
+    fill=col_red,
+    alpha=0.9
+    )+
+  geom_text(
+    data=count_by_species,     
+    aes(
+      x=species, 
+      y=ID_count, 
+      label = ID_count
+      ), 
+    size = 2, 
+    vjust = -0.5
+    ) +
+  
+  labs(
+    x="Species", 
+    y="Number of available growth curves"
+  )+
+  
+  theme_minimal()+
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+
+```
+
+For control conditions :
+
+```{r}
+count_by_species <- subset(df_metadata, treatment_type=="control") %>%
+  group_by(species) %>%
+  summarise(ID_count = n())%>%
+  arrange(ID_count) |> 
+  mutate(species = fct_reorder(species, -ID_count))
+```
+
+```{r}
+ggplot()+
+  geom_col(
+    data=count_by_species, 
+    aes(
+      x=species, 
+      y=ID_count
+      ),
+    color=Nord_frost[4],
+    fill=Nord_frost[4],
+    alpha=0.7
+    )+
+  geom_col(
+    data=subset(
+      count_by_species,
+      species=="Aporrectodea caliginosa"
+      ), 
+    aes(
+      x=species, 
+      y=ID_count
+      ),
+    color=col_red,
+    fill=col_red,
+    alpha=0.9
+    )+
+  geom_text(
+    data=count_by_species, 
+    aes(
+      x=species, 
+      y=ID_count, 
+      label = ID_count
+      ), 
+    size = 2, 
+    vjust = -0.5
+    ) +
+  
+  labs(
+    x="Species", 
+    y="Number of available growth curves"
+    )+
+  
+  theme_minimal()+
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+
+```
+
+```{r}
+sum(count_by_species$ID_count)
+```
+
+# 3. Growth curves in control conditions for a given species
+
+Curves for *Aporrectodea caliginosa*.
+
+```{r}
+chosen_species <- "Aporrectodea caliginosa"
+
+curves_species_control <- subset(
+  df_metadata, 
+  species == chosen_species & 
+    treatment_type %in% c("control","food")
+  )
+curves_species <- curves_species_control$CURVE_ID[1:min(12, length(subset(df_metadata, species == chosen_species)$CURVE_ID))]
+
+df_species <- subset(df_data, CURVE_ID %in% curves_species)
+```
+
+```{r}
+alpha_line <- 0.5
+ggplot(
+  data=df_species, 
+  aes(
+    x=time, 
+    y=bm^(1/3), 
+    group=CURVE_ID
+    )
+  )+
+  geom_point(
+    color=Nord_polar[4],
+    fill=Nord_polar[4]
+    )+
+  geom_line(
+    alpha=alpha_line,
+    color=Nord_polar[4]
+    )+
+  #facet_wrap(~CURVE_ID)+
+  
+  labs(
+    title = paste("Growth curves of ", chosen_species), 
+    x="Time (d)", y="Body mass (mg)"
+    )+
+  theme_minimal()
+
+```
+
+# 4. Growth curves for control conditions
+
+```{r}
+palette_nord <- colorRampPalette(c("#5E81AC", "#81A1C1", "#88C0D0", "#8FBCBB",  # Bleus doux et turquoises
+                                   "#A3BE8C","#EBCB8B", "#D08770", "#BF616A","#B48EAD"))(24)                   # Vert et violet pastel
+
+
+curves_ctrl <- subset(df_metadata, treatment_type=="control")$CURVE_ID
+
+```
+
+```{r}
+#| fig-width: 12
+#| fig-height: 10
+
+
+df_ctrl <- subset(df_data, CURVE_ID %in% curves_ctrl) |> 
+  left_join(df_metadata) |> 
+  mutate(CURVE_ID = fct_relevel(CURVE_ID, levels(species))) |> 
+  arrange(species,CURVE_ID)
+
+alpha_line <- 0.5
+ggplot(
+  data=df_ctrl, 
+  aes(
+    x=time, 
+    y=bm, 
+    color=species, 
+    fill=species)
+  )+
+  geom_point()+
+  geom_line(
+    alpha=alpha_line
+    )+
+  facet_wrap(
+    ~CURVE_ID, 
+    ncol=6, 
+    scales="free"
+    )+
+  
+  scale_color_manual(values = palette_nord)+
+  scale_fill_manual(values = palette_nord)+
+  
+  labs(
+    title = paste("Growth curves in control conditions"), 
+    x="Time (d)", 
+    y="Body mass (mg)"
+    )+
+  
+  theme_minimal()
+```
+
+```{r}
+# Selection de courbe modélisable au moins par une courbe de von Bertalanffy
+
+l_curves_mod <- c("gr0011", "gr0033", "gr0034", "gr0244", "gr0251", "gr0320", 
+                  "gr0462", "gr0463", "gr0633", "gr0652", "gr0653", "gr0687", 
+                  "gr0853", "gr0890", "gr0891", "gr0949", "gr0954", "gr0955", 
+                  "gr0956", "gr1082", "gr1083", "gr1456", "gr1460", "gr1486")
+
+df_data <- df_data |> left_join(df_metadata)
+df_data_mod <- subset(df_data, CURVE_ID %in% l_curves_mod | (species == "Eisenia andrei" & treatment_type=="control")) |> 
+  arrange(species,CURVE_ID) |> 
+  mutate(L=bm^(1/3)) |> 
+  filter(time <=1000)
+
+```
+
+# 5. Modelisation de la croissance avec une courbe de von Bertalanffy
+
+```{r mod}
+# Model definition
+bf.mod.vB <- bf(
+  L ~ Linf*(1-exp(-K*(time)-t0)),                         
+  Linf~1,                    
+  K ~ 1,
+  t0 ~ 1,
+  center=T,                          
+  nl=T
+  ) 
+
+priors <- 
+  prior(normal(3000^(1/3), 3000^(1/3)*0.2), class = b, nlpar = Linf, lb = 0) +
+  prior(normal(0.07, 0.07*0.5), class = b, nlpar = K, lb = 0) +
+  prior(normal(100, 100*0.5), class = b, nlpar = t0, lb = 0) +
+  prior(exponential(1), sigma) 
+
+df_E_andrei <- subset(df_data_mod, species=="Aporrectodea caliginosa" & time < 1000)
+
+m.eisenia.andrei <- brm(
+  data = df_E_andrei,                  
+  bf.mod.vB,                         
+  backend = "rstan",                 
+  prior = priors,                    
+  save_pars = save_pars(all = TRUE), 
+  sample_prior = "yes",              
+  seed = 42,                         
+  chains = 4, cores = 4,             
+  iter = 6000, warmup = 1000,        
+  control = list(
+    adapt_delta = .95,  
+    max_treedepth = 12
+    ),
+  file="mod/brms_eisenia_andrei_trunc"
+  )  
+
+summary(m.eisenia.andrei)
+
+```
+
+```{r}
+# pred <- predicted_draws(m.eisenia.andrei, newdata=df_E_andrei)
+# 
+# pal_blue <- c("#5E81AC", "#7F9DC4", "#A0C1D9", "#DCE9F2")
+# 
+# p <- ggplot(
+#   pred, 
+#   aes(
+#     x=time, 
+#     y=L^3)
+#   )+
+#   
+#   stat_lineribbon(aes(y=.prediction^3),
+#                   .width=c(.99,.95,.8,.5),
+#                   color="black")+
+#   geom_line(data=df_E_andrei, 
+#             aes(x=time, y=L^3, group=CURVE_ID), color="#141c44", alpha=0.4)+
+#   geom_point(data=df_E_andrei, 
+#              aes(x=time, y=L^3, group=CURVE_ID), color="#141c44", alpha=0.4)+
+#   
+#   scale_fill_manual(values = rev(pal_blue))+
+#   xlim(0,200)+
+#   
+#   labs(
+#     y="Weight (mg)", 
+#     x="Time (d)"
+#     )+
+#   
+#   theme_minimal()+
+#   theme(legend.position = "none")
+# p
+
+```

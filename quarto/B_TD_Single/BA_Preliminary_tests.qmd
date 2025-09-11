@@ -1,0 +1,399 @@
+```{r, include=F}
+library(here)
+source(file = here::here("functions/fun.R"))
+f_load_libraries_colors()
+```
+
+# Experimental design
+
+Our experimental designs are based on OECD TG 222 about reproduction tests performed on earthworms. A summary of the procedure is given in this section but detailled protocols are available in the `protocols` folder.
+
+All experiments were performed at 18°C with a soil from a permanent grassland in Versailles (48°48′ N, 2°5′ E, called "les Closeaux") where no pesticides have been applied for more than 25 years. More information is available @sec-A. Individuals were always fed with 3 g/ind/14 days (*ad libitum* conditions). Soil humidity is checked and adjusted every week. At the end of the experiments, earthworms are starved to empty their gut content on wet filter paper in Petri dishes before being frozen at -80°C.
+
+Pesticides concentrations were chosen thanks to preliminary tests presented @sec-CAPrelim.
+
+## Soil contamination
+
+The contamination of soil was performed a day prior to the beginning of the experiment. Due to the very low water solubility of epoxiconazole and the relatively high tested concentrations, it was not possible to spike the soil with a water solution containing epoxiconazole. The alternative use of a co-solvent was avoided, as they are often toxic to earthworms, and the required quantity would have been excessive. One day prior to the start of the tests, the soil contamination was carried out depending on the substance : a dry mixture of epoxiconazole and soil at 20% of its WHC with an addition of water to adjust the soil WHC to 70% ; a spiking the soil with a water solution of imidacloprid with an addition of water to adjust the soil WHC to 70%. The soil isn't mixed until the morning after on the start of the experiment.
+
+## Growth experiments
+
+```{r, message=F, warning=F}
+#| fig-cap: Experimental design of the growth experiments
+#| fig-width: 3
+#| fig-label: fig-growthexp
+
+knitr::include_graphics(here::here("photos/Growth_experiment_design.png")) 
+```
+
+The growth experiments were performed using juveniles from our culture. One replicate correspond to an individual placed in a cosm made of a plastic vessel (11 cm x 7.7 cm x 4.5 cm) containing the equivalent of 200 g of dry soil for 28 days.
+
+## Reproduction experiments
+
+```{r, message=F, warning=F}
+#| fig-cap: Experimental design of the reproduction experiments
+#| fig-width: 3
+#| fig-label: fig-reproexp
+
+knitr::include_graphics(here::here("photos/Reproduction_experiment_design.png")) 
+```
+
+For each replicate, two earthworms are placed in a cosm made of a plastic vessel (11 cm x 7.7 cm x 4.5 cm) containing the equivalent of 200 g of dry soil for 28 days. Individuals are weighted at the beginning and the end of the experiment. Cocoons produced during the experiment are retrieved by wet sieving the soil through a 1-mm mesh size [@bart_2018], and incubated at 18°C in Petri dishes on wet filter papers [@holmstrup_1991]. Cocoon hatching is monitored over the next four weeks.
+
+As nothing ever goes according to plan, the cocoon hatling monitoring could not be properly done as a power shortage disrupted the temperature of our incubator.
+
+## Preliminary tests {#sec-CAPrelim}
+
+Preliminary tests were performed to identify the concentration range capturing the whole range of effect of each substance. This would allow us to choose more carrefully the tested concentrations for each substance.
+
+### Method
+
+At the time of these preliminary tests, our lab culture had just started and thus we could not use *A. caliginosa* from our lab. In the Closeaux meadow, *A. icterica* were easy to find so we chose to performed the test with these collected individuals.
+
+These tests were performed as described above with the difference being that juveniles were put by 2 instead of 1 in cosms. Growth tests were performed in 1 replicate and reproduction tests were performed in 2 replicates.
+
+The tested concentrations are the following :
+
+-   IMD : 0.001, 0.01, 0.1, 1, 10 mg/kg
+-   EPX : 0.01, 0.1, 1, 10, 100 mg/kg
+
+### Results
+
+#### Variables names
+
+-   `Date` : Date of the measurement
+-   `ID` : Identification number of the earthworm
+-   `ID_cosm` : Identification number of the cosm
+-   `t` : Number of days since the start of the exposition
+-   `w` : Fresh weight of the earthworm (mg)
+-   `w_tot` : Fresh weight of the earthworms in one cosm (mg)
+-   `nb_ind` : Number of individuals in one cosm (#)
+-   `Dose` : concentration in the soil (mg/kg)
+-   `Status` :
+    -   "J" : Juvenile
+    -   "A" : Adulte
+    -   "D" : Dead
+
+#### Effects on juveniles growth
+
+```{r datagrowth, include=F, message=F}
+df_growth_full <- read_excel(here::here("data/Data_preliminary_tests.xlsx"), sheet="Growth") |> 
+  mutate(L=w^(1/3))
+
+df_growth_EPX <- subset(df_growth_full, Molecule %in% c("Ctrl", "EPX")) |> 
+  mutate(Molecule = "EPX")
+df_growth_IMD <- subset(df_growth_full, Molecule %in% c("Ctrl", "IMD")) |> 
+  mutate(Molecule = "IMD")
+
+df_growth <- rbind(df_growth_EPX, df_growth_IMD)
+
+```
+
+```{r, messsage=F, warning=F}
+#| fig-cap: Juvenile earthworms growth. 
+#| label: fig-growthJ
+#| fig-width: 8
+#| fig-height: 4
+
+
+p <- ggplot(
+  data = df_growth,
+  aes(
+    x = t,
+    y = w,
+    group = ID,
+    color = Molecule
+    )
+  )+
+  geom_point(
+    alpha = 0.5
+  )+
+  geom_line()+
+  facet_wrap(
+    ~Molecule+Dose,
+    ncol = 6
+    )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  
+  labs(
+    y = "Fresh body weight (mg)",
+    x = "Time (days)"
+  )+
+  
+  theme_minimal()
+
+p
+
+```
+
+Earthworms growth can be modeled thanks to @eq-growth.
+
+$$\frac{dL}{dt}=a \Rightarrow L(t)=L_0 = a\times t$$ {#eq-growth}
+
+With :
+
+-   L : The structural volumetric length of the earthworm ($= \sqrt[3]{w}$) (mg$^{1/3}$)
+-   a : Growth rate (mg$^{1/3}$/d)
+
+For each earthworm, the growth rate is estimated using the "deSolve" package.
+
+```{r, messsage=F, warning=F, results="hide"}
+a_init <- 0.1
+
+df_rates <- data.frame(
+  ID = df_growth[df_growth$t==0,]$ID,
+  Dose = df_growth[df_growth$t==0,]$Dose,
+  Molecule = df_growth[df_growth$t==0,]$Molecule
+  )
+a_i <- c()
+
+for(i in df_growth[df_growth$t==0,]$ID){
+  
+  data_i <- data.frame(
+    L=df_growth[df_growth$ID==i,]$L,
+    t=df_growth[df_growth$ID==i,]$t
+    )
+  L0_i <- df_growth[df_growth$ID==i & df_growth$t==0,]$L
+  
+  mod.nlsHill=nls(
+    L ~ L0_i+t*a,
+    start = list(a=a_init), 
+    trace=T, 
+    data=data_i
+    ) 
+  
+  a.Est=mod.nlsHill$m$getPars()[1]
+  a_i <- c(a_i, a.Est)
+}
+
+df_rates <- df_rates%>%
+  mutate(a_i=a_i)%>%
+  mutate(Status=df_growth[df_growth$t>=28,]$Status)
+
+df_rates$a_i <- replace_na(df_rates$a_i, 0)
+
+df_rates_alive <- df_rates[!df_rates$Status=="D",]
+
+df_rates_alive_mean <- df_rates_alive |> 
+  aggregate(a_i ~ Dose + Molecule, FUN=mean)
+
+```
+
+```{r, messsage=F, warning=F}
+#| fig-cap: Juvenile earthworms growth rates. 
+#| label: fig-growthratesJ
+#| fig-width: 6
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_point(
+    data = df_rates_alive_mean,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 1,
+    size = 3
+  )+
+  geom_point(
+    data = df_rates_alive,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 0.5
+  )+
+  geom_line(
+    data = df_rates_alive_mean,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 1
+  )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  
+  scale_x_log10()+
+  
+  labs(
+    y = expression(paste("Growth rate (", mg^{1/3}, ")")),
+    x = "Dose (mg/kg)"
+  )+
+  
+  theme_minimal()
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Pretest_juv_growth.png", 
+  plot=p, 
+  width=6, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+#### Effects on adult growth
+
+Data on adult growth is taken from the reproduction tests.
+
+```{r datarepro, include=F, message=F}
+df_repro_full <- read_excel(here::here("data/Data_preliminary_tests.xlsx"), sheet="Repro") |> 
+  mutate(
+    w = w_tot/nb_ind,
+    L=w^(1/3)
+    ) |> 
+  filter(!t == 14)
+
+df_repro_EPX <- subset(df_repro_full, Molecule %in% c("Ctrl", "EPX")) |> 
+  mutate(Molecule = "EPX")
+df_repro_IMD <- subset(df_repro_full, Molecule %in% c("Ctrl", "IMD")) |> 
+  mutate(Molecule = "IMD")
+
+df_repro <- rbind(df_repro_EPX, df_repro_IMD)
+
+```
+
+```{r, messsage=F, warning=F}
+#| fig-cap: Adult earthworms growth. 
+#| label: fig-growthA
+#| fig-width: 8
+#| fig-height: 4
+
+
+p <- ggplot(
+  data = df_repro,
+  aes(
+    x = t,
+    y = w,
+    group = ID_cosm,
+    color = Molecule
+    )
+  )+
+  geom_point(
+    alpha = 0.5
+  )+
+  geom_line()+
+  facet_wrap(
+    ~Molecule+Dose,
+    ncol = 6
+    )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  
+  labs(
+    y = "Fresh body weight (mg)",
+    x = "Time (days)"
+  )+
+  
+  theme_minimal()
+
+p
+
+```
+
+Next we calculate growth rates again per cosm.
+
+```{r, messsage=F, warning=F}
+df_rates_A <- data.frame(
+  ID=df_repro[df_repro$t==0,]$ID_cosm,
+  Dose=df_repro[df_repro$t==0,]$Dose,
+  Molecule=df_repro[df_repro$t==0,]$Molecule
+  )
+
+a_i <- c()
+
+for(i in df_repro[df_repro$t==0,]$ID_cosm){
+  a_i_i <- (df_repro[df_repro$ID_cosm==i & df_repro$t==28,]$L[1]-df_repro[df_repro$ID_cosm==i & df_repro$t==0,]$L[1])/28
+  a_i <- c(a_i, a_i_i)
+}
+
+df_rates_A <- df_rates_A%>%
+  mutate(Dose=df_repro[df_repro$t==0,]$Dose)%>%
+  mutate(L0_i=L0_i)%>%
+  mutate(a_i=a_i)%>%
+  mutate(Status=df_repro[df_repro$t>=28,]$Status)
+
+df_rates_A$a_i <- replace_na(df_rates_A$a_i, 0)
+
+df_rates_A_alive <- df_rates_A[!df_rates_A$Status=="D",]
+
+df_rates_A_alive_mean <- df_rates_A_alive |> 
+  aggregate(a_i ~ Dose + Molecule, FUN=mean)
+
+```
+
+```{r, messsage=F, warning=F}
+#| fig-cap: Adult earthworms growth rates. 
+#| label: fig-growthratesA
+#| fig-width: 6
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_point(
+    data = df_rates_A_alive_mean,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 1,
+    size = 3
+  )+
+  geom_point(
+    data = df_rates_A_alive,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 0.5
+  )+
+  geom_line(
+    data = df_rates_A_alive_mean,
+    aes(
+      x = Dose,
+      y = a_i,
+      color = Molecule
+    ),
+    alpha = 1
+  )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  
+  scale_x_log10()+
+  
+  labs(
+    y = expression(paste("Growth rate (", mg^{1/3}, ")")),
+    x = "Dose (mg/kg)"
+  )+
+  
+  theme_minimal()
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Pretest_adults_growth.png", 
+  plot=p, 
+  width=6, 
+  height = 4, 
+  path=here::here("fig/Single_expo")
+  )
+```
+
+#### Effects on reproduction
+
+Unfortunately, conditions were not met for *A. icterica* reproduction. No cocoons were collected in controls and the first concentrations.

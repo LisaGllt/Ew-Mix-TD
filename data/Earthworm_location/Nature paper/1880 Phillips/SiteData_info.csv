@@ -1,0 +1,49 @@
+﻿"Online-only Table 2: Information captured in the data template, relating to site-level information.",,,,
+,,,,
+Field,Format,Possible Values,Information,Required field (*)
+File ,Text,,Unique ID for each article. Assigned to all studies within a single publication,*
+Study_Name,Text,,Unique ID for each study. Assigned to all sites within a single study,*
+Site_Name,Text,,Unique ID given to each site. A site that is sampled in different studies will have the same ID,*
+Observational,Multiple choice,Observation; Experimental,"Was the data from an observational study or an experimental study. Experimental studies may be unrealistic in their treatments, and are often over a smaller area (resulting in similar/identical coordinates)",*
+Latitude (decimal degrees) ,Numerical,,The latitude of the site (in decimal degrees only),*
+Longitude (decimal degrees),Numerical,,The longitude of the site (in decimal degrees only),
+Altitude (m),Numerical,,The altitude of the site (in metres only),
+Country,Text,,The country the site was in (as given by data collector),*
+Sample_StartDate_Month ,Integer,01. Dec,The month the sampling started,
+Sample_StartDate_Year,Integer,Less than 2018,The year the sampling started,*
+Sample_EndDate_Month,Integer,01. Dec,The month the sampling ended,
+Sample_EndDate_Year,Integer,Less than 2018,The year the sampling ended,
+ExtractionMethod,Multiple choice,"Visual search, Hand sorting, Chemical extraction (Mustard), Chemical extraction (Formalin), Octet Method (electric shock), Hand sorting + Chemical extraction (Mustard), Hand sorting + Chemical Extraction (Formalin), Other, Other Multiple, Unknown",The methodology used to sample the earthworms,*
+Sampled Area ,Numerical,,The area over which sample(s) were taken. Typically the size of the quadrat or soil block,*
+Sampled Area Unit,Multiple choice,"cm2, cm3, m2, m3, Unknown, Other",The unit of the sampled area,*
+Sampling Effort,Numerical,,The number of times the site was sampled to obtain the earthworm community metric(s) provided,*
+pH,Numerical,,Sampled pH of the site,At least one of the following variables was required: pH or pH Collection Method
+pH Collection Method ,Multiple choice,"H2O, KCl, CaCl2, Other, Unknown",The suspension solvent used in the measurement,At least one of the following variables was required: pH or pH Collection Method
+pH_mean,Multiple choice,Yes / no,Denotes whether the value given for the pH is a mean from individual values across a depth profile,
+CEC,Numerical,,The Cation Exchange Capacity of the site,
+CEC_unit,Text,,The unit of the CEC measurement,
+XXX_mean,Multiple choice,Yes / no,Denotes whether the value given for the pH is a mean from individual values across a depth profile,
+Base Saturation(%),Numerical,,The base saturation of the site,
+BaseSaturation_mean,Multiple choice,Yes / no,Denotes whether the value given for the base saturation is a mean from individual values across a depth profile,
+Organic Carbon (%),Numerical,,The organic carbon content of the soil at the site,
+OC_mean,Multiple choice,Yes / no,Denotes whether the value given for the organic carbon is a mean from individual values across a depth profile,
+Soil Organic Matter (%),Numerical,,The soil organic matter content at the site,
+SOM_mean,Multiple choice,Yes / no,Denotes whether the value given for the soil organic matter is a mean from individual values across a depth profile,
+C/N ratio,Numerical,,The carbon to nitrogen ratio at the site,
+CN_mean,Multiple choice,Yes / no,Denotes whether the value given for the carbon:nitrogen ratio is a mean from individual values across a depth profile,
+Sand (%) / Silt (%) / Clay (%),Numerical,,"The percentage of sand, silt and clay at the site",
+Sand_silt_clay_mean,Multiple choice,Yes / no,"Denotes whether the value given for the percentage of sand, silt and clay is a mean from individual values across a depth profile",
+USDA_SoilTexture,Multiple choice,"clay, sandy clay, sandy clay loam, clay loam, loam, sandy loam, loamy sand, sand, silt clay, silty clay loam, silt loam, silt",The texture of the soil at the site,
+Soil Moisture(%),Numerical,,The soil moisture at the site,
+WRB/FAO_SoilType,Multiple choice,"Acrisols, Albeluvisols, Alisols, Andosols, Anthrosols, Arenosols, Calcisols, Cambisols, Chernozem, Cryosols, Durisol, Ferralsols, Fluvisol, Gleysols, Gypsisols, Histosols, Kastanozem, Leptosols, Lixisols, Luvisols, Nitisols, Phaeozem, Planosols, Plinthosols, Podzols, Regosols, Retisols, Solonchaks, Solonetz, Technosols, Umbrisols, Vertisols","The type of soil at the site. Using the WRB/FAO classification 26, but only classified when given by the data providers in the same system",
+LandUse,Multiple choice,"Primary vegetation, Secondary vegetation, Production - Arable, Production - Crop plantations, Production - Wood plantation, Pasture, Urban, Unknown","The category of land use 29,30 that the site was classified as. Classification was based on descriptions of the site in the text of the original publication or subsequent correspondence with the data provider",*
+HabitatCover,Multiple choice,"Broadleaf evergreen forest, Broadleaf deciduous forest, Needleleaf evergreen forest, Needleleaf deciduous forest, Mixed forest, Tree open, Shrub, Herbaceous, Herbaceous with spare tree/shrub, Sparse vegetation, Cropland, Paddy field, Cropland/Other vegetation mosaic, Mangrove, Wetland, Bare area (consolidated, e.g. rock), Bare area (unconsolidated, e.g. sand), Urban, Snow/Ice, Water bodies, Unknown",The category of habitat cover (ESA CCI-LC 300m; https://www.esa-landcover-cci.org/) that the site was classified as. Classification was based on descriptions of the site in the text of the original publication or subsequent correspondence with the data provider,*
+Management System,Multiple choice,"Annual crop, Integrated systems, Perennial crops, Pastures (grazed lands), Tree plantations, Unknown, NA","The management system at the site. Sites with no management, i.e. pristine or recovering sites, were categorised as ‘NA’. Classification system based on expert opinion. ",
+Tillage / Pesticide / Fertilizer / Selectively harvested / Clear cut / Fire / Grazing all year / Rotation / Monoculture / Planted,Boolean,,"The presence or absence of each pressure at the site. The applicability of these depended on the ‘management system’. Thus, they were left empty or filled as ‘NA’ when not applicable (see Supplementary Material 1)",
+Habitat as described,Text,,Free text field for a description of the site based on the original article or on emails from the data provider,*
+SpeciesRichness,Numerical,,The species richness at the site (if available),"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"
+SpeciesRichnessUnit,Multiple choice,"Number of species, Species per cm2, Species per cm3, Species per m2, Species per m3, Other",The units of the species richness value,"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"
+Site_WetBiomass,Numerical,,The total wet biomass of the site (if available),"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"
+Site_WetBiomassUnits,Multiple choice,"g, g/m2",The units of the biomass value,"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"
+Site_Abundance,Numerical,,The total abundance of the site (if available),"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"
+Site_Abundance Units,Multiple choice,"Number of individuals, Individuals per cm2, Individuals per cm3, Individuals per m2, Individuals per m3",The units of the abundance value,"At least one of the following variables was required: SpeciesRichness, SpeciesRichnessUnit, Site_WetBiomass, Site_WetBiomassUnits, Site_Abundance, or Site_Abundance Units"

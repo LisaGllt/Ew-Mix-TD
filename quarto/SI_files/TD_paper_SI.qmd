@@ -1,0 +1,254 @@
+---
+title: "Toxic cocktails in our soils : Assessing fungicide-insecticide mixture effects on earthworm growth and reproduction"
+subtitle: "Supplementary information"
+author: 
+  - name: Lisa Gollot
+  - name: Cleo Bodin
+  - name: Juliette Faburé
+  - name: Rémy Beaudouin
+  - name: Raphaël Royauté
+lang: eng
+format:
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    toc-depth: 3
+    lof: true
+    lot: true
+    tbl-colwidths: auto
+    df-print: tibble
+    number-sections: true
+    fontsize: large
+    linestretch: 1.2
+    layout: 
+      - header=1cm
+    geometry: 
+      - top=2cm
+      - bottom=2cm
+      - left=2cm
+      - right=2cm
+    include-in-header: 
+      text: 
+        \usepackage{pdfpages}
+editor: 
+    markdown:
+      canonical: true
+bibliography: references.bib
+csl: apa.csl
+---
+
+# Earthworm culture
+
+## Breeding and experiment soil
+
+| Characteristics                 | Value |
+|---------------------------------|-------|
+| Clay ( \< 2 µm, g/kg)           | 226.0 |
+| Fine silt (2-20 µm, g/kg)       | 174.1 |
+| Coarse silt (20-50 µm, g/kg)    | 298.9 |
+| Fine sand (50-200 µm, g/kg)     | 239.1 |
+| Coarse sand (200-2000 µm, g/kg) | 47.9  |
+| $CaCO_3$ total (g/kg)           | 23.3  |
+| Organic matter (g/kg)           | 32.6  |
+| $P_2O_5$ (g/kg)                 | 0.1   |
+| Organic carbon (g/kg)           | 18.9  |
+| Total nitrogen (N) (g/kg)       | 1.5   |
+| C/N                             | 12.5  |
+| pH                              | 7.5   |
+| Total $Cu$ (mg/kg)              | 25.2  |
+
+: Main characteristics of the breeding soil from Versailles. Table from @bart_2017a. {@tbl-Clx}
+
+## DNA barcoding
+
+![Results of the DNA barcoding of 10 individuals from the culture (highlighted in yellow)](../../photos/DNA_barcoding.png)
+
+# Experiments
+
+## Growth and reproduction experiments
+
+![Overview of the growth experiments](../../photos/Growth_experiment_design.png){width="50%"}
+
+![Overview of the reproduction experiments](../../photos/Reproduction_experiment_design.png){width="80%"}
+
+## Experiment A - Single substance
+
+### Juvenile growth
+
+***Initial state of earthworms***
+
+![Initial weight of juvenile earthworms.](../../fig/Single_expo/Growth_initial_weights.png)
+
+For IMD, there is a significant effect of the dose on earthworm initial weights.
+
+-   ANOVA : pval(IMD) = 9.66e-05,
+-   All concentrations are not significatively different from the control (post hoc Dunett test).
+
+However, earthworms were non the less randomly attributed to conditions and the growth model allows to take the differences in initial weight into account.
+
+For EPX, there is no significant effect of the dose on the initial weight of earthworms (Student test : pval(IMD) = 0.125).
+
+***Mortality during the experiment***
+
+![](../../fig/Single_expo/Growth_single_dead.png){#fig-ExpAGrowthJuvDead}
+
+***Growth curves***
+
+::: {#fig-ExpAGrowthJuv layout-ncol="2"}
+![](../../fig/Single_expo/Growth_curves_juveniles_EPX.png){#fig-ExpAGrowthJuvEPX}
+
+![](../../fig/Single_expo/Growth_curves_juveniles_IMD.png){#fig-ExpAGrowthJuvIMD}
+
+Growth curves of juvenile earthworms.
+:::
+
+![Effect of the pesticides on juvenile growth rates](../../fig/Single_expo/Growth_drc_single.png)
+
+|     | NOEC (mg/kg) | LOEC (mg/kg) |
+|-----|--------------|--------------|
+| IMD | 0.28         | 0.5          |
+| EPX | 9.28         | 20           |
+
+: NOEC and LOEC estimated with a t-test using the Bonferroni adjustment method.
+
+### Reproduction
+
+***Initial state***
+
+![Initial weight of adult earthworms.](../../fig/Single_expo/Repro_initial_weights.png)
+
+There is no effect of the dose on the initial weight of earthworms (Student test : pval(EPX) = 0.17 & pval(IMD) = 0.573).
+
+***Estimated effect***
+
+|                      | Imidacloprid           | Epoxiconazole          |
+|----------------------|------------------------|------------------------|
+| Y$_{min}$            | 0 (fixed)              | 0 (fixed)              |
+| Y$_{max}$ \[CI 95%\] | 14.3 \[13.0 ; 15.6\]   | 18.7 \[16.8 ; 20.7\]   |
+| EC$_{50}$ (mg/kg)    | 0.55 \[0.45 ; 0.65\]   | 126.8 \[73.6 ; 180.0\] |
+| \alpha               | 126.8 \[73.6 ; 180.0\] | 1.1 \[0.5 ; 1.6\]      |
+
+: Estimated parameters of the dose-response curve for cocoon production of earthworms exposed to Imidacloprid or epoxiconazole and their respective 95% confidence intervals.
+
+![Effect of the pesticides on adult growth rates.](../../fig/Single_expo/Repro_growth_rates.png)
+
+|     | NOEC (mg/kg) | LOEC (mg/kg) |
+|-----|--------------|--------------|
+| IMD | 0.5          | 0.89         |
+| EPX | 92.8         | 200          |
+
+: NOEC and LOEC estimated with a t-test using the Bonferroni adjustment method.
+
+## Experiment B - Mixture
+
+# Jonker interaction models
+
+## Mathematical formulation
+
+Let $f_A$ and $f_B$ be the functions describing the dose-response curves of substance A and substance B, respectively.
+
+In the case of no interaction, concentration addition implies the dose-response surface of the mixture of A and B can be expressed as all couple of concentration of substance A and substance B ($c_A$ ; $c_B$) as :
+
+$$
+\frac{c_A}{f^{-1}_A(Y)}+\frac{c_B}{f^{-1}_B(Y)}=1
+$$ {#eq-CAbin}
+
+The Jonker simple interaction model add the definition of an interaction parameter ($a$) so the dose-response surface of the mixture of A and B can be expressed as all ($c_A$ ; $c_B$) as :
+
+$$
+\frac{c_A}{f^{-1}_A(Y)}+\frac{c_B}{f^{-1}_B(Y)}=\text{exp}(G)
+$$ {#eq-jonkerbin}
+
+With :
+
+$$
+G(z_A, z_B)=a\times (z_A\times z_B)
+$$ {#eq-jonkerbinGSA}
+
+And :
+
+$$
+z_i=\frac{\text{TU}_{x_i}}{\text{TU}_{x_A}+\text{TU}_{x_B}},\ \text{ where }\  \text{TU}_{x_i}=\frac{c_i}{EC_{x_i}}
+$$ {#eq-jonkerbinZ}
+
+With :
+
+-   $Y$ : The response for a given couple of concentrations,
+-   $x$ : Usually 5, 10, ou 50 (50 used in this study),
+-   $z_A$ & $z_B$ : Contribution of each substance to the overall effect,
+
+For the SA model, the interaction parameter value describes the type of the interaction :
+
+-   $a$ = 0 : Additivity,
+-   $a$ \< 0 : Synergy,
+-   $a$ \> 0 : Antagonisme.
+
+The Jonker framework adds two other types of model, making it four models in total :
+
+-   CA : Concentration addition, case with no interaction (@eq-CAbin)
+-   SA : Simple interaction with constant deviation from additivity (@eq-jonkerbinGSA),
+-   DL : Dose-level dependent interaction where effects vary with response magnitude (@eq-JonkerDLDR),
+-   DR : Ratio-dependent interaction where effects vary with mixture composition (@eq-JonkerDLDR).
+
+The DL and DR models include a second interaction parameter, $b$. The expression of $G$ is then :
+
+$$
+\begin{aligned}
+G(z_Az_B) = \begin{cases}
+a\,[1 - b_{DL}]\, z_A z_B & \text{(DL model)}\\[6pt]
+(a + b_{DR} z_A)\, z_A z_B & \text{(DR model)}
+\end{cases}
+\end{aligned}
+$$ {#eq-JonkerDLDR}
+
+## Computational implementation
+
+In practice, the fit of the dose-response curve surface is a double optimization :
+
+1.  For given set of interaction parameters, the corresponding effects must be found also numerically.
+2.  Numerical optimization of the interaction parameters
+
+To perform step 1, a function `CA_complete2()` was written. For a given set of interaction parameters, finding the corresponding efect for a couple of concentration ($c_A$ ; $c_B$) implies the minimization of the following term :
+
+$$
+\frac{c_A}{f^{-1}_A(Y)}+\frac{c_B}{f^{-1}_B(Y)}-\text{exp}(G)
+$$ {#eq-minim}
+
+For step 2, a function `CA_complete_fit_speed()` was written. Parameter estimation for the interaction models requires maximum likelihood estimation (MLE). The optimization procedure depends on the assumed error distribution: for normally distributed errors, this is equivalent to minimizing the residual sum of squares (calculated with the function `CA_complete2_RSS()`), while for Poisson-distributed errors, the log-likelihood function (@eq-LLPoisson) (calculated with the function `CA_complete2_Poisson()`) is directly maximized.
+
+Let $\mathbf{y}=(y_1, y_2, \dots, y_n)$ be the vector of observed responses, $\mathbf{\theta}$ the parameter vector to be estimated, and $f(.|\mathbf{\theta})$ the density function conditional to the parameters. Then, the likelihood function is defined as :
+
+$$
+\mathcal{L}(\theta | \mathbf{y})=\prod_{i=1}^nf(y_i|\theta)
+$$
+
+The log-likelihood function, which is computationally more tractable, is given by:
+
+$$
+l(\theta|\mathbf{y}) = \ln(\mathcal{L}(\theta | \mathbf{y})) = \sum^n_{i=1} \ln(f(y_i|\theta))\\
+$$
+
+For count data (cocoon production), assuming $y_i \sim \mathcal{P}(\lambda_i)$ where $\lambda_i = g(\mathbf{x_i}; \theta)$ represents the expected response given covariates $\mathbf{x_i}$, the log-likelihood becomes:
+
+$$
+\begin{aligned}
+l(\theta|\mathbf{y}) &=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i}}{y_i!}\right) \\
+&= \sum^n_{i=1} [y_i \ln(\lambda_i) - \lambda_i - \ln(y_i!)]\\
+&= \sum^n_{i=1} [y_i \ln(g(x_i;\theta)) - g(x_i;\theta) - \ln(y_i!)]
+\end{aligned}
+$$ {#eq-LLPoisson}
+
+## Model comparisons
+
+|           | Log-Likelihood             | Df  | p-value |
+|-----------|----------------------------|-----|---------|
+| SA vs. CA | SA : 380.7 (CA : 380.7378) | 1   | 1       |
+| DL vs. CA | DL : 377.8                 | 2   | 1       |
+| DR vs. CA | DR : 380.6                 | 2   | 1       |
+
+: Comparison of the different models with Likelihood Ratio tests.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
