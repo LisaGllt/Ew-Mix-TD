@@ -1,8 +1,0 @@
-"0",""
-"0","df_repro_grate <- df_repro |> "
-"0","  dplyr::select(ID_cosm, t, L, Dose, Dose_plot, Molecule) |> "
-"0","  pivot_wider(names_from = t, values_from = L, names_prefix = ""L_t"") |> "
-"0","  mutate(a_i = (L_t28 - L_t0)/28)"
-"0",""
-"0","df_repro_grate_mean <- df_repro_grate |> "
-"0","  aggregate(a_i ~ Molecule + Dose + Dose_plot, FUN = ""mean"")"

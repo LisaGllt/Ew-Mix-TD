@@ -4,9 +4,10 @@ subtitle: "Supplementary information"
 author: 
   - name: Lisa Gollot
   - name: Cleo Bodin
-  - name: Juliette Faburé
+  - name: Laura Frattaroli
   - name: Rémy Beaudouin
   - name: Raphaël Royauté
+  - name: Juliette Faburé
 lang: eng
 format:
   pdf:
@@ -139,7 +140,47 @@ There is no effect of the dose on the initial weight of earthworms (Student test
 
 : NOEC and LOEC estimated with a t-test using the Bonferroni adjustment method.
 
+|   | Y$_{min}$ (#) | Y$_{max}$ (#) | Slope | EC\_{50} (mg/kg) |
+|----|----|----|----|----|
+| IMD | Set to 0 | 14.3 \[13.0 ; 15.6\] | 2.8 \[1.8 ; 3.7\] | 0.55 \[0.45 ; 0.65\] |
+| EPX | Set to 0 | 18.7 \[16.8 ; 20.7\] | 1.1 \[0.5 ; 1.6\] | 126.8 \[73.6 ; 180.0\] |
+
+: Estimated parameters of the dose-response curves from experiment A.
+
+|   | Y$_{min}$ (#) | Y$_{max}$ (#) | Slope | EC\_{50} (mg/kg) |
+|----|----|----|----|----|
+| IMD | Set to 0 | 14.3 \[13.0 ; 15.6\] | 1.6 \[0.6 ; 2.5\] | 0.55 \[0.45 ; 0.65\] |
+| EPX | Set to 0 | 18.7 \[16.8 ; 20.7\] |  | 126.8 \[73.6 ; 180.0\] |
+
+: Estimated parameters of the dose-response curves from experiment A. Model with common slope.
+
+F-test - Comparison of the dose-response curve models with or without common slope with data normalized with respective controls :
+
+| Model            | Model Df | RSS    | Df  | F value | p value |
+|------------------|----------|--------|-----|---------|---------|
+| Different slopes | 101      | 118059 |     |         |         |
+| Common slope     | 100      | 117776 | 1   | 0.2404  | 0.6250  |
+
+: ANOVA table
+
 ## Experiment B - Mixture
+
+![Experimental design of experiment B.](../../fig/Mixture/Repro_design_exp.png)
+
+![Expected effect range for each effect isobole (red points).](../../fig/Mixture/Repro_design_effect_range.png)
+
+![Initial body weight of earthworms used in the experiment B. Earthworm assigned to lot D are represented in blue while the ones assigned to lot E are represented in dark grey.](../../fig/Mixture/Mix_spring_initial_weights.png)
+
+|   | Y$_{min}$ (#) | Y$_{max}$ (#) | Slope | EC\_{50} (mg/kg) |
+|----|----|----|----|----|
+| IMD | Set to 0 | 13.1 \[11.6 ; 14.5\] | 2.3 \[1.6 ; 2.9\] | 0.26 \[0.20 ; 0.33\] |
+| EPX | Set to 0 | 13.1 \[11.6 ; 14.5\] | 2.3 \[1.6 ; 2.9\] | 215.6 \[159.9 ; 271.2\] |
+
+: Estimated parameters of the dose-response curves from experiment B (common slope and Y$_{max}$, used in Jonker models.
+
+![Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common Y$_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.](../../fig/mixture/Mix_spring_cocoons_drcmix.png)
+
+![Dose-response curves obtained for each mixture ratio. The lines represent the dose-response curves obtained (with common Y$_{max}$ and Y$_{min}$ set to 0). Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.](../../fig/mixture/Mix_spring_cocoons_drcRatios.png)
 
 # Jonker interaction models
 
@@ -238,15 +279,40 @@ l(\theta|\mathbf{y}) &=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i
 \end{aligned}
 $$ {#eq-LLPoisson}
 
+## Power analysis
+
+![Density of estimated values of the interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right. Vertical blue bars indicate the true simulated interaction value, and the probability of direction for each distribution is shown above the corresponding panel.](../../fig/Mixture/Mix_power_CA_dens_error.png)
+
+![Density of percentage errors in the estimation of the interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Mix_power_CA_per_error.png)
+
+## Dose-response curve prediction for each ratio
+
+![Estimated dose-response curves for each ratios with the SA model with CA as reference.](../../fig/Mixture/Mix_spring_mix_pred_drc_ratios_CASA.png)
+
 ## Model comparisons
 
-|           | Log-Likelihood             | Df  | p-value |
-|-----------|----------------------------|-----|---------|
-| SA vs. CA | SA : 380.7 (CA : 380.7378) | 1   | 1       |
-| DL vs. CA | DL : 377.8                 | 2   | 1       |
-| DR vs. CA | DR : 380.6                 | 2   | 1       |
+| Model type | a                      | b                      | Log-Likelihood |
+|------------|------------------------|------------------------|----------------|
+| CA         | \-                     | \-                     | 380.7          |
+| SA         | -0.0045 \[-2.5 ; 1.6\] | \-                     | 380.7          |
+| DL         | 1.6 \[-3.0 ; 14.0\]    | 0.62 \[-180.1 ; 0.71\] | 377.8          |
+| DR         | -0.39 \[-10.4 ; 4.7\]  | 0.91 \[-12.1 ; 31.7\]  | 380.6          |
+
+: Estimated interaction parameters by the different Jonker interaction models.
+
+|           | Log-Likelihood          | Df  | p-value |
+|-----------|-------------------------|-----|---------|
+| SA vs. CA | SA : 380.7 (CA : 380.7) | 1   | 1       |
+| DL vs. CA | DL : 377.8              | 2   | 1       |
+| DR vs. CA | DR : 380.6              | 2   | 1       |
 
 : Comparison of the different models with Likelihood Ratio tests.
+
+![Results of the CA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Mix_spring_mix_predobs_CA.png)
+
+![Results of the SA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Mix_spring_mix_predobs_SA.png)
+
+Predicted responses will always be strictly above zero hence the points represented on the left hedge of the plot which correspond to the cosms where no cocoon were found.
 
 # References {.unnumbered}
 

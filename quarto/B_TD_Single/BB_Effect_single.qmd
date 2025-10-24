@@ -200,9 +200,9 @@ ggsave(
   )
 ```
 
-We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment. 
+We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment.
 
-We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test. 
+We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test.
 
 ```{r lmD0EPXg, warning=F, message=F}
 # lm_D0_EPX <- lm(w~Dose, data=subset(df_repro, Molecule=="EPX" & t==0))
@@ -614,6 +614,34 @@ plot_resfit <- ggplot()+
 
 plot <- plot_resfit + plot_QQ + plot_layout(ncol=2)
 plot
+```
+
+NOEC determination :
+
+```{r, warning=F, message=F}
+
+df_repro_alive$Dose_f <- as.factor(df_repro_alive$Dose)
+df_repro_alive$Dose_f <- relevel(df_repro_alive$Dose_f, ref = "0")
+
+cat("IMD - Determination of NOEC and LOEC\n")
+mod_aov <- aov(Nb_cocoons ~ Dose_f, data = subset(df_repro_alive, Molecule == "IMD"))
+summary(mod_aov)
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+cat("EPX - Determination of NOEC and LOEC\n")
+mod_aov <- aov(Nb_cocoons ~ Dose_f, data = subset(df_repro_alive, Molecule == "EPX"))
+summary(mod_aov)
+dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
+summary(dunnett_test)
+
+# lm.repro.grates.IMD <- lm(a_i ~ as.factor(Dose), subset(df_repro_grate, Molecule == "IMD"))
+# cat("IMD - Determination of NOEC and LOEC\n")
+# lsmeans(lm.repro.grates.IMD, pairwise~as.factor(Dose), adjust='bonferroni')
+# 
+# lm.repro.grates.EPX <- lm(a_i ~ as.factor(Dose), subset(df_repro_grate, Molecule == "EPX"))
+# cat("EPX - Determination of NOEC and LOEC\n")
+# lsmeans(lm.repro.grates.EPX, pairwise~as.factor(Dose), adjust='bonferroni')
 ```
 
 #### Effect on hatchlings
@@ -1284,7 +1312,7 @@ ggsave(
 
 We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment.
 
-We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test. 
+We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test.
 
 ```{r lmD0EPXr, warning=F, message=F}
 

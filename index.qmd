@@ -27,8 +27,8 @@ Folders concerning the setup of the git repository and the web pages :
 -   `_freeze` folder : Cache the results of code blocks (code cells) to avoid recalculating them on each execution
 -   `.git`, `.gitignore` & `.github` : Git related folders
 -   `.quarto` : Store configuration files, metadata, and intermediate files related to a Quarto project
--   `.Rproj.user` & `ew-growth-vi.Rproj` : R project related files
-- `appearance` folder :
+-   `.Rproj.user` & `Ew-Mix-TD.Rproj` : R project related files
+-   `appearance` folder :
     -   `html_css.scss` : CSS file to modify the look of the html pages
     -   `lightnord.theme` : Theme to use for code blocks displayed in the html pages
 
@@ -40,7 +40,7 @@ Instructions :
 
 -   Whether or not you want to run the models again, please delete the folders from the `quarto` folder that end by `_cache` or `_files` and delete all the figures present in the `fig` folder.
     -   If you do not want to run the models again, move on to the next step
-    -   If you wish to run the models again, please delete the files in `mod` (keep the arborescence)
+    -   If you wish to run the models again, please delete the files in `mod` but the `.model` files and keep the arborescence)
 -   Then, you can render again all .qmd files from the `quarto` folder in the alphabetical order of their name. Some code line will have to be de-commented for some figures to be rendered again.
 
 ## Preliminary information about this study

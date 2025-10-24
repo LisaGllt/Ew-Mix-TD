@@ -92,6 +92,7 @@ df_dose_rep <- df_dose_rep[,-c(1, 4)]
 
 ```{r resCAthdesignsurf, message=F, warning=F}
 #| code-show: show
+
 # Graphic preparation : Construction of the surface mesh
 
 min_dose_EPX <- min(subset(df_design, !EPX==0)$EPX)
@@ -205,7 +206,6 @@ p <- ggplot() +
 p
 
 ```
-
 
 We can now simulate our data.
 
@@ -359,7 +359,7 @@ p
 
 ## Determination of the lowest interaction detectable with an error of 10%
 
-We create a function that will simulate the response of `Nb_pop` experiments consisting of our experimental design with `Nb_rep` replicates for an exposure to a mixture with each of the interaction parameter value ($a$) contained in the list `l_interaction_a` and will estimate the interaction with the Jonker simple interaction model. 
+We create a function that will simulate the response of `Nb_pop` experiments consisting of our experimental design with `Nb_rep` replicates for an exposure to a mixture with each of the interaction parameter value ($a$) contained in the list `l_interaction_a` and will estimate the interaction with the Jonker simple interaction model.
 
 ```{r fpower}
 #| code-show: show
@@ -403,7 +403,7 @@ f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
         for(i in 1:length(df_dose_rep_i$EPX)){
           
           Y_th <- df_dose_rep_i$rep_Y[i]
-          Y_sim <- rnorm(Nb_rep_j, Y_th, IV*Y_th) # <1>
+          Y_sim <- rpois(Nb_rep_j, Y_th) # <1>
           
           EPX <- rep(df_dose_rep_i$EPX[i], Nb_rep_j)
           IMD <- rep(df_dose_rep_i$IMD[i], Nb_rep_j)
@@ -452,12 +452,12 @@ f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
 ```{r defparampower}
 #| code-show: show
 Nb_rep <- c(4)
-tmp <- c(10, 7, 5, 2, 1)
+tmp <- c(10, 7, 5, 2, 1, 0.5, 0.1, 0.01)
 l_interaction_a <- c(tmp, -rev(tmp))
-Nb_pop <- 1000
-df_boot_res <- f_power_design(Nb_rep, l_interaction_a, Nb_pop, param)
-save(df_boot_res,file = here::here("mod/MIX/Res_boot_design_new.RData"))
-#load(file = here::here("mod/MIX/Res_boot_design_new.RData"))
+Nb_pop <- 5000
+# df_boot_res <- f_power_design(Nb_rep, l_interaction_a, Nb_pop, param)
+# save(df_boot_res,file = here::here("mod/MIX/Res_boot_design_CARData"))
+load(file = here::here("mod/MIX/Res_boot_design_CA.RData"))
 ```
 
 ```{r respower}
@@ -466,14 +466,14 @@ df_boot_res_print <- df_boot_res |> mutate(
   Estimated_interaction = round(Estimated_interaction, 5),
   Error = Estimated_interaction - Simulated_interaction
 )
-df_boot_res_line <- data.frame(Simulated_interaction = l_interaction_a,
-                              Line = l_interaction_a)
-# regarder erreur sur le signe
+df_boot_res_line <- data.frame(
+  Simulated_interaction = l_interaction_a,
+  Line = l_interaction_a
+  )
 ```
 
 ```{r fpdirection}
 library(bayestestR)
-
 f_pdir <- function(df){
   Nb_rep_unique = unique(df$Nb_rep)
   Simulated_interaction_unique = unique(df$Simulated_interaction)
@@ -504,13 +504,14 @@ df_boot_res_line <- df_boot_res_line |>
 
 ```
 
-Thanks to this algorithm, we can estimate the density of error of estimation and the probability of direction of the model for each interaction level. 
+Thanks to this algorithm, we can estimate the density of error of estimation and the probability of direction of the model for each interaction level.
 
 ```{r, warning=F, message=F}
 #| fig-cap: Density of errors of estimation and probability of direction. 
 #| label: fig-pererrorpdir
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 8
+#| fig-height: 16
+
 alpha_dens <- 0.5
 p <- ggplot(
   data = df_boot_res_print, 
@@ -536,14 +537,14 @@ p <- ggplot(
     data = df_boot_res_line,
     aes(
       x = Simulated_interaction-0.25,
-      y = 0.8,
-      label = paste("Pdirection = ", pd)
+      y = 1,
+      label = paste("Pdirection = ", round(pd,2))
       )
   )+
-  facet_grid(
-    rows = vars(Simulated_interaction),
-    cols = vars(Nb_rep),
-    scales="free"
+  facet_wrap(
+    ~Simulated_interaction,
+    scales="free",
+    ncol=1
     )+
   # facet_wrap(
   #   ~ Nb_rep+Simulated_interaction,
@@ -554,19 +555,38 @@ p <- ggplot(
     x = "Estimated interaction",
     y = "Density"
   )+
+  lims(y=c(0,1.2))+
   #theme_minimal()+
   theme(
     strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 14)
+    strip.text = element_text(color="white", size = 10)
   )
+
 p
 ```
-@fig-pererrorpdir shows that at least when the interaction is above 1, there is a very low probability of being wrong about the direction of the interaction with our experimental design. 
+
+```{r, include=F}
+ggsave(
+  filename="Mix_power_CA_dens_error.png", 
+  plot=p, 
+  width=8, height = 8, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_power_CA_dens_error.svg", 
+  plot=p, 
+  width=8, height = 8, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+@fig-pererrorpdir shows that at least when the interaction is above 1, there is a very low probability of being wrong about the direction of the interaction with our experimental design.
 
 ```{r, warning=F, message=F}
 #| fig-cap: Density of percentage of estimation errors
 #| label: fig-pererror
-#| fig-width: 12
+#| fig-width: 8
 #| fig-height: 8
 
 alpha_dens <- 0.5
@@ -581,10 +601,10 @@ p <- ggplot(
     alpha=alpha_dens,
     fill = Nord_polar[1]
     )+
-  facet_grid(
-    rows = vars(Simulated_interaction),
-    cols = vars(Nb_rep),
-    scales="free"
+  facet_wrap( 
+    ~Simulated_interaction,
+    scales="free",
+    ncol=2
     )+
   xlim(xmin=-50, xmax=50)+
   labs(
@@ -594,9 +614,25 @@ p <- ggplot(
   #theme_minimal()+
   theme(
     strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 14)
+    strip.text = element_text(color="white", size = 10)
   )
 p
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_power_CA_per_error.png", 
+  plot=p, 
+  width=6, height = 8, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_power_CA_per_error.svg", 
+  plot=p, 
+  width=6, height = 8, 
+  path=here::here("fig/Mixture")
+  )
 ```
 
 ```{r, message=F, warning=F}
@@ -604,9 +640,13 @@ p
 df_boot_res_print_summary <- df_boot_res_print %>%
   group_by(Simulated_interaction) %>%
   summarise(
+    Mean_error = signif(mean(abs(Per_error)), 3),
+    Median_error = signif(median(abs(Per_error)), 3),
     Per_error_above_10 = signif(mean(abs(Per_error) > 10) * 100, 3),
     Per_error_above_25 = signif(mean(abs(Per_error) > 25) * 100, 3),
     Per_error_above_50 = signif(mean(abs(Per_error) > 50) * 100, 3),
+    Per_error_above_100 = signif(mean(abs(Per_error) > 100) * 100, 3),
+    Per_error_above_500 = signif(mean(abs(Per_error) > 500) * 100, 3),
     .groups = "drop"
   )
 

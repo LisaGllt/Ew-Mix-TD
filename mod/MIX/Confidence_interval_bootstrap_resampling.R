@@ -180,7 +180,7 @@ N_obs <- length(df_mix_coc_int$Response)
 
 # 2. Resampling & model fit ----
 
-N_draws <- 10000
+N_draws <- 2000
 
 # Pick a number btw 1 and N_obs for each draw
 min_resampling <- 1

@@ -1527,3 +1527,1149 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
     } # End common slopes
   } # End Dose-response curves not known
 } # End.
+
+
+
+
+
+
+IA_complete2 <- function(C_mat, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none") {
+  param <- data.frame(Slopes, Ec50s)
+  # try(cat(Slopes))
+  # try(cat(Ec50s))
+  
+  # 1. IA model ----
+  
+  if (interact == "none"){
+    
+    Y <- c()
+    
+    for (i in 1:nrow(C_mat)){
+
+      yA_i <- 1/(1+exp(as.numeric(Slopes[1])*(log(C_mat[i,1])-log(as.numeric(Ec50s[1])))))
+      yB_i <- 1/(1+exp(as.numeric(Slopes[2])*(log(C_mat[i,2])-log(as.numeric(Ec50s[2])))))
+      
+      Y_i <- as.numeric(Max[1]) * (yA_i*yB_i)
+      Y <- c(Y, Y_i)
+    }
+  
+  # 2. SA model ----
+  
+  } else if (interact == "SA") {
+    
+    Y <- c()
+    
+    for (i in 1:nrow(C_mat)){
+      yA_i <- 1/(1+exp(as.numeric(Slopes[1])*(log(C_mat[i,1])-log(as.numeric(Ec50s[1])))))
+      yB_i <- 1/(1+exp(as.numeric(Slopes[2])*(log(C_mat[i,2])-log(as.numeric(Ec50s[2])))))
+      
+      TUA_i <- C_mat[i,1]/as.numeric(Ec50s[1])
+      TUB_i <- C_mat[i,2]/as.numeric(Ec50s[2])
+      
+      zA_i <- TUA_i/(TUA_i + TUB_i)
+      zB_i <- TUB_i/(TUA_i + TUB_i)
+      
+      G <- a * (zA_i*zB_i)
+      
+      Y_i <- as.numeric(Max[1]) * pnorm(qnorm(yA_i*yB_i) + G)
+      Y <- c(Y, Y_i)
+    }
+    
+  # 3. DR model ----
+  
+  } else if (interact == "DR"){
+    
+    Y <- c()
+    
+    for (i in 1:nrow(C_mat)){
+      yA_i <- 1/(1+exp(as.numeric(Slopes[1])*(log(C_mat[i,1])-log(as.numeric(Ec50s[1])))))
+      yB_i <- 1/(1+exp(as.numeric(Slopes[2])*(log(C_mat[i,2])-log(as.numeric(Ec50s[2])))))
+      
+      TUA_i <- C_mat[i,1]/as.numeric(Ec50s[1])
+      TUB_i <- C_mat[i,2]/as.numeric(Ec50s[2])
+      
+      zA_i <- TUA_i/(TUA_i + TUB_i)
+      zB_i <- TUB_i/(TUA_i + TUB_i)
+      
+      G <- (a+b*zA_i) * (zA_i*zB_i)
+      
+      Y_i <- as.numeric(Max[1]) * pnorm(qnorm(yA_i*yB_i) + G)
+      Y <- c(Y, Y_i)
+    }
+  
+  
+  # 4. DL model ----
+  
+  } else if (interact == "DL"){
+    
+    Y <- c()
+    
+    for (i in 1:nrow(C_mat)){
+      yA_i <- 1/(1+exp(as.numeric(Slopes[1])*(log(C_mat[i,1])-log(as.numeric(Ec50s[1])))))
+      yB_i <- 1/(1+exp(as.numeric(Slopes[2])*(log(C_mat[i,2])-log(as.numeric(Ec50s[2])))))
+      
+      TUA_i <- C_mat[i,1]/as.numeric(Ec50s[1])
+      TUB_i <- C_mat[i,2]/as.numeric(Ec50s[2])
+      
+      zA_i <- TUA_i/(TUA_i + TUB_i)
+      zB_i <- TUB_i/(TUA_i + TUB_i)
+      
+      G <- a*(1-b*(yA_i*yB_i)) * zA_i*zB_i
+      
+      Y_i <- as.numeric(Max[1]) * pnorm(qnorm(yA_i*yB_i) + G)
+      Y <- c(Y, Y_i)
+    }
+  }
+  
+  res_IA <- Y
+
+  return(res_IA)
+}
+
+
+IA_complete2_RSS <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none") {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_IA <- IA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact,
+    multicore = multicore,
+    mc.cores  = mc.cores
+  )
+  res_IA_RSS <- sum((res_IA - Response)^2)
+  
+  return(res_IA_RSS)
+}
+
+
+IA_complete2_Poisson <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none") {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_IA <- IA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact
+  )
+  
+  # Pour stabilité numérique, éviter log(0)
+  if (any(res_IA <= 0)) {
+    return(-Inf)
+  }
+  res_IA_Poisson <- -sum(Response * log(res_IA) - res_IA - lfactorial(Response)) # - Loglikelihood
+  
+  return(res_IA_Poisson)
+}
+
+IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, lower = NULL, start = NULL, interact = "none", identical_slopes = FALSE, error_type = "Normal", iter = 500, multicore = FALSE, mc.cores = 4) {
+  # 1. Dose-response curves known ----
+  if (!is.null(param)) {
+    if ((is.null(param$Max)) | (is.null(param$Slopes)) | (is.null(param$Ec50s))) {
+      stop("param misspecification")
+    }
+    if (interact == "none") {
+      stop("please specify interaction")
+    }
+    
+    ## 1.1. SA model ----
+    if (interact == "SA") {
+      if (missing(upper)) {
+        upper <- 20
+      } # the intervals for a and b must be larger because they can compensate each other
+      if (missing(lower)) {
+        lower <- -20
+      }
+      
+      if (error_type == "Normal") {
+        res_IA_optim <- optimize(
+          f = function(x) {
+            IA_complete2_RSS(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x,
+              interact  = interact
+            )
+          },
+          upper = upper,
+          lower = lower
+        )
+        Res <- list(
+          a     = res_IA_optim$minimum,
+          Error = res_IA_optim$objective
+        )
+        return(Res)
+      } else if (error_type == "Poisson") {
+        res_IA_optim <- optimize(
+          f = function(x) {
+            IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x,
+              interact  = interact
+            )
+          },
+          upper = upper,
+          lower = lower
+        )
+        Res <- list(
+          a     = res_IA_optim$minimum,
+          Error = res_IA_optim$objective
+        )
+        return(Res)
+      } else {
+        stop("Misspecification of the error model")
+      }
+    } # End SA
+    
+    ## 1.2. DR model ----
+    if (interact == "DR") {
+      if (error_type == "Normal") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_RSS(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "Poisson") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else {
+        stop("Misspecification of the error model")
+      }
+    } # End DR
+    
+    ## 1.3. DR2 model ----
+    if (interact == "DR2") {
+      if (error_type == "Normal") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_RSS(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "Poisson") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else {
+        stop("Misspecification of the error model")
+      }
+    } # End DR2
+    
+    ## 1.4. DL model ----
+    if (interact == "DL") {
+      if (error_type == "Normal") {
+        res_IA_optim <- optim(
+          par = c(0, 0),
+          fn = function(x) {
+            IA_complete2_RSS(
+              C_mat = C_mat,
+              Response = Response,
+              Max = param$Max,
+              Slopes = param$Slopes,
+              Ec50s = param$Ec50s,
+              a = x[1], b = x[2],
+              interact = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "Poisson") {
+        res_IA_optim <- optim(
+          par = c(0, 0),
+          fn = function(x) {
+            IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else {
+        stop("Misspecification of the error model")
+      }
+    } # End DL
+  } # End dose-response curves known
+  
+  # 2. Dose-response curves not known ----
+  if (is.null(param)) {
+    # require(DEoptim)
+    require(dfoptim)
+    if (any(C_mat == 0)) {
+      mean_C_mat <- exp(apply(log(C_mat[-which(C_mat == 0, arr.ind = TRUE)[, 1], ]), 2, mean))
+    } else {
+      mean_C_mat <- exp(apply(log(C_mat), 2, mean))
+    }
+    
+    ## 2.1. Different slopes ----
+    if (!identical_slopes) {
+      ### 2.1.1. IA model ----
+      if (interact == "none") {
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10)
+        }
+        if (missing(lower)) {
+          lower <- c(0, -100, -100, 0, 0)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, -1, mean_C_mat)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                interact  = interact
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]),
+            Ec50s  = c(res_IA_nmk$par[4:5]),
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                interact  = interact
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]),
+            Ec50s  = c(res_IA_nmk$par[4:5]),
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      }
+      
+      ### 2.1.2. SA model ----
+      if (interact == "SA") {
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20) # the intervals for a and b must be larger beacuse they can compensate each other
+        }
+        if (missing(lower)) {
+          lower <- c(0, -100, -100, 0, 0, -20)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, -1, mean_C_mat, 0)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                a         = x[6],
+                interact  = interact
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]),
+            Ec50s  = c(res_IA_nmk$par[4:5]),
+            a      = res_IA_nmk$par[6],
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+          
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], 
+                interact  = interact
+              )
+            },
+            upper   = upper,
+            lower   = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End SA 
+      
+      ### 2.1.3. DR model ----
+      if (interact == "DR") {
+        
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+        } # the intervals for a and b must be larger beacuse they can compensate each other
+        if (missing(lower)) {
+          lower <- c(0, -100, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, -1, mean_C_mat, 0, rep(0, (dim(C_mat)[2] - 1)))
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], 
+                b         = x[7:length(x)], 
+                interact  = interact
+              )
+            }, 
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]),
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7:(7 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6],
+                b         = x[7:length(x)], 
+                interact  = interact
+              )
+            },
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7:(7 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End DR 
+      
+      ### 2.1.4. DL model ----
+      if (interact == "DL") {
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, 30)
+        }
+        if (missing(lower)) {
+          lower <- c(0, -100, -100, 0, 0, -20, -30)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, -1, mean_C_mat, 0, 0)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], b = x[7], 
+                interact  = interact
+              )
+            }, 
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+          
+        } else if (error_type == "Poisson") {
+          
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], b = x[7],
+                interact  = interact
+              )
+            }, 
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End DL
+    } 
+    ## 2.2. Common slopes ----
+    else {
+      
+      ### 2.2.1. IA model ----
+      if (interact == "none") {
+        
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, mean_C_mat * 10)
+        }
+        if (missing(lower)) {
+          lower <- c(0, -100, 0, 0)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, mean_C_mat)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3], x[4]), 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3], x[4]), 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End IA
+      
+      ### 2.2.2. SA model ----
+      if (interact == "SA") {
+        
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20)
+        } # the intervals for a and b must be larger beacuse they can compensate each other
+        if (missing(lower)) {
+          lower <- c(0, -100, 0, 0, -20)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, mean_C_mat, 0)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], Slopes = c(x[2], x[2]), 
+                Ec50s     = c(x[3], x[4]), a = x[5], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]),
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat = C_mat, 
+                Response = Response, 
+                Max = x[1], 
+                Slopes = c(x[2], x[2]), 
+                Ec50s = c(x[3], x[4]), 
+                a = x[5], 
+                interact = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower,
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s = c(res_IA_nmk$par[3:4]), 
+            a = res_IA_nmk$par[5],
+            Error = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End SA
+      
+      ### 2.2.3. DR model ----
+      if (interact == "DR") {
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+        } # the intervals for a and b must be larger beacuse they can compensate each other
+        if (missing(lower)) {
+          lower <- c(0, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]),
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6:length(x)],
+                interact  = interact
+              )
+            }, 
+            upper = upper,
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5],
+            b      = res_IA_nmk$par[6:(6 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6:length(x)], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5],
+            b      = res_IA_nmk$par[6:(6 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      }
+      
+      ### 2.2.4. DL model ----
+      if (interact == "DL") {
+        if (missing(upper)) {
+          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, 30)
+        }
+        if (missing(lower)) {
+          lower <- c(0, -100, 0, 0, -20, -30)
+        }
+        if (missing(start)) {
+          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+        }
+        
+        if (error_type == "Normal") {
+          res_IA_nmk <- nmkb(
+            par = start, fn = function(x) {
+              IA_complete2_RSS(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]),
+                a         = x[5], 
+                b         = x[6], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]),
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5], 
+            b      = res_IA_nmk$par[6],
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "Poisson") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_Poisson(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = 10^-6)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5],
+            b      = res_IA_nmk$par[6], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else {
+          stop("Misspecification of the error model")
+        }
+      } # End DL
+    } # End common slopes
+  } # End Dose-response curves not known
+} # End.
+
+
+
+
+
+f_Jonker_CI_calculations <- function(df_data, N_draws, interact, error_type){
+  
+  # Pick a number btw 1 and N_obs for each draw
+  min_resampling <- 1
+  N_obs <- length(df_data$Response)
+  max_resampling <- N_obs
+  
+  # Draws
+  draws <- lapply(
+    1:N_draws, 
+    function(i) {
+      n <- sample(min_resampling:max_resampling, 1) 
+      lines <- sample(1:N_obs, size = n, replace = TRUE)  
+      list(ID = i, N_resampling = n, Lines = lines)
+    }
+  )
+  
+  df_draws <- do.call(rbind, lapply(draws, as.data.frame))
+  df_draws <- as.data.frame(df_draws)
+  df_draws$Lines <- lapply(df_draws$Lines, unlist) 
+  
+  List_a <- vector("list", N_draws)
+  List_b <- vector("list", N_draws)
+  
+  res <- data.frame(
+    a_2.5 = NA, 
+    a_97.5 = NA,
+    b_2.5 = NA, 
+    b_97.5 = NA
+    )
+  
+  i <- 1
+  
+  for(draw_i in unique(df_draws$ID)){
+    print(i)
+    
+    Lines_i <- unlist(subset(df_draws, ID==draw_i)$Lines)
+    
+    df_data_i <- df_data |> 
+      dplyr::slice(Lines_i)
+    
+    mod <- tryCatch({
+      # Code that can fail
+      CA_complete_fit_speed(                         
+        C_mat=cbind(                                              
+          df_data_i$Dose_EPX,                                  
+          df_data_i$Dose_IMD                                  
+        ),                                                         
+        Response=df_data_i$Response,                         
+        interact=interact,                                            
+        param=param,
+        error_type = error_type,
+        multicore = TRUE,                                       
+        mc.cores = 4   
+      )        
+    }, error = function(e) {
+      NA
+    })
+    
+    if (!is.na(mod)[1]){
+      if (interact == "SA"){
+        List_a[[i]] <- mod$a
+      }else if (interact %in% c("DL", "DR")){
+        List_a[[i]] <- mod$a
+        List_b[[i]] <- mod$b
+      }else{
+        warning("Interaction misspecification")
+      }
+      
+    }else{
+      List_a[[i]] <- NA
+      List_b[[i]] <- NA
+    }
+    i <- i+1
+  }
+  
+  if (interact=="SA"){
+    res$a_2.5 <- quantile(unlist(List_a), probs = c(0.025, 0.975), na.rm = TRUE)[1]
+    res$a_97.5 <- quantile(unlist(List_a), probs = c(0.025, 0.975), na.rm = TRUE)[2]
+  }else if(interact %in% c("DL", "DR")){
+    res$a_2.5 <- quantile(unlist(List_a), probs = c(0.025, 0.975), na.rm = TRUE)[1]
+    res$a_97.5 <- quantile(unlist(List_a), probs = c(0.025, 0.975), na.rm = TRUE)[2]
+    res$b_2.5 <- quantile(unlist(List_b), probs = c(0.025, 0.975), na.rm = TRUE)[1]
+    res$b_97.5 <- quantile(unlist(List_b), probs = c(0.025, 0.975), na.rm = TRUE)[2]
+  }
+  
+  return(res)
+  
+}
+
+f_Jonker_CI_calculations_condition <- function(df_data, N_draws, interact, reference = "CA", error_type, max_per_cond = 4){
+  
+  df_data <- df_data |> 
+    mutate(
+      condition = paste0(Line, Ratio)
+    )
+  
+  # Nombres d'observations par condition
+  cond_levels <- unique(df_data$condition)
+  N_obs_cond  <- table(df_data$condition)
+  
+  List_a <- vector("list", N_draws)
+  List_b <- vector("list", N_draws)
+  
+  res <- data.frame(
+    a_2.5 = NA, 
+    a_97.5 = NA,
+    b_2.5 = NA, 
+    b_97.5 = NA
+  )
+
+  for(i in seq_len(N_draws)){
+    print(i)
+    
+    # Stratified draws per condition
+    n_cond <- sample(1:max_per_cond, 1)
+    
+    Lines_i <- unlist(lapply(cond_levels, function(cond){
+      n_max <- min(N_obs_cond[[cond]], n_cond) 
+      sample(
+        which(df_data$condition == cond), 
+        size = n_max, 
+        replace = TRUE
+      )
+    }))
+    
+    df_data_i <- dplyr::slice(df_data, Lines_i)
+    
+    if (reference == "CA") {
+      mod <- tryCatch({
+        CA_complete_fit_speed(                         
+          C_mat=cbind(
+            df_data_i$Dose_EPX,
+            df_data_i$Dose_IMD
+          ),                                                         
+          Response=df_data_i$Response,                         
+          interact=interact,                                            
+          param=param,
+          error_type = error_type,
+          multicore = TRUE,                                       
+          mc.cores = 4   
+        )        
+      }, error = function(e) NA)
+    } else if (reference == "IA") {
+      mod <- tryCatch({
+        IA_complete_fit_speed(                         
+          C_mat=cbind(
+            df_data_i$Dose_EPX,
+            df_data_i$Dose_IMD
+          ),                                                         
+          Response=df_data_i$Response,                         
+          interact=interact,                                            
+          param=param,
+          error_type = error_type
+        )        
+      }, error = function(e) NA)
+    }
+    
+    if (!is.na(mod)[1]){
+      if (interact == "SA"){
+        List_a[[i]] <- mod$a
+      } else if (interact %in% c("DL", "DR")){
+        List_a[[i]] <- mod$a
+        List_b[[i]] <- mod$b
+      } else {
+        warning("Interaction misspecification")
+      }
+    } else {
+      List_a[[i]] <- NA
+      List_b[[i]] <- NA
+    }
+  }
+  
+  if (interact=="SA"){
+    res$a_2.5  <- quantile(unlist(List_a), probs = 0.025, na.rm = TRUE)
+    res$a_97.5 <- quantile(unlist(List_a), probs = 0.975, na.rm = TRUE)
+  } else if (interact %in% c("DL", "DR")){
+    res$a_2.5  <- quantile(unlist(List_a), probs = 0.025, na.rm = TRUE)
+    res$a_97.5 <- quantile(unlist(List_a), probs = 0.975, na.rm = TRUE)
+    res$b_2.5  <- quantile(unlist(List_b), probs = 0.025, na.rm = TRUE)
+    res$b_97.5 <- quantile(unlist(List_b), probs = 0.975, na.rm = TRUE)
+  }
+  
+  return(res)
+}
+
+
+

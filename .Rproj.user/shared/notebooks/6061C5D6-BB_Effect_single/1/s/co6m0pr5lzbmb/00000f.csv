@@ -1,3 +1,0 @@
-"0","library(here)"
-"0","source(file = here::here(""functions/fun.R""))"
-"0","f_load_libraries_colors()"

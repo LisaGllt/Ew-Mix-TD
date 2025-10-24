@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "**Toxic cocktails in our soils** - Unravelling the effect of a fungicide and insecticide mixture on earthworm growth and reproduction
+  title: "**Toxic cocktails in soils** - Unravelling the effect of a fungicide and insecticide mixture on earthworm growth and reproduction
 "
   subtitle: "Git repository"
   author:
