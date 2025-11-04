@@ -1658,11 +1658,13 @@ b_IADR <- IADR_fit$b
 a_IADR_print <- signif(a_IADR, 3)
 b_IADR_print <- signif(b_IADR, 3)
 LogLikelihood_IADR_print <- signif(LogLikelihood_IADR, signif_LL)
+
 ```
 
 ```{r CI, message=F, warning=F}
 
 N_draws <- 2000
+
 # CI_CASA <- f_Jonker_CI_calculations_condition(
 #   df_data = df_mix_coc_int,
 #   N_draws = N_draws,
@@ -1735,7 +1737,6 @@ load(here::here("mod/CI_cond_IADL.RData"))
 # save(CI_IADR, file = here::here("mod/CI_cond_IADR.RData"))
 # 
 load(here::here("mod/CI_cond_IADR.RData"))
-
 ```
 
 ```{r resJonker, warning=F, message=F}
@@ -1757,6 +1758,7 @@ df_Jonker <- df_Jonker[, c("Type", "a", "a_2.5", "a_97.5",
 
 df_Jonker |> datatable(options = list(dom = 't'), class="hover") |> 
   formatSignif(columns = c("a", "a_2.5", "a_97.5", "b", "b_2.5", "b_97.5", "Likelihood"), c(4, 4, 4, 4, 4, 4,7))
+
 ```
 
 ### Step 3 - Test of models
@@ -4714,10 +4716,17 @@ calculate_predobs_stats <- function(df) {
   list(df = df, per_fold2 = per_fold2, per_fold5 = per_fold5)
 }
 
+f_calc_residuals <- function(df){
+  df <- df |> 
+    mutate(
+      Ratio_predobs = Predicted / Response,
+      Residuals = Predicted - Response
+    )
+}
 
 dfs <- list(
-  CA = df_predobs_CA, SA = df_predobs_CASA, DL = df_predobs_CADL, DR = df_predobs_CADR,
-  IA = df_predobs_IA, "IA-SA" = df_predobs_IASA, "IA-DL" = df_predobs_IADL, "IA-DR" = df_predobs_IADR
+  CA = f_calc_residuals(df_predobs_CA), "CA-SA" = f_calc_residuals(df_predobs_CASA), "CA-DL" = f_calc_residuals(df_predobs_CADL), "CA-DR" = f_calc_residuals(df_predobs_CADR),
+  IA = f_calc_residuals(df_predobs_IA), "IA-SA" = f_calc_residuals(df_predobs_IASA), "IA-DL" = f_calc_residuals(df_predobs_IADL), "IA-DR" = f_calc_residuals(df_predobs_IADR)
 )
 
 results <- lapply(dfs, calculate_predobs_stats)
@@ -4728,7 +4737,6 @@ df_predobs_summary <- data.frame(
   Per_fold2 = sapply(results, `[[`, "per_fold2"),
   Per_fold5 = sapply(results, `[[`, "per_fold5")
 )
-
 df_predobs_summary |> datatable(options = list(dom="t"), class="hover")
 
 ```
@@ -4746,7 +4754,7 @@ df_predobs_summary |> datatable(options = list(dom="t"), class="hover")
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_CA,
+    data = dfs$CA,
     aes(
       x = Line,
       y = Residuals,
@@ -4764,8 +4772,8 @@ p <- ggplot()+
   )+
   scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
   scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
-  #scale_x_log10()+
   theme_minimal()
+
 p
 ```
 
@@ -4779,7 +4787,7 @@ p
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_CASA,
+    data = dfs$`CA-SA`,
     aes(
       x = Line,
       y = Residuals,
@@ -4812,7 +4820,7 @@ p
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_CADL,
+    data = dfs$`CA-DL`,
     aes(
       x = Line,
       y = Residuals,
@@ -4845,7 +4853,7 @@ p
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_IA,
+    data = dfs$IA,
     aes(
       x = Line,
       y = Residuals,
@@ -4878,7 +4886,7 @@ p
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_IASA,
+    data = dfs$`IA-SA`,
     aes(
       x = Line,
       y = Residuals,
@@ -4911,7 +4919,7 @@ p
 
 p <- ggplot()+
   geom_dotplot(
-    data = df_predobs_IADL,
+    data = dfs$`IA-DL`,
     aes(
       x = Line,
       y = Residuals,
