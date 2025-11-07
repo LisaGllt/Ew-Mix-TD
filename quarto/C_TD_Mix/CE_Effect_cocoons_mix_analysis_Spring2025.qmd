@@ -1768,38 +1768,56 @@ We need first to test the acceptability of the CA and IA model against an anova 
 Creation of the anova model :
 
 ```{r}
+df_mix_coc_int_anova <- df_mix_coc_int |> 
+  mutate(
+    Dose_EPX_f = as.factor(Dose_EPX),
+    Dose_IMD_f = as.factor(Dose_IMD)
+  )
 # The anova model 
-glm_anova <- glm(Response ~ Dose_EPX + Dose_IMD, family = poisson(link = "log"), data = df_mix_coc_int)
-LogLikelihood_anova <- as.numeric(logLik(glm_anova))
+glm_anova <- glm(Response ~ Dose_EPX_f + Dose_IMD_f, family = poisson(link = "log"), data = df_mix_coc_int_anova)
+LogLikelihood_anova <- -as.numeric(logLik(glm_anova))
 k_anova <- attr(logLik(glm_anova), "df")   # nombre de paramètres (inclut intercept)
 
 ```
 
 ```{r FtestCAanova, warning=F, message=F}
-LL0 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
-LL1 <- LogLikelihood_CA    # log-vraisemblance du modèle SA (CA reference)
+LL1 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
+LL0 <- LogLikelihood_CA    # log-vraisemblance du modèle SA (CA reference)
 
-p0 <- k_anova         
-p1 <- 4     
+p1 <- k_anova         
+p0 <- 4     
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison Anova/CA - D =", D, "p =", p_val, "\n")
-
 ```
 
 ```{r FtestIAanova, warning=F, message=F}
-LL0 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
-LL1 <- LogLikelihood_IA    # log-vraisemblance du modèle SA (CA reference)
+LL1 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
+LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle SA (CA reference)
 
-p0 <- k_anova         
-p1 <- 4     
+p1 <- k_anova         
+p0 <- 4     
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison Anova/IA - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestIASAanova, warning=F, message=F}
+LL1 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
+LL0 <- LogLikelihood_IASA    # log-vraisemblance du modèle SA (CA reference)
+
+p1 <- k_anova         
+p0 <- 4+1     
+
+D <- -2 * (LL1 - LL0)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison Anova/IASA - D =", D, "p =", p_val, "\n")
 
 ```
 
@@ -1814,7 +1832,7 @@ LL1 <- LogLikelihood_CASA    # log-vraisemblance du modèle SA (CA reference)
 p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
 p1 <- 1         # un paramètre d'interaction dans le modèle SA (CA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison CA/SA - D =", D, "p =", p_val, "\n")
@@ -1830,7 +1848,7 @@ LL1 <- LogLikelihood_CADL    # log-vraisemblance du modèle DL (CA reference)
 p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
 p1 <- 2         # un paramètre d'interaction dans le modèle DL (CA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison CA/DL - D =", D, "p =", p_val, "\n")
@@ -1844,7 +1862,7 @@ LL1 <- LogLikelihood_CADR    # log-vraisemblance du modèle DR
 p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
 p1 <- 1         # un paramètre d'interaction dans le modèle DR (CA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison CA/DR - D =", D, "p =", p_val, "\n")
@@ -1862,14 +1880,14 @@ LL1 <- LogLikelihood_IASA    # log-vraisemblance du modèle (IA reference)
 p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
 p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison IA/SA - D =", D, "p =", p_val, "\n")
 
 ```
 
-The SA model is not significatively different than the CA model. There is no significant interaction between EPX & IMD for cocoon production. Therefore, the best model to represent the data is the CA model.
+The SA model is significatively different than the IA model. There is a significant interaction between EPX & IMD for cocoon production. Therefore, the best model to represent the data is the IA-SA model.
 
 ```{r FtestIADL, warning=F, message=F}
 LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle IA
@@ -1878,10 +1896,24 @@ LL1 <- LogLikelihood_IADL    # log-vraisemblance du modèle DL (IA reference)
 p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
 p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison IA/DL - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestIASADL, warning=F, message=F}
+LL0 <- LogLikelihood_IASA    # log-vraisemblance du modèle IA SA
+LL1 <- LogLikelihood_IADL    # log-vraisemblance du modèle DL (IA reference)
+
+p0 <- 1         # nombre de paramètres additionnels dans le modèle IA SA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
+
+D <- -2 * (LL1 - LL0)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IASA/DL - D =", D, "p =", p_val, "\n")
 
 ```
 
@@ -1892,12 +1924,28 @@ LL1 <- LogLikelihood_IADR    # log-vraisemblance du modèle SA (IA reference)
 p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
 p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
 
-D <- 2 * (LL1 - LL0)
+D <- -2 * (LL1 - LL0)
 p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
 
 cat("Comparison IA/DR - D =", D, "p =", p_val, "\n")
 
 ```
+
+```{r FtestIASADR, warning=F, message=F}
+LL0 <- LogLikelihood_IASA    # log-vraisemblance du modèle IA SA
+LL1 <- LogLikelihood_IADR    # log-vraisemblance du modèle DL (IA reference)
+
+p0 <- 1         # nombre de paramètres additionnels dans le modèle IA SA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
+
+D <- -2 * (LL1 - LL0)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IASA/DR - D =", D, "p =", p_val, "\n")
+
+```
+
+The IA-DL and the IA-DR models are not significatively different from IA-SA.
 
 ### Step 4 - Graphical representation
 
