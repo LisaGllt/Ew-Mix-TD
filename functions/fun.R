@@ -113,6 +113,74 @@ f_load_libraries_colors <- function() {
   f_load_colors()
 }
 
+# Load experimental data ----
+
+f_read_data_expA_repro <- function(){
+  
+  # Value given to controls for plots
+  Val_Ctrl <- 1e-4
+  Label_Ctrl <- "0 (Ctrl)"
+  
+  df_repro_tot <- read_excel(
+    here::here("data/Data_EC50.xlsx"), 
+    sheet="Repro"
+  ) |> 
+    mutate(                                                  # <1>
+      Dose = as.numeric(Dose),                               # <1>
+      Dose_f = as.factor(round(Dose, 4)),                    # <1>
+      Dose_plot = case_when(                                 # <1>
+        Dose == 0 ~ Val_Ctrl,                                # <1>
+        !(Dose == 0) ~ Dose                                  # <1>
+      ),                                                     # <1>
+      w=w_tot/Nb_ind,                                        # <1>
+      L=w^(1/3)                                              # <1>
+    )                                                      # <1>
+  
+  df_controls <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
+    aggregate(Nb_cocoons ~ Molec, FUN = mean)
+  
+  df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |>   
+    mutate(
+      Molecule = "EPX",
+      r_Nb_cocoons = Nb_cocoons/subset(df_controls,Molec == "Ctrl_2")$Nb_cocoons*100
+    )                                                      
+  ID_alive_EPX <- subset(df_repro_EPX, t==28 & (!Status=="D"))$ID_cosm    
+  df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)   
+  
+  df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |> 
+    mutate(
+      Molecule = "IMD",
+      r_Nb_cocoons = case_when(
+        Lot == "A" ~ Nb_cocoons/subset(df_controls,Molec == "Ctrl_1")$Nb_cocoons,
+        Lot == "B" ~ Nb_cocoons/subset(df_controls,Molec == "Ctrl_2")$Nb_cocoons
+      )*100
+    )                                                      
+  
+  ID_alive_IMD <- subset(df_repro_IMD, t==28 & (!Status=="D"))$ID_cosm            
+  df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)           
+  
+  df_repro <- rbind(df_repro_EPX, df_repro_IMD)                                   
+  df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)                 
+  
+  df_repro_alive_mean <- df_repro_alive |>
+    group_by(Dose, Molecule, Dose_plot) |> 
+    summarise(
+      r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
+      Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  df_res <- data.frame(
+    df_repro = df_repro,
+    df_repro_alive = df_repro_alive,
+    df_repro_alive_mean = df_repro_alive_mean
+    
+  )
+  
+  return(df_res)
+  
+}
+
 # Mixture - Jonker interaction models ----
 
 # Fonction calculating the surface dose - response knowing the dose - response curves
@@ -300,9 +368,11 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
     } # End SA model
   } # End dose-response curves known
 
-  # 2. If dose-response curves known ----
+  # 2. If dose-response curves not known ----
   if (is.null(param)) {
     require(dfoptim)
+    
+    print("estimation drc")
 
     if (any(C_mat == 0)) {
       mean_C_mat <- exp(apply(log(C_mat[-which(C_mat == 0, arr.ind = TRUE)[, 1], ]), 2, mean))
@@ -328,6 +398,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
 
         # fit
         if (error_type == "Normal") {
+          print("nk common slopes Normal CA")
           res_CA_nmk <- nmkb(
             par = start,
             fn = function(x) {
@@ -355,6 +426,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
           )
           return(Res)
         } else if (error_type == "Poisson") {
+          print("nk diff slopes Poisson CA")
           res_CA_nmk <- nmkb(
             par = start,
             fn = function(x) {
@@ -511,6 +583,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
           )
           return(Res)
         } else if (error_type == "Poisson") {
+          print("nk common slopes Poisson CA")
           res_CA_nmk <- nmkb(
             par = start,
             fn = function(x) {
@@ -932,13 +1005,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.1. CA model ----
       if (interact == "none") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10)
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0)
+          lower <- c(0, 0, 0, 0, 0)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat)
+          start <- c(max(Response), 1, 1, mean_C_mat)
         }
 
         if (error_type == "Normal") {
@@ -1001,13 +1074,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.2. SA model ----
       if (interact == "SA") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20) # the intervals for a and b must be larger beacuse they can compensate each other
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20) # the intervals for a and b must be larger beacuse they can compensate each other
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20)
+          lower <- c(0, 0, 0, 0, 0, -20)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0)
+          start <- c(max(Response), 1, 1, mean_C_mat, 0)
         }
 
         if (error_type == "Normal") {
@@ -1076,13 +1149,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "DR") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+          lower <- c(0, 0, 0, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0, rep(0, (dim(C_mat)[2] - 1)))
+          start <- c(max(Response), 1, 1, mean_C_mat, 0, rep(0, (dim(C_mat)[2] - 1)))
         }
 
         if (error_type == "Normal") {
@@ -1153,13 +1226,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.4. DL model ----
       if (interact == "DL") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, 30)
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20, 30)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20, -30)
+          lower <- c(0, 0, 0, 0, 0, -20, -30)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, 1, mean_C_mat, 0, 0)
         }
 
         if (error_type == "Normal") {
@@ -1234,13 +1307,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "none") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0)
+          lower <- c(0, 0, 0, 0)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat)
+          start <- c(max(Response), 1, mean_C_mat)
         }
 
         if (error_type == "Normal") {
@@ -1304,13 +1377,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "SA") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20)
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20)
+          lower <- c(0, 0, 0, 0, -20)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0)
         }
 
         if (error_type == "Normal") {
@@ -1375,13 +1448,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.2.3. DR model ----
       if (interact == "DR") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+          lower <- c(0, 0, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0, 0)
         }
 
         if (error_type == "Normal") {
@@ -1452,13 +1525,13 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.2.4. DL model ----
       if (interact == "DL") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, 30)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20, 30)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20, -30)
+          lower <- c(0, 0, 0, 0, -20, -30)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0, 0)
         }
 
         if (error_type == "Normal") {
@@ -1917,13 +1990,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.1. IA model ----
       if (interact == "none") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10)
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0)
+          lower <- c(0, 0, 0, 0, 0)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat)
+          start <- c(max(Response), 1, 1, mean_C_mat)
         }
         
         if (error_type == "Normal") {
@@ -1982,13 +2055,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.2. SA model ----
       if (interact == "SA") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20) # the intervals for a and b must be larger beacuse they can compensate each other
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20) # the intervals for a and b must be larger beacuse they can compensate each other
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20)
+          lower <- c(0, 0, 0, 0, 0, -20)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0)
+          start <- c(max(Response), 1, 1, mean_C_mat, 0)
         }
         
         if (error_type == "Normal") {
@@ -2053,13 +2126,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "DR") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+          lower <- c(0, 0, 0, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0, rep(0, (dim(C_mat)[2] - 1)))
+          start <- c(max(Response), 1, 1, mean_C_mat, 0, rep(0, (dim(C_mat)[2] - 1)))
         }
         
         if (error_type == "Normal") {
@@ -2126,13 +2199,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.1.4. DL model ----
       if (interact == "DL") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, 0, mean_C_mat * 10, 20, 30)
+          upper <- c(max(Response) * 5, 100, 100, mean_C_mat * 10, 20, 30)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, -100, 0, 0, -20, -30)
+          lower <- c(0, 0, 0, 0, 0, -20, -30)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, 1, mean_C_mat, 0, 0)
         }
         
         if (error_type == "Normal") {
@@ -2203,13 +2276,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "none") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0)
+          lower <- c(0, 0, 0, 0)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat)
+          start <- c(max(Response), 1, mean_C_mat)
         }
         
         if (error_type == "Normal") {
@@ -2269,13 +2342,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       if (interact == "SA") {
         
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20)
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20)
+          lower <- c(0, 0, 0, 0, -20)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0)
         }
         
         if (error_type == "Normal") {
@@ -2336,13 +2409,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.2.3. DR model ----
       if (interact == "DR") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20, rep(30, (dim(C_mat)[2] - 1)))
         } # the intervals for a and b must be larger beacuse they can compensate each other
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
+          lower <- c(0, 0, 0, 0, -20, rep(-30, (dim(C_mat)[2] - 1)))
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0, 0)
         }
         
         if (error_type == "Normal") {
@@ -2409,13 +2482,13 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
       ### 2.2.4. DL model ----
       if (interact == "DL") {
         if (missing(upper)) {
-          upper <- c(max(Response) * 5, 0, mean_C_mat * 10, 20, 30)
+          upper <- c(max(Response) * 5, 100, mean_C_mat * 10, 20, 30)
         }
         if (missing(lower)) {
-          lower <- c(0, -100, 0, 0, -20, -30)
+          lower <- c(0, 0, 0, 0, -20, -30)
         }
         if (missing(start)) {
-          start <- c(max(Response), -1, mean_C_mat, 0, 0)
+          start <- c(max(Response), 1, mean_C_mat, 0, 0)
         }
         
         if (error_type == "Normal") {

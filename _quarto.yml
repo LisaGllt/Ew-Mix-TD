@@ -27,8 +27,9 @@ book:
         - quarto/C_TD_Mix/CB_Effect_cocoons_mix_design.qmd
         - quarto/C_TD_Mix/CC_Effect_cocoons_mix_power.qmd
         - quarto/C_TD_Mix/CD_Effect_cocoons_mix_analysis_Autumn2024.qmd
-        - quarto/C_TD_Mix/CE_Effect_cocoons_mix_analysis_Spring2025.qmd
-        - quarto/C_TD_Mix/CF_Effect_cocoons_mix_analysis_otherEndpoints.qmd
+        - quarto/C_TD_Mix/CE_Comparison_Single_Mix.qmd
+        - quarto/C_TD_Mix/CF_Effect_cocoons_mix_analysis_Spring2025.qmd
+        - quarto/C_TD_Mix/CG_Effect_cocoons_mix_analysis_otherEndpoints.qmd
     - quarto/references.qmd
   navbar:
     right:

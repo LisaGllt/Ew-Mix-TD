@@ -573,6 +573,43 @@ ggsave(
   )
 ```
 
+```{r}
+# Anova model
+df_repro_alive <- df_repro_alive |> 
+  mutate(
+    Condition_f = as.factor(paste0(Molecule, Dose_plot)),
+    Molecule = as.factor(Molecule)
+  )
+
+anova.drc.r <- glm(
+  Nb_cocoons ~ Condition_f, 
+  family = poisson(link = "log"), 
+  data = df_repro_alive
+  )
+#check_model(glm_anova)
+#predict(glm_anova)
+
+# Log-vraisemblances
+LL_drc <- as.numeric(logLik(drc.mod.r))
+LL_anova <- as.numeric(logLik(anova.drc.r))
+
+# Nombre de paramètres
+k_drc <- 6
+k_anova <- attr(logLik(anova.drc.r), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_val, 4), "\n")
+```
+
 ```{r, warning=F, message=F}
 #| fig-cap: Diagnostic graphs
 #| label: fig-drcdiagg
@@ -1824,6 +1861,42 @@ ggsave(
   height = 4, 
   path=here::here("fig/Single_expo")
   )
+```
+
+```{r}
+# Anova model
+df_rates_alive <- df_rates_alive |> 
+  mutate(
+    Condition_f = as.factor(paste0(Molecule, Dose_plot)),
+    Molecule = as.factor(Molecule)
+  )
+
+anova.drc.g <- glm(
+  a ~ Condition_f, 
+  data = df_rates_alive
+  )
+#check_model(glm_anova)
+#predict(glm_anova)
+
+# Log-vraisemblances
+LL_drc <- as.numeric(logLik(drc.mod.g))
+LL_anova <- as.numeric(logLik(anova.drc.g))
+
+# Nombre de paramètres
+k_drc <- 6
+k_anova <- attr(logLik(anova.drc.g), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_val, 4), "\n")
 ```
 
 ```{r, warning=F, message=F}

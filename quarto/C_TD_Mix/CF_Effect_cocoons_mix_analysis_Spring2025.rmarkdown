@@ -1,0 +1,5329 @@
+```{r lib, include=F}
+library(here)
+source(file = here::here("functions/fun.R"))
+f_load_libraries_colors()
+
+palette <- colorRampPalette(c("#5E81AC", "#88C0D0"))
+col_mix <- Nord_polar[4]
+pal_ratio <- c("#88C0D0", col_mix, col_mix, col_mix, "#5E81AC",col_mix)
+
+
+```
+
+
+
+
+# Results of the mixture experiments : Is there an interaction between the two active substances ? {#sec-MIXSpringJonker}
+
+## Data importation
+
+
+
+
+```{r datamix, message = F, warning=F}
+
+# Value given to controls for plot
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+# Data EC50
+
+df_repro_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet = "Repro") |>
+  mutate(
+    Dose = as.numeric(Dose),
+    Dose_plot = case_when(
+      Dose == 0 ~ Val_Ctrl,
+      !(Dose == 0) ~ Dose
+    ),
+    Dose_f = as.factor(round(Dose, 4)),
+    w = w_tot / Nb_ind,
+    L = w^(1 / 3),
+  )
+# Data for EPX
+df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |>
+  mutate(Molecule = "EPX")
+# We only keep earthworms still alive at then end of the experiment
+ID_alive_EPX <- subset(df_repro_EPX, t == 28 & (!Status == "D"))$ID_cosm
+df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)
+
+# Data for IMD
+df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |>
+  mutate(Molecule = "IMD")
+# We only keep earthworms still alive at then end of the experiment
+ID_alive_IMD <- subset(df_repro_IMD, t == 28 & (!Status == "D"))$ID_cosm
+df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)
+df_repro <- rbind(df_repro_EPX, df_repro_IMD)
+df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)
+
+Control_IMD <- mean(subset(df_repro_IMD_alive, Dose == 0)$Nb_cocoons, na.rm = T)
+Control_EPX <- mean(subset(df_repro_EPX_alive, Dose == 0)$Nb_cocoons, na.rm = T)
+
+df_repro_EPX_alive <- df_repro_EPX_alive |>
+  mutate(
+    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
+  )
+
+df_repro_IMD_alive <- df_repro_IMD_alive |>
+  mutate(
+    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
+  )
+
+df_repro_alive <- df_repro_alive |>
+  mutate(
+    r_Nb_cocoons = case_when(
+      Molecule == "IMD" ~ Nb_cocoons / Control_IMD,
+      Molecule == "EPX" ~ Nb_cocoons / Control_EPX
+    ) * 100
+  )
+
+df_repro_alive_mean <- df_repro_alive |>
+  dplyr::group_by(Dose, Dose_plot, Molecule) |>
+  dplyr::summarise(
+    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
+    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Retriving EC50 
+df_drc_param <- read.csv(here::here("data/DRC_parameters_cocoons_really_used.csv"))
+EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
+IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
+
+
+# Mixture data
+
+df_mix_ind <- read_excel(here::here("data/Data_Mix.xlsx"), sheet = "ReproSpring2025weight") |>
+  mutate(
+    Condition = paste0(Ratio, Line),
+    Nb_rep = as.factor(Nb_rep),
+    w = as.numeric(w),
+    L = w^(1 / 3),
+    TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX / EPX_EC50_drc,
+    Dose_IMD_plot = case_when(
+      Dose_IMD == 0 ~ Val_Ctrl,
+      !(Dose_IMD == 0) ~ Dose_IMD
+    ),
+    Dose_EPX_plot = case_when(
+      Dose_EPX == 0 ~ Val_Ctrl,
+      !(Dose_EPX == 0) ~ Dose_EPX
+    ),
+    TU_drc_plot = case_when(
+      TU_drc == 0 ~ Val_Ctrl,
+      !(TU_drc == 0) ~ TU_drc
+    )
+  )
+
+df_mix_coc <- read_excel(here::here("data/Data_Mix.xlsx"), sheet = "ReproSpring2025coc") |>
+  mutate(
+    Condition = paste0(Ratio, Line),
+    w_coc = w_coc_tot / (Nb_cocoons - Nb_cocoons_crushed),
+    TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX / EPX_EC50_drc,
+    Dose_IMD_plot = case_when(
+      Dose_IMD == 0 ~ Val_Ctrl,
+      !(Dose_IMD == 0) ~ Dose_IMD
+    ),
+    Dose_EPX_plot = case_when(
+      Dose_EPX == 0 ~ Val_Ctrl,
+      !(Dose_EPX == 0) ~ Dose_EPX
+    ),
+    TU_drc_plot = case_when(
+      TU_drc == 0 ~ Val_Ctrl,
+      !(TU_drc == 0) ~ TU_drc
+    )
+  )
+
+df_coc_mean_controls <- subset(df_mix_coc, Dose_IMD == 0 & Dose_EPX == 0) |> 
+  aggregate(Nb_cocoons ~ Lot, FUN = mean)
+
+Mean_coc_controls <- mean(subset(df_mix_coc, Dose_IMD == 0 & Dose_EPX == 0)$Nb_cocoons)
+
+#Shift <- 1e-6
+
+df_mix_coc <- df_mix_coc |> 
+  mutate(
+    r_Nb_cocoons = Nb_cocoons/Mean_coc_controls
+    )
+
+df_mix_coc <- df_mix_coc |>
+  mutate(
+    Trans_r_Nb_cocoons = sqrt(r_Nb_cocoons)
+    )
+
+df_conc_mix <- df_mix_coc |> 
+  dplyr::select(Condition, Dose_IMD, Dose_EPX)%>%
+  distinct(Condition, .keep_all = TRUE)
+
+df_mix_cocsize <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025cocsize") |> 
+  mutate(
+    Condition = paste0(Ratio, Line),
+    v_coc = 4/3*pi*(Coc_height/2)*(Coc_width/2)^2,
+  ) |> 
+  left_join(df_conc_mix, by = "Condition") |> 
+  mutate(TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX/EPX_EC50_drc)
+
+df_mix_cocsize_cosm <- df_mix_cocsize |> 
+  aggregate(v_coc ~ Ratio + Line + Nb_rep + TU_drc, FUN = mean) |> 
+  mutate(Condition = paste0(Ratio, Line))
+
+df_mix_coc <- df_mix_coc |> 
+  full_join(df_mix_cocsize_cosm, by = c("Condition", "Nb_rep", "Ratio", "Line", "TU_drc")) |> 
+  mutate(
+    Id_Cond = w_coc/v_coc
+    )
+
+df_mix_coc_mean <- df_mix_coc |>
+  dplyr::group_by(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc) |>
+  dplyr::summarise(
+    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
+    w_coc = mean(w_coc, na.rm = TRUE),
+    v_coc = mean(v_coc, na.rm = TRUE),
+    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
+    Trans_r_Nb_cocoons = mean(Trans_r_Nb_cocoons, na.rm = TRUE),
+    #Nb_cocoons_normalized = mean(Nb_cocoons_normalized, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+df_mix_coc_IMD_mean <- subset(df_mix_coc_mean, Dose_EPX ==0)
+df_mix_coc_EPX_mean <- subset(df_mix_coc_mean, Dose_IMD ==0)
+
+
+
+df_mix_coc_sd <- df_mix_coc |>
+  dplyr::group_by(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc) |>
+  dplyr::summarise(
+    Nb_cocoons = sd(Nb_cocoons, na.rm = TRUE),
+    w_coc = sd(w_coc, na.rm = TRUE),
+    v_coc = sd(v_coc, na.rm = TRUE),
+    r_Nb_cocoons = sd(r_Nb_cocoons, na.rm = TRUE),
+    Trans_r_Nb_cocoons = sd(Trans_r_Nb_cocoons, na.rm = TRUE),
+    #Nb_cocoons_normalized = mean(Nb_cocoons_normalized, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+df_mix_coc_cv <- df_mix_coc_mean |>
+  dplyr::rename_with(~ paste0(.x, "_mean"), -c(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc)) |>
+  dplyr::left_join(
+    df_mix_coc_sd |> 
+      dplyr::rename_with(~ paste0(.x, "_sd"), -c(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc)),
+    by = c("Condition", "Dose_IMD", "Dose_EPX", "Dose_IMD_plot", "Dose_EPX_plot", "Ratio", "Line", "TU_drc")
+  ) |>
+  dplyr::mutate(
+    CV_Nb_cocoons = Nb_cocoons_sd / Nb_cocoons_mean,
+    CV_w_coc = w_coc_sd / w_coc_mean,
+    CV_v_coc = v_coc_sd / v_coc_mean,
+    CV_r_Nb_cocoons = r_Nb_cocoons_sd / r_Nb_cocoons_mean,
+    CV_Trans_r_Nb_cocoons = Trans_r_Nb_cocoons_sd / Trans_r_Nb_cocoons_mean
+  )
+
+# mean(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
+# min(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
+# max(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
+# median(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
+
+```
+
+
+
+
+## Initial state
+
+We can first take a look at the initial weights of individuals (@fig-init).
+
+
+
+
+```{r D0, warning=F, message=F}
+#| fig-cap: Initial weights of earthworms according to batches. 
+#| label: fig-init
+#| fig-width: 10
+#| fig-height: 4
+
+pal_lot <- c(Nord_frost[3], Nord_polar[4])
+
+# Weights at t=0
+p <- ggplot(
+  data=subset(df_mix_ind,t==0), 
+  aes(
+    x=Condition, 
+    y=w
+    )
+  )+
+
+  geom_boxplot(
+    alpha=0.2,
+    color = Nord_polar[1]
+    )+
+  geom_dotplot(
+    aes(
+    color=Lot, 
+    fill=Lot
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    dotsize=0.5, 
+    alpha=0.7
+    )+
+  
+  scale_color_manual(values=pal_lot)+
+  scale_fill_manual(values=pal_lot)+
+
+  labs(x="Condition", y="Weight (mg)")+
+  
+
+  theme_classic(12)+
+  theme(
+    #legend.position = "none", 
+    legend.title=element_text(size=sizetitle-2,face="bold"),
+    legend.text = element_text(size=sizetitle-2,face="plain"),
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size=sizetitle,face="plain"),
+    
+    #axis.text.x = element_blank(),
+    axis.line.x=element_blank(),
+    axis.ticks.x=element_blank(),
+    
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+    )
+p
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_initial_weights_Spring.png",
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_initial_weights_Spring.jpg",
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_initial_weights_Spring.svg",
+  plot=p, 
+  width=8, 
+  height = 4, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+## Step 1 - Dose-response curves from the mixture data
+
+We need to note that the number of produced cocoons `Nb_cocoons` is a count variable that follows a Poisson distribution. Models will have to be made accordingly.
+
+### Dose-response curves for single-substances (Ratio E & I)
+
+
+
+
+```{r drcmixratios, warning=F, message=F}
+
+df_mix_coc_IMD <- subset(df_mix_coc, Ratio %in% c("I", "N")) |> 
+  mutate(
+    Dose = Dose_IMD,
+    Dose_plot = Dose_IMD_plot,
+    Molecule = "IMD"
+    ) |> 
+  dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule, Line)
+
+# We do not take the controls into account twice
+df_mix_coc_EPX <- subset(df_mix_coc, Ratio  %in% c("E")) |> 
+  mutate(
+    Dose = Dose_EPX,
+    Dose_plot = Dose_EPX_plot,
+    Molecule = "EPX"
+    ) |>  
+  dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule, Line)
+
+df_mix_coc_EPX_plot <- subset(df_mix_coc, Ratio  %in% c("E", "N")) |>
+  mutate(
+    Dose = Dose_EPX,
+    Dose_plot = Dose_EPX_plot,
+    Molecule = "EPX"
+    ) |>
+  dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule)
+
+df_mix_coc_single <- rbind(df_mix_coc_IMD, df_mix_coc_EPX) |> 
+  filter(!(Line %in% c(2)))
+
+df_mix_coc_single_mean <- df_mix_coc_single |> 
+  aggregate(Nb_cocoons ~ Dose+Molecule, mean)
+
+Dose_x <- expand.grid(
+  exp(
+    seq(
+      log(Val_Ctrl),log(5000),
+      by=(log(5000)-log(Val_Ctrl))/100
+    )
+  )
+)
+
+# Common Ymax and slope
+drc.mix.IE<- drm(
+  Nb_cocoons~Dose, Molecule, 
+  data = df_mix_coc_single,
+  type="Poisson",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(1, 1, Molecule)
+)
+
+CI.mix.IE <- data.frame(
+  Dose = c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+)
+
+pm.mix.IE <- predict(drc.mix.IE, newdata=CI.mix.IE, interval="confidence")
+CI.mix.IE$p <- pm.mix.IE[,1]
+CI.mix.IE$pmin <- pm.mix.IE[,2]
+CI.mix.IE$pmax <- pm.mix.IE[,3]
+
+Hill.mix.IE <- function(Dose, Molecule){
+  
+  i <- 0
+  if(Molecule == "IMD"){i <- 1}
+  
+  Y_min <- 0
+  slope <- coef(drc.mix.IE)[1]
+  Y_max <- coef(drc.mix.IE)[2]
+  EC50 <- coef(drc.mix.IE)[3+i]
+  
+  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(Dose)-log(EC50)))))
+}
+EPX_EC50_mix.IE <- coef(drc.mix.IE)[3]
+IMD_EC50_mix.IE <- coef(drc.mix.IE)[4]
+
+df_mix_coc <- df_mix_coc |> 
+  mutate(
+    TU_mix = Dose_IMD/IMD_EC50_mix.IE + Dose_EPX/EPX_EC50_mix.IE,
+    TU_mix_plot = case_when(
+      TU_mix == 0 ~ Val_Ctrl,
+      !(TU_mix == 0) ~ TU_mix
+    )
+    )
+
+df_mix_coc_mean <- df_mix_coc_mean |> 
+  mutate(
+    TU_mix = Dose_IMD/IMD_EC50_mix.IE + Dose_EPX/EPX_EC50_mix.IE,
+    TU_mix_plot = case_when(
+      TU_mix == 0 ~ Val_Ctrl,
+      !(TU_mix == 0) ~ TU_mix
+    )
+    )
+
+summary(drc.mix.IE)
+
+est <- coef(drc.mix.IE)
+ci <- confint(drc.mix.IE)
+params_tab <- data.frame(
+  estimate  = unname(est),
+  CI_lower  = ci[,1],
+  CI_upper  = ci[,2]
+)
+
+params_tab
+
+```
+
+
+
+
+We can consider that the slope is the same if there is not difference between this model and a model without common slope.
+
+
+
+
+```{r verifcommonslopes, warning=F, message=F}
+drc.mix.IE_notcommonslope<- drm(
+  Nb_cocoons~Dose, Molecule, 
+  data = df_mix_coc_single,
+  type="Poisson",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(Molecule, 1, Molecule)
+)
+
+anova(drc.mix.IE_notcommonslope, drc.mix.IE, test="F")
+
+```
+
+
+
+
+Which is the case here.
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common $Y_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
+#| label: fig-drcIMDEPXmixr
+#| fig-width: 8
+#| fig-height: 4
+
+x <- seq(Val_Ctrl, 5000, 0.01)
+line_width <- 1.2
+ymax <- 22.5
+
+p_I <- ggplot()+
+  geom_ribbon(
+    data = subset(CI.mix.IE, Molecule == "IMD"), 
+    aes(
+      x = Dose, 
+      y = p, 
+      ymin = pmin, 
+      ymax = pmax
+      ), 
+    alpha=0.2,
+    fill = col_IMD
+    )+
+  geom_line(
+    data = subset(CI.mix.IE, Molecule == "IMD"), 
+    aes(
+      x=Dose, 
+      y=p
+    ), 
+    color=col_IMD, 
+    linewidth=line_width
+  )+
+  geom_point(
+    data = df_mix_coc_IMD, 
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_IMD,
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_IMD_mean, 
+    aes(x = Dose_IMD_plot, y = Nb_cocoons),
+    color = col_IMD,
+    size = 3
+  )+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  ylim(NA, ymax)+
+  labs(
+    x = "Concentration of IMD (mg/kg)",
+    y = "Cocoon production (#)"
+  )+
+  theme_bw()
+
+p_E <- ggplot()+
+  geom_ribbon(
+    data = subset(CI.mix.IE, Molecule == "EPX"), 
+    aes(
+      x = Dose, 
+      y = p, 
+      ymin = pmin, 
+      ymax = pmax
+    ), 
+    alpha=0.2,
+    fill = col_EPX,
+    #color = col_IMD
+  )+
+  geom_line(
+    data = subset(CI.mix.IE, Molecule == "EPX"), 
+    aes(
+      x=Dose, 
+      y=p
+    ), 
+    color=col_EPX, 
+    linewidth=line_width
+  )+
+  geom_point(
+    data = df_mix_coc_EPX_plot, 
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_EPX,
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_EPX_mean, 
+    aes(x = Dose_EPX_plot, y = Nb_cocoons),
+    color = col_EPX,
+    size = 3
+  )+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  ylim(NA, ymax)+
+  labs(
+     x = "Concentration of EPX (mg/kg)",
+    y = "Cocoon production (#)"
+  )+
+  theme_bw()
+
+p <- p_I + p_E
+p
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_cocoons_drcmix.png", 
+  plot=p, 
+  width=8, height = 4, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_cocoons_drcmix.jpg", 
+  plot=p, 
+  width=8, height = 4, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+We need to perform a lake of fit test for these dose-response curves.
+
+
+
+
+```{r}
+# Anova model
+df_mix_coc_single <- df_mix_coc_single |> 
+  mutate(
+    Condition_f = as.factor(paste0(Molecule, Dose_plot)),
+    Molecule = as.factor(Molecule)
+  )
+
+anova.IE <- glm(
+  Nb_cocoons ~ Condition_f, 
+  family = poisson(link = "log"), 
+  data = df_mix_coc_single
+  )
+#check_model(glm_anova)
+#predict(glm_anova)
+
+# Likelihoods
+LL_drc <- as.numeric(logLik(drc.mix.IE))
+LL_anova <- as.numeric(logLik(anova.IE))
+
+# Number of parameters
+k_drc <- 4
+k_anova <- attr(logLik(anova.IE), "df")
+
+# Likelihood ratio test
+# H0 : drc model is acceptable 
+# H1 : ANOVA model has a better fit
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_val, 4), "\n")
+
+# If p-val < 0.05, we cannot reject H1 = Anova model 
+```
+
+```{r}
+
+df_pred_drc.mix.IE <- cbind(
+  df_mix_coc_single, 
+  predict(
+    drc.mix.IE
+    ),
+  predict(
+    anova.IE,
+    type = "response"
+    )
+  ) |> 
+  mutate(
+    Pred_drc = `predict(drc.mix.IE)`,
+    Pred_anova = `predict(anova.IE, type = "response")`
+    )
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+xmin <- 0.1
+xmax <- 15
+step <- 0.5
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_drc_against_anova <- ggplot()+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  geom_point(
+    data = df_pred_drc.mix.IE,
+    aes(
+      x = Pred_anova, 
+      y = Pred_drc,
+      color = Molecule
+    )
+    )+
+  labs(
+    x = "Prédiction de l'anova",
+    y = "Prédiction de drc"
+  )+
+  scale_color_manual(values = col_molec)+
+  scale_x_log10()+
+  scale_y_log10()+
+  theme_minimal()
+
+#p_drc_against_anova
+
+```
+
+
+
+
+These dose-response curves will be used for the simple interaction model of Jonker.
+
+### Dose-response curves for each ratio
+
+We can visualise the results of the experiment by looking at the resulting dose-response curves for each mixture ratio.
+
+
+
+
+```{r, warning=F, message=F}
+Dose_x <- expand.grid(
+  exp(
+    seq(
+      log(0.0001),log(5000),
+      by=(log(5000)-log(0.0001))/1000
+    )
+  )
+)
+
+# Common Ymax
+drc.ratios<- drm(
+  Nb_cocoons~TU_mix, Ratio, 
+  data = df_mix_coc,
+  type="Poisson",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(Ratio, 1, Ratio)
+)
+
+CI.ratios <- data.frame(
+  TU_mix = c(rep(Dose_x$Var1,1)),
+  Ratio = c(rep("E", length(Dose_x$Var1)), 
+             rep("F", length(Dose_x$Var1)),
+             rep("G", length(Dose_x$Var1)), 
+             rep("H", length(Dose_x$Var1)), 
+             rep("I", length(Dose_x$Var1))
+             )
+)
+
+pm.ratios <- predict(drc.ratios, newdata=CI.ratios, interval="confidence")
+CI.ratios$p <- pm.ratios[,1]
+CI.ratios$pmin <- pm.ratios[,2]
+CI.ratios$pmax <- pm.ratios[,3]
+
+summary(drc.ratios)
+```
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves obtained for each mixture ratio. The lines represent the dose-response curves obtained (with common Ymax and Ymin set to 0). Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratios
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+
+Ratio_E <- "1:0 (EPX only)"
+Ratio_I <- "0:1 (IMD only)"
+Ratio_F <- "3:1"
+Ratio_G <- "1:1"
+Ratio_H <- "1:3"
+
+df_mix_coc_mean_I <- subset(df_mix_coc_mean, Ratio %in% c("I", "N")) |> 
+  mutate(Ratio_plot = Ratio_I)
+df_mix_coc_mean_H <- subset(df_mix_coc_mean, Ratio %in% c("H", "N")) |> 
+  mutate(Ratio_plot = Ratio_H)
+df_mix_coc_mean_G <- subset(df_mix_coc_mean, Ratio %in% c("G", "N")) |> 
+  mutate(Ratio_plot = Ratio_G)
+df_mix_coc_mean_F <- subset(df_mix_coc_mean, Ratio %in% c("F", "N")) |> 
+  mutate(Ratio_plot = Ratio_F)
+df_mix_coc_mean_E <- subset(df_mix_coc_mean, Ratio %in% c("E", "N")) |> 
+  mutate(Ratio_plot = Ratio_E)
+
+df_mix_coc_mean_plotdrc <- rbind(
+  df_mix_coc_mean_I,
+  df_mix_coc_mean_H,
+  df_mix_coc_mean_G,
+  df_mix_coc_mean_F,
+  df_mix_coc_mean_E
+) |> 
+  mutate(
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+
+df_mix_coc_I <- subset(df_mix_coc, Ratio %in% c("I", "N")) |> 
+  mutate(Ratio_plot = Ratio_I)
+df_mix_coc_H <- subset(df_mix_coc, Ratio %in% c("H", "N")) |> 
+  mutate(Ratio_plot = Ratio_H)
+df_mix_coc_G <- subset(df_mix_coc, Ratio %in% c("G", "N")) |> 
+  mutate(Ratio_plot = Ratio_G)
+df_mix_coc_F <- subset(df_mix_coc, Ratio %in% c("F", "N")) |> 
+  mutate(Ratio_plot = Ratio_F)
+df_mix_coc_E <- subset(df_mix_coc, Ratio %in% c("E", "N")) |> 
+  mutate(Ratio_plot = Ratio_E)
+
+df_mix_coc_plotdrc <- rbind(
+  df_mix_coc_I,
+  df_mix_coc_H,
+  df_mix_coc_G,
+  df_mix_coc_F,
+  df_mix_coc_E
+)|> 
+  mutate(
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+
+CI.ratios <- CI.ratios |> 
+  mutate(
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I,
+      )
+    )|> 
+  mutate(
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+
+size_axistitle <- 11
+
+library(ggh4x)
+
+p_full <- ggplot() +
+  geom_ribbon(
+    data = CI.ratios, 
+    aes(
+      x = TU_mix, 
+      y = p, 
+      ymin = pmin, 
+      ymax = pmax, 
+      fill = Ratio_plot
+      ), 
+    alpha = 0.2
+  ) +
+  geom_line(
+    data = CI.ratios, 
+    aes(
+      x = TU_mix, 
+      y = p, 
+      color = Ratio_plot, 
+      fill = Ratio_plot
+      ), 
+    linewidth = line_width
+  ) +
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot, 
+      y = Nb_cocoons, 
+      color = Ratio_plot, 
+      fill = Ratio_plot
+      ),
+    alpha = 0.6, shape = 4
+  ) +
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot, 
+      y = Nb_cocoons, 
+      color = Ratio_plot, 
+      fill = Ratio_plot
+      ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+p_comp <- ggplot()+
+
+  geom_line(
+    data = CI.ratios, 
+    aes(
+      x=TU_mix, 
+      y=p,
+      color=Ratio_plot,
+      fill = Ratio_plot
+    ), 
+    linewidth=line_width
+  )+
+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+p <- p_full + 
+  inset_element(
+    p_comp,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_cocoons_drcRatios.png", 
+  plot=p, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_cocoons_drcRatios.jpg", 
+  plot=p, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+# ggsave(
+#   filename="Mix_spring_cocoons_drcRatios.svg", 
+#   plot=p, 
+#   width=6, height = 6, 
+#   path=here::here("fig/Mixture")
+#   )
+```
+
+
+
+
+The dose-response curves per ratio do not differ widely visually. An important interaction is not to be expected.
+
+
+
+
+```{r}
+# Anova model
+df_mix_coc <- df_mix_coc |> 
+  mutate(
+    Condition_f = as.factor(paste0(Ratio, Line))
+  )
+
+anova.ratios <- glm(
+  Nb_cocoons ~ Condition_f, 
+  family = poisson(link = "log"), 
+  data = df_mix_coc
+  )
+#check_model(glm_anova)
+#predict(glm_anova)
+
+# Likelihoods
+LL_drc <- as.numeric(logLik(drc.ratios))
+LL_anova <- as.numeric(logLik(anova.ratios))
+
+# Number of parameters
+k_drc <- 11
+k_anova <- attr(logLik(anova.ratios), "df")
+
+# Likelihood ratio test
+# H0 : drc model is acceptable 
+# H1 : ANOVA model has a better fit
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc)
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_val, 4), "\n")
+
+# If p-val < 0.05, we cannot reject H1 = Anova model 
+```
+
+
+
+
+## Step 2 - Fit of the model to our data
+
+The different Jonker models can be fit to our data.
+
+
+
+
+```{r modelsentry, warning=F, message=F}
+
+# Preparation of model entry
+
+df_design <- read.csv(here::here("data/Design_mixture.csv"))
+
+slope <- coef(drc.mix.IE)[1]
+Y_max <- coef(drc.mix.IE)[2]
+EPX_EC50 <- coef(drc.mix.IE)[3]
+IMD_EC50 <- coef(drc.mix.IE)[4]
+Y_min <- 0
+
+C_mat = cbind(df_design$EPX,df_design$IMD)
+Max = Y_max
+Slopes = c(slope, slope)
+Ec50s = c(EPX_EC50, IMD_EC50)
+
+param <- data.frame(Slopes=Slopes, Max=Max, Ec50s=Ec50s)
+
+min_dose_EPX <- min(subset(df_design, !EPX==0)$EPX)
+max_dose_EPX <- max(subset(df_design, !EPX==0)$EPX)
+
+min_dose_IMD <- min(subset(df_design, !IMD==0)$IMD)
+max_dose_IMD <- max(subset(df_design, !IMD==0)$IMD)
+
+by_EPX <- (log(max_dose_EPX)-log(min_dose_EPX))/100
+by_IMD <- (log(max_dose_IMD)-log(min_dose_IMD))/100
+
+# Créer une grille pour x et y en utilisant expand.grid
+grid_C1 <- exp(seq(log(min_dose_EPX), log(max_dose_EPX), by = by_EPX))
+grid_C2 <- exp(seq(log(min_dose_IMD), log(max_dose_IMD), by = by_IMD))
+grid <- expand.grid(
+  x = grid_C1, 
+  y = grid_C2
+  )
+
+# !!!!!!!!!!!!!!!!!!!! REVOIR LES POINTS A FILTER !!!!!!!!!!!!!!!!!
+
+df_mix_coc_int <- df_mix_coc |> 
+  mutate(Response = Nb_cocoons) |> 
+  dplyr::select(Dose_EPX, Dose_IMD, Response, Line, Ratio, TU_mix, TU_drc, Nb_rep) |> 
+  as.data.frame() |> 
+  filter(!(Dose_IMD == 0 & Dose_EPX == 0)) #|> 
+  # filter(!(Line ==2))
+  #  #filter(!(Ratio == "I" & Line == 6)) |> 
+  # # filter(!(Ratio == "H" & Line == 6)) |>
+  # # filter(!(Ratio == "G" & Line == 7)) |> 
+  # # filter(!(Ratio == "F" & Line == 6)) |>
+  # # filter(!(Ratio == "I" & Line == 7)) |>
+  #  #filter(!(Ratio == "F" & Line == 7))
+```
+
+```{r ModelsFit, warning=F, message=F}
+
+signif_LL <- 5 # Significative digits for LL printing
+
+######## CA ##################################################################
+
+CA_fit <- data.frame(Error = NA)
+CA_fit$Error <- CA_complete2_Poisson(
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  Max = Max, 
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact="none",                                                # <1>
+  multicore = TRUE, 
+  mc.cores = 4
+)
+
+LogLikelihood_CA <- -CA_fit$Error 
+
+CA_fit$a <- NA
+CA_fit$b <- NA
+CA_fit$Type <- "CA"
+CA_fit$Ref <- "CA"
+
+CA_fit <- CA_fit |> 
+  as.data.frame()
+
+######## IA ##################################################################
+
+IA_fit <- data.frame(Error = NA)
+IA_fit$Error <- IA_complete2_Poisson(
+  C_mat=cbind(                                                  
+    df_mix_coc_int$Dose_EPX,                                    
+    df_mix_coc_int$Dose_IMD                                      
+    ),                                                          
+  Response=df_mix_coc_int$Response,                              
+  Max = Max, 
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact="none"
+)
+
+LogLikelihood_IA <- -IA_fit$Error 
+
+IA_fit$a <- NA
+IA_fit$b <- NA
+IA_fit$Type <- "IA"
+IA_fit$Ref <- "IA"
+
+IA_fit <- IA_fit |> 
+  as.data.frame()
+
+######## CASA ##################################################################
+
+CASA_fit<-CA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="SA",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+CASA_fit$Type <- "SA"
+CASA_fit$Ref <- "CA"
+
+LogLikelihood_CASA <- -CASA_fit$Error                              
+a_CASA <- CASA_fit$a
+CASA_fit$b <- NA
+# Printing results
+a_CASA_print <- signif(a_CASA, 3)
+LogLikelihood_CASA_print <- signif(LogLikelihood_CASA, signif_LL)
+
+######## IASA ##################################################################
+
+IASA_fit<-IA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="SA",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+IASA_fit$Type <- "SA"
+IASA_fit$Ref <- "IA"
+
+LogLikelihood_IASA <- -IASA_fit$Error                              
+a_IASA <- IASA_fit$a
+IASA_fit$b <- NA
+# Printing results
+a_IASA_print <- signif(a_IASA, 3)
+LogLikelihood_IASA_print <- signif(LogLikelihood_IASA, signif_LL)
+
+######## CADL ##################################################################
+
+CADL_fit<-CA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="DL",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+CADL_fit$Type <- "DL"
+CADL_fit$Ref <- "CA"
+
+LogLikelihood_CADL <- -CADL_fit$Error
+a_CADL <- CADL_fit$a
+b_CADL <- CADL_fit$b
+# Printing results
+a_CADL_print <- signif(a_CADL, 3)
+b_CADL_print <- signif(b_CADL, 3)
+LogLikelihood_CADL_print <- signif(LogLikelihood_CADL, signif_LL)
+
+######## IADL ##################################################################
+
+IADL_fit<-IA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="DL",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+IADL_fit$Type <- "DL"
+IADL_fit$Ref <- "IA"
+
+LogLikelihood_IADL <- -IADL_fit$Error
+a_IADL <- IADL_fit$a
+b_IADL <- IADL_fit$b
+# Printing results
+a_IADL_print <- signif(a_IADL, 3)
+b_IADL_print <- signif(b_IADL, 3)
+LogLikelihood_IADL_print <- signif(LogLikelihood_IADL, signif_LL)
+
+######## CADR ##################################################################
+
+CADR_fit<-CA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="DR",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+CADR_fit$Type <- "DR"
+CADR_fit$Ref <- "CA"
+
+LogLikelihood_CADR <- -CADR_fit$Error
+a_CADR <- CADR_fit$a
+b_CADR <- CADR_fit$b
+# Printing results
+a_CADR_print <- signif(a_CADR, 3)
+b_CADR_print <- signif(b_CADR, 3)
+LogLikelihood_CADR_print <- signif(LogLikelihood_CADR, signif_LL)
+
+######## IADR ##################################################################
+
+IADR_fit<-IA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="DR",                                                  # <1>
+  param=param,                                                    # <1>
+  error_type = "Poisson",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+IADR_fit$Type <- "DR"
+IADR_fit$Ref <- "IA"
+
+LogLikelihood_IADR <- -IADR_fit$Error
+a_IADR <- IADR_fit$a
+b_IADR <- IADR_fit$b
+# Printing results
+a_IADR_print <- signif(a_IADR, 3)
+b_IADR_print <- signif(b_IADR, 3)
+LogLikelihood_IADR_print <- signif(LogLikelihood_IADR, signif_LL)
+
+```
+
+```{r CI, message=F, warning=F}
+
+N_draws <- 2000
+
+# CI_CASA <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "SA",
+#   reference = "CA",
+#   error_type = "Poisson"
+#     )
+
+#save(CI_CASA, file = here::here("mod/CI_cond_CASA.RData"))
+
+load(here::here("mod/CI_cond_CASA.RData"))
+
+# CI_CADL <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "DL",
+#   reference = "CA",
+#   error_type = "Poisson"
+#     )
+# 
+# save(CI_CADL, file = here::here("mod/CI_cond_CADL.RData"))
+# 
+load(here::here("mod/CI_cond_CADL.RData"))
+
+# CI_CADR <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "DR",
+#   reference = "CA",
+#   error_type = "Poisson"
+#     )
+# 
+# save(CI_CADR, file = here::here("mod/CI_cond_CADR.RData"))
+# 
+load(here::here("mod/CI_cond_CADR.RData"))
+
+
+# CI_IASA <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "SA",
+#   reference = "IA",
+#   error_type = "Poisson"
+#     )
+
+#save(CI_IASA, file = here::here("mod/CI_cond_IASA.RData"))
+
+load(here::here("mod/CI_cond_IASA.RData"))
+
+# CI_IADL <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "DL",
+#   reference = "IA",
+#   error_type = "Poisson"
+#     )
+# 
+# save(CI_IADL, file = here::here("mod/CI_cond_IADL.RData"))
+# 
+load(here::here("mod/CI_cond_IADL.RData"))
+
+# CI_IADR <- f_Jonker_CI_calculations_condition(
+#   df_data = df_mix_coc_int,
+#   N_draws = N_draws,
+#   interact = "DR",
+#   reference = "IA",
+#   error_type = "Poisson"
+#     )
+# 
+# save(CI_IADR, file = here::here("mod/CI_cond_IADR.RData"))
+# 
+load(here::here("mod/CI_cond_IADR.RData"))
+```
+
+```{r resJonker, warning=F, message=F}
+df_Jonker <- rbind(CA_fit, CASA_fit, CADL_fit, CADR_fit, IA_fit, IASA_fit, IADL_fit, IADR_fit) |> 
+  as.data.frame() |> 
+  mutate(Likelihood = Error)
+
+df_Jonker$a_2.5 <- c(NA, CI_CASA$a_2.5, CI_CADL$a_2.5, CI_CADR$a_2.5, 
+                     NA, CI_IASA$a_2.5, CI_IADL$a_2.5, CI_IADR$a_2.5)
+df_Jonker$a_97.5 <- c(NA, CI_CASA$a_97.5, CI_CADL$a_97.5, CI_CADR$a_97.5, 
+                      NA, CI_IASA$a_97.5, CI_IADL$a_97.5, CI_IADR$a_97.5)
+df_Jonker$b_2.5 <- c(NA, CI_CASA$b_2.5, CI_CADL$b_2.5, CI_CADR$b_2.5, 
+                     NA, CI_IASA$b_2.5, CI_IADL$b_2.5, CI_IADR$b_2.5)
+df_Jonker$b_97.5 <- c(NA, CI_CASA$b_97.5, CI_CADL$b_97.5, CI_CADR$b_97.5, 
+                      NA, CI_IASA$b_97.5, CI_IADL$b_97.5, CI_IADR$b_97.5)
+
+df_Jonker <- df_Jonker[, c("Type", "a", "a_2.5", "a_97.5",
+                           "b", "b_2.5", "b_97.5", "Likelihood", "Ref")]
+
+df_Jonker |> datatable(options = list(dom = 't'), class="hover") |> 
+  formatSignif(columns = c("a", "a_2.5", "a_97.5", "b", "b_2.5", "b_97.5", "Likelihood"), c(4, 4, 4, 4, 4, 4,7))
+
+```
+
+
+
+
+## Step 3 - Test of models
+
+We need first to test the acceptability of the CA and IA model against an anova model.
+
+Creation of the anova model :
+
+
+
+
+```{r}
+# !!!!!!!!!!!!!!!!!!!! REVOIR LES POINTS A FILTER !!!!!!!!!!!!!!!!!
+
+# Anova model
+df_mix_coc_int_anova <- df_mix_coc_int |> 
+  mutate(
+    Dose_EPX_f = as.factor(Dose_EPX),
+    Dose_IMD_f = as.factor(Dose_IMD),
+    Dose_IMD_EPX_f = paste0(Dose_EPX_f, Dose_IMD_f)
+  ) # |> 
+  # filter(!(Line ==2))
+  # filter(!(Ratio == "I" & Line == 6)) |> 
+  # filter(!(Ratio == "H" & Line == 6)) |>
+  # filter(!(Ratio == "F" & Line == 6)) |>
+  # filter(!(Ratio == "G" & Line == 7)) |>
+  # filter(!(Ratio == "I" & Line == 7)) |>
+  # filter(!(Ratio == "F" & Line == 7))
+
+# The anova model 
+anova.mix <- glm(
+  Response ~ Dose_IMD_EPX_f, 
+  family = poisson(link = "log"), 
+  data = df_mix_coc_int_anova
+  )
+#check_model(glm_anova)
+#predict(glm_anova)
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CA
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+```
+
+```{r FtestIAanova, warning=F, message=F}
+# Log-vraisemblances
+LL_drc <- LogLikelihood_IA
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+```
+
+```{r FtestCASAanova, warning=F, message=F}
+LL1 <- LogLikelihood_anova    # log-vraisemblance du modèle CA
+LL0 <- LogLikelihood_CASA    # log-vraisemblance du modèle SA (CA reference)
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CASA
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+```
+
+```{r FtestIASAanova, warning=F, message=F}
+
+# Log-vraisemblances
+#LL_drc <- LogLikelihood_IASA
+LL_drc <- LogLikelihood_IADR
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+```
+
+```{r}
+
+C_mat=cbind(                                            
+    df_mix_coc_int$Dose_EPX,                             
+    df_mix_coc_int$Dose_IMD
+    ) 
+  
+
+# Calculation of effects for the design concentrations 
+res_CA <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+res_CASA <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="SA",
+  a = CASA_fit$a
+  )
+
+res_IA <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+res_IASA <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="SA",
+  a = IASA_fit$a
+  )
+
+
+df_pred_anova.mix <- predict(
+    anova.mix,
+    type = "response"
+  )
+
+# We add the corresponding response to our design
+df_predobs_CA <- cbind(df_mix_coc_int%>%
+  mutate(Predicted=res_CA), df_pred_anova.mix) |> 
+  mutate(Pred_anova = df_pred_anova.mix)
+df_predobs_CASA <- cbind(df_mix_coc_int%>%
+  mutate(Predicted=res_CASA), df_pred_anova.mix) |> 
+  mutate(Pred_anova = df_pred_anova.mix)
+
+df_predobs_IA <- cbind(df_mix_coc_int%>%
+  mutate(Predicted=res_IA), df_pred_anova.mix) |> 
+  mutate(Pred_anova = df_pred_anova.mix)
+df_predobs_IASA <- cbind(df_mix_coc_int%>%
+  mutate(Predicted=res_IASA), df_pred_anova.mix) |> 
+  mutate(Pred_anova = df_pred_anova.mix)
+```
+
+```{r}
+df_predobs_CA_trunc <- df_predobs_CA 
+
+fact_1 <- 2
+fact_2 <- 5
+
+seq_line <- seq(0.1, 20, 0.1)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+
+p_pred_anova_CA <- ggplot()+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x1, y=y1), 
+    linetype="dashed"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x_1, y=y_1), 
+    linetype="dashed"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x2, y=y2), 
+    linetype="dotted"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x_2, y=y_2), 
+    linetype="dotted"
+    )+
+  geom_point(
+    data = df_predobs_CA_trunc,
+    aes(
+      y = Pred_anova,
+      x = Predicted,
+      color = as.factor(Line), 
+      shape = Ratio,
+      size = 1.2
+    )
+  )+
+  geom_point(
+    data = df_predobs_CA_trunc,
+    aes(
+      y = Response,
+      x = Predicted,
+      color = as.factor(Line), 
+      shape = Ratio,
+      alpha =0.7
+    )
+  )+
+  labs(
+    x = "Prédiction de l'anova",
+    y = "Prédiction de CA"
+  )+
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_x_log10()+
+  scale_y_log10()+
+  theme_minimal()
+p_pred_anova_CA
+
+# p_pred_response_CA <- ggplot(
+#   data = df_predobs_CA_trunc,
+#   aes(
+#     x = Response,
+#     y = Predicted,
+#     color = as.factor(Line), 
+#     shape = Ratio
+#   )
+# )+
+#   geom_point()+
+#   labs(
+#     x = "Prédiction de l'anova",
+#     y = "Prédiction de CA"
+#   )+
+#   geom_abline(
+#     slope=1, 
+#     intercept = 0, 
+#     color = col_line0,
+#     linewidth = 1
+#     )+
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   theme_minimal()
+# p_pred_response_CA
+# 
+# p_pred_response_Anova <- ggplot(
+#   data = df_predobs_CA_trunc,
+#   aes(
+#     x = Response,
+#     y = Pred_anova,
+#     color = as.factor(Line), 
+#     shape = Ratio
+#   )
+# )+
+#   geom_point()+
+#   labs(
+#     x = "Prédiction de l'anova",
+#     y = "Prédiction de CA"
+#   )+
+#   geom_abline(
+#     slope=1, 
+#     intercept = 0, 
+#     color = col_line0,
+#     linewidth = 1
+#     )+
+#   scale_x_log10()+
+#   scale_y_log10()+
+#   theme_minimal()
+# p_pred_response_Anova
+  
+```
+
+```{r}
+df_predobs_IA_trunc <- df_predobs_IA 
+
+fact_1 <- 2
+fact_2 <- 5
+
+seq_line <- seq(0.1, 20, 0.1)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+
+p_pred_anova_IA <- ggplot()+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x1, y=y1), 
+    linetype="dashed"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x_1, y=y_1), 
+    linetype="dashed"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x2, y=y2), 
+    linetype="dotted"
+    )+
+  geom_line(
+    data=df_line, 
+    mapping=aes(x=x_2, y=y_2), 
+    linetype="dotted"
+    )+
+  geom_point(
+    data = df_predobs_IA_trunc,
+    aes(
+      y = Pred_anova,
+      x = Predicted,
+      color = as.factor(Line), 
+      shape = Ratio
+    )
+  )+
+  geom_point(
+    data = df_predobs_IA_trunc,
+    aes(
+      y = Response,
+      x = Predicted,
+      color = as.factor(Line), 
+      shape = Ratio,
+      alpha =0.7
+    )
+  )+
+  labs(
+    x = "Prédiction de l'anova",
+    y = "Prédiction de IA"
+  )+
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_x_log10(limits = c(5, 20))+
+  scale_y_log10()+
+  facet_wrap(~Nb_rep)+
+  theme_minimal()
+p_pred_anova_IA
+
+p_pred_anova_IA_zoom <- p_pred_anova_IA+
+  scale_x_log10()+
+  scale_y_log10()
+```
+
+
+
+
+#### CA reference
+
+We are now able to conduct an Log-Likelihood Ratio test to compare the models with the CA reference :
+
+
+
+
+```{r FtestCASA, warning=F, message=F}
+LL0 <- LogLikelihood_CA    # log-vraisemblance du modèle CA
+LL1 <- LogLikelihood_CASA    # log-vraisemblance du modèle SA (CA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (CA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison CA/SA - D =", D, "p =", p_val, "\n")
+
+```
+
+
+
+
+The SA model is not significatively different than the CA model. There is no significant interaction between EPX & IMD for cocoon production. Therefore, the best model to represent the data is the CA model.
+
+
+
+
+```{r FtestCADL, warning=F, message=F}
+LL0 <- LogLikelihood_CA    # log-vraisemblance du modèle CA 
+LL1 <- LogLikelihood_CADL    # log-vraisemblance du modèle DL (CA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (CA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison CA/DL - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestCADR, warning=F, message=F}
+LL0 <- LogLikelihood_CA    # log-vraisemblance du modèle CA
+LL1 <- LogLikelihood_CADR    # log-vraisemblance du modèle DR
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle CA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle DR (CA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison CA/DR - D =", D, "p =", p_val, "\n")
+
+```
+
+
+
+
+#### IA reference
+
+We are now able to conduct an Log-Likelihood Ratio test to compare the models with the IA reference :
+
+
+
+
+```{r FtestIASA, warning=F, message=F}
+LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_IASA    # log-vraisemblance du modèle (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IA/SA - D =", D, "p =", p_val, "\n")
+
+```
+
+
+
+
+The SA model is significatively different than the IA model. There is a significant interaction between EPX & IMD for cocoon production. Therefore, the best model to represent the data is the IA-SA model.
+
+
+
+
+```{r FtestIADL, warning=F, message=F}
+LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_IADL    # log-vraisemblance du modèle DL (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IA/DL - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestIASADL, warning=F, message=F}
+LL0 <- LogLikelihood_IASA    # log-vraisemblance du modèle IA SA
+LL1 <- LogLikelihood_IADL    # log-vraisemblance du modèle DL (IA reference)
+
+p0 <- 1         # nombre de paramètres additionnels dans le modèle IA SA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IASA/DL - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestIADR, warning=F, message=F}
+LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_IADR    # log-vraisemblance du modèle SA (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IA/DR - D =", D, "p =", p_val, "\n")
+
+```
+
+```{r FtestIASADR, warning=F, message=F}
+LL0 <- LogLikelihood_IASA    # log-vraisemblance du modèle IA SA
+LL1 <- LogLikelihood_IADR    # log-vraisemblance du modèle DL (IA reference)
+
+p0 <- 1         # nombre de paramètres additionnels dans le modèle IA SA (par rapport à ta base)
+p1 <- 2         # un paramètre d'interaction dans le modèle DL (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IASA/DR - D =", D, "p =", p_val, "\n")
+
+```
+
+
+
+
+The IA-DL and the IA-DR models are not significatively different from IA-SA.
+
+## Step 4 - Graphical representation
+
+
+
+
+```{r calcSurface, message=F, warning=F, execute = F}
+########### CA ################################
+
+df_data_solved_surf_CA <- CA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="none",
+  multicore = TRUE
+  )
+
+save(df_data_solved_surf_CA, file = here::here("mod/MIX/Surface_CA.RData"))
+
+########### CASA ################################
+
+df_data_solved_surf_CASA <- CA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="SA",
+  a = a_CASA,
+  multicore = TRUE
+  )
+
+save(df_data_solved_surf_CASA, file = here::here("mod/MIX/Surface_CASA.RData"))
+
+########### CADL ################################
+
+df_data_solved_surf_CADL <- CA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="DL",
+  a = a_CADL,
+  b = b_CADL,
+  multicore = TRUE
+  )
+
+save(df_data_solved_surf_CADL, file = here::here("mod/MIX/Surface_CADL.RData"))
+
+########### CADR ################################
+
+df_data_solved_surf_CADR <- CA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="DR",
+  a = a_CADR,
+  b = b_CADR,
+  multicore = TRUE
+  )
+
+save(df_data_solved_surf_CADR, file = here::here("mod/MIX/Surface_CADR.RData"))
+
+########### IA ################################
+
+df_data_solved_surf_IA <- IA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="none"
+  )
+
+save(df_data_solved_surf_IA, file = here::here("mod/MIX/Surface_IA.RData"))
+
+########### IASA ################################
+
+df_data_solved_surf_IASA <- IA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="SA",
+  a = a_IASA
+  )
+
+save(df_data_solved_surf_IASA, file = here::here("mod/MIX/Surface_IASA.RData"))
+
+########### IADL ################################
+
+df_data_solved_surf_IADL <- IA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="DL",
+  a = a_IADL,
+  b = b_IADL
+  )
+
+save(df_data_solved_surf_IADL, file = here::here("mod/MIX/Surface_IADL.RData"))
+
+########### IADR ################################
+
+df_data_solved_surf_IADR <- IA_complete2(
+  C_mat=grid,
+  Max=Max,
+  Slopes=Slopes,
+  Ec50s=Ec50s,
+  interact="DR",
+  a = a_IADR,
+  b = b_IADR
+  )
+
+save(df_data_solved_surf_IADR, file = here::here("mod/MIX/Surface_IADR.RData"))
+```
+
+```{r simdataCAfit}
+
+########### CA ################################
+
+load(here::here("mod/MIX/Surface_CA.RData"))
+
+df_data_solved_surf_ordered_CA <- df_data_solved_surf_CA[order(grid[,2])]
+
+z_CA <- matrix(
+  df_data_solved_surf_ordered_CA,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### CASA ################################
+
+load(here::here("mod/MIX/Surface_CASA.RData"))
+
+df_data_solved_surf_ordered_CASA <- df_data_solved_surf_CASA[order(grid[,2])]
+
+z_CASA <- matrix(
+  df_data_solved_surf_ordered_CASA,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### CADL ################################
+
+load(here::here("mod/MIX/Surface_CADL.RData"))
+
+df_data_solved_surf_ordered_CADL <- df_data_solved_surf_CADL[order(grid[,2])]
+
+z_CADL <- matrix(
+  df_data_solved_surf_ordered_CADL,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### CADR ################################
+
+load(here::here("mod/MIX/Surface_CADR.RData"))
+
+df_data_solved_surf_ordered_CADR <- df_data_solved_surf_CADR[order(grid[,2])]
+
+z_CADR <- matrix(
+  df_data_solved_surf_ordered_CADR,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### IA ################################
+
+load(here::here("mod/MIX/Surface_IA.RData"))
+
+df_data_solved_surf_ordered_IA <- df_data_solved_surf_IA[order(grid[,2])]
+
+z_IA <- matrix(
+  df_data_solved_surf_ordered_IA,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### IASA ################################
+
+load(here::here("mod/MIX/Surface_IASA.RData"))
+
+df_data_solved_surf_ordered_IASA <- df_data_solved_surf_IASA[order(grid[,2])]
+
+z_IASA <- matrix(
+  df_data_solved_surf_ordered_IASA,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### IADL ################################
+
+load(here::here("mod/MIX/Surface_IADL.RData"))
+
+df_data_solved_surf_ordered_IADL <- df_data_solved_surf_IADL[order(grid[,2])]
+
+z_IADL <- matrix(
+  df_data_solved_surf_ordered_IADL,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+########### IADR ################################
+
+load(here::here("mod/MIX/Surface_IADR.RData"))
+
+df_data_solved_surf_ordered_IADR <- df_data_solved_surf_IADR[order(grid[,2])]
+
+z_IADR <- matrix(
+  df_data_solved_surf_ordered_IADR,
+  nrow=length(grid_C1),
+  ncol=length(grid_C2),
+  byrow=FALSE
+  )
+
+```
+
+
+
+
+#### 2D representations
+
+::: panel-tabset
+## CA vs. IA
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated surfaces isobols for cocoon production with the CA and the IA models.
+#| label: fig-SurfCAIA2Ddata
+#| fig-width: 5
+#| fig-height: 4
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_IA <- as.vector(z_IA)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid, 
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4], 
+    linewidth = 0.8,
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_frost[3],
+    linewidth = 0.8,
+    binwidth = bin_contour
+  ) +
+  
+  metR::geom_text_contour(
+    aes(z = z_IA), 
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1*")"),
+    y = expression("[IMD] (mg·kg"^-1*")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_contour_data_CAIA.png", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_contour_data_CAIA.svg", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+## SA model (CA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated surface isobols for cocoon production. The CA model is represented by the grey dotted lines and the SA model by the blue curves.
+#| label: fig-SurfCASA2Ddata
+#| fig-width: 5
+#| fig-height: 4
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_CASA <- as.vector(z_CASA)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid, 
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_CASA),
+    color = Nord_frost[4], 
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_CASA), 
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1*")"),
+    y = expression("[IMD] (mg·kg"^-1*")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_contour_data_CASA.png", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_contour_data_CASA.svg", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+## DL model (CA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated surface isobols for cocoon production. The CA model is represented by the grey dotted lines and the DL model by the blue curves.
+#| label: fig-SurfCADL2D
+#| fig-width: 5
+#| fig-height: 4
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_CADL <- as.vector(z_CADL)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid, 
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_CADL),
+    color = Nord_frost[4], 
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_CADL), 
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1*")"),
+    y = expression("[IMD] (mg·kg"^-1*")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_contour_data_CADL.png", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_contour_data_CADL.svg", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+## SA model (IA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated surface isobols for cocoon production. The IA model is represented by the grey dotted lines and the SA model by the blue curves.
+#| label: fig-SurfIASA2Ddata
+#| fig-width: 5
+#| fig-height: 4
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_IA <- as.vector(z_IA)
+grid$z_IASA <- as.vector(z_IASA)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid, 
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IASA),
+    color = Nord_frost[4], 
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_IASA), 
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1*")"),
+    y = expression("[IMD] (mg·kg"^-1*")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_contour_data_IASA.png", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_contour_data_IASA.svg", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+## DL model (IA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Estimated surface isobols for cocoon production. The IA model is represented by the grey dotted lines and the DL model by the blue curves.
+#| label: fig-SurfIADL2Ddata
+#| fig-width: 5
+#| fig-height: 4
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_IA <- as.vector(z_IA)
+grid$z_IADL <- as.vector(z_IADL)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid, 
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IADL),
+    color = Nord_frost[4], 
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_IADL), 
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1*")"),
+    y = expression("[IMD] (mg·kg"^-1*")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+```
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_contour_data_IADL.png", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_contour_data_IADL.svg", 
+  plot=p, 
+  width=6, height = 5, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+:::
+
+##### Dose-response curves per ratio
+
+
+
+
+```{r drcratiopred, message=F, warning=F}
+
+xIMD_I <- expand.grid(
+  exp(
+    seq(
+      log(0.00001),log(5000),
+      by=(log(5000)-log(0.00001))/100
+    )
+  )
+)
+
+xEPX_E <- expand.grid(
+  exp(
+    seq(
+      log(0.00001),log(5000),
+      by=(log(5000)-log(0.00001))/100
+    )
+  )
+)
+
+df_x_E <- data.frame(
+  Dose_EPX = xEPX_E$Var1
+) |> 
+  mutate(
+    Dose_IMD = 0,
+    Ratio = "I"
+    )
+
+df_x_I <- data.frame(
+  Dose_IMD = xIMD_I$Var1
+) |> 
+  mutate(
+    Dose_EPX = 0,
+    Ratio = "E"
+    )
+
+df_x_F <- data.frame(
+  Dose_EPX = 3/4*Ec50s[1]/Ec50s[2]*xEPX_E$Var1/100,
+  Dose_IMD = 1/4*Ec50s[1]/Ec50s[2]*xIMD_I$Var1/100
+) |> 
+  mutate(Ratio = "F")
+df_x_G <- data.frame(
+  Dose_EPX = 1/2*Ec50s[1]/Ec50s[2]*xEPX_E$Var1/200,
+  Dose_IMD = 1/2*Ec50s[1]/Ec50s[2]*xIMD_I$Var1/200
+) |> 
+  mutate(Ratio = "G")
+df_x_H <- data.frame(
+  Dose_EPX = 1/4*Ec50s[1]/Ec50s[2]*xEPX_E$Var1/200,
+  Dose_IMD = 3/4*Ec50s[1]/Ec50s[2]*xIMD_I$Var1/200
+) |> 
+  mutate(Ratio = "H")
+
+df_pred_drc_ratio <- rbind(df_x_E, df_x_F, df_x_G, df_x_H, df_x_I)
+
+# Vérification of the lines
+
+# width_iso <- 1.1
+# size_points <- 3
+
+# plot_design <- ggplot()+
+#   # Design points
+#   geom_point(
+#     data=df_pred_drc_ratio, 
+#     aes(
+#       x=Dose_EPX, 
+#       y=Dose_IMD,
+#       color = Ratio
+#       ), 
+#     size=size_points
+#     )+
+#   
+#   labs(
+#     x="Epoxiconazole (mg/kg)",
+#     y="Imidacloprid (mg/kg)"
+#     )+
+#   
+#   lims(x = c(0, 10000), y = c(0, 10000))+
+#   
+#   theme_minimal(12)
+
+C_mat_E <- cbind(df_x_E$Dose_EPX,df_x_E$Dose_IMD)
+C_mat_F <- cbind(df_x_F$Dose_EPX,df_x_F$Dose_IMD)
+C_mat_G <- cbind(df_x_G$Dose_EPX,df_x_G$Dose_IMD)
+C_mat_H <- cbind(df_x_H$Dose_EPX,df_x_H$Dose_IMD)
+C_mat_I <- cbind(df_x_I$Dose_EPX,df_x_I$Dose_IMD)
+
+# We should set the a SA interaction parameter to around 1000 to see a difference between the dose-response curves for the different ratios
+
+response_CA_E <- CA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_CASA_E <- CA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_CASA
+  )
+response_CADL_E <- CA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_CADL,
+  b=b_CADL
+  )
+
+response_CA_F <- CA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_CASA_F <- CA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_CASA
+  )
+response_CADL_F <- CA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_CADL,
+  b=b_CADL
+  )
+
+response_CA_G <- CA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_CASA_G <- CA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_CASA
+  )
+response_CADL_G <- CA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_CADL,
+  b=b_CADL
+  )
+
+response_CA_H <- CA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_CASA_H <- CA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_CASA
+  )
+response_CADL_H <- CA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_CADL,
+  b=b_CADL
+  )
+
+response_CA_I <- CA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_CASA_I <- CA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_CASA
+  )
+response_CADL_I <- CA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_CADL,
+  b = b_CADL
+  )
+
+
+response_IA_E <- IA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_IASA_E <- IA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_IASA
+  )
+response_IADL_E <- IA_complete2(
+  C_mat_E, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_IADL,
+  b = b_IADL
+  )
+
+response_IA_F <- IA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_IASA_F <- IA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_IASA
+  )
+response_IADL_F <- IA_complete2(
+  C_mat_F, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_IADL,
+  b=b_IADL
+  )
+
+response_IA_G <- IA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_IASA_G <- IA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_IASA
+  )
+response_IADL_G <- IA_complete2(
+  C_mat_G, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_IADL,
+  b=b_IADL
+  )
+
+response_IA_H <- IA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_IASA_H <- IA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_IASA
+  )
+response_IADL_H <- IA_complete2(
+  C_mat_H, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_IADL,
+  b=b_IADL
+  )
+
+response_IA_I <- IA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+response_IASA_I <- IA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="SA", 
+  a=a_IASA
+  )
+response_IADL_I <- IA_complete2(
+  C_mat_I, 
+  Max, Slopes, Ec50s, 
+  interact="DL", 
+  a=a_IADL,
+  b = b_IADL
+  )
+
+
+responses_CA <- c(
+  response_CA_E,
+  response_CA_F,
+  response_CA_G,
+  response_CA_H,
+  response_CA_I
+  )
+
+responses_CASA <- c(
+  response_CASA_E, 
+  response_CASA_F,
+  response_CASA_G, 
+  response_CASA_H,
+  response_CASA_I
+  )
+
+responses_CADL <- c(
+  response_CADL_E, 
+  response_CADL_F,
+  response_CADL_G, 
+  response_CADL_H,
+  response_CADL_I
+  )
+
+
+responses_IA <- c(
+  response_IA_E,
+  response_IA_F,
+  response_IA_G,
+  response_IA_H,
+  response_IA_I
+  )
+
+responses_IASA <- c(
+  response_IASA_E, 
+  response_IASA_F,
+  response_IASA_G, 
+  response_IASA_H,
+  response_IASA_I
+  )
+
+responses_IADL <- c(
+  response_IADL_E, 
+  response_IADL_F,
+  response_IADL_G, 
+  response_IADL_H,
+  response_IADL_I
+  )
+
+
+
+Ratio_E <- "1:0 (EPX only)"
+Ratio_I <- "0:1 (IMD only)"
+Ratio_F <- "3:1"
+Ratio_G <- "1:1"
+Ratio_H <- "1:3"
+
+df_pred_drc_ratio_CA <- cbind(df_pred_drc_ratio, Response = responses_CA) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+df_pred_drc_ratio_CASA <- cbind(df_pred_drc_ratio, Response = responses_CASA) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+df_pred_drc_ratio_CADL <- cbind(df_pred_drc_ratio, Response = responses_CADL) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+
+df_pred_drc_ratio_IA <- cbind(df_pred_drc_ratio, Response = responses_IA) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+df_pred_drc_ratio_IASA <- cbind(df_pred_drc_ratio, Response = responses_IASA) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+df_pred_drc_ratio_IADL <- cbind(df_pred_drc_ratio, Response = responses_IADL) |> 
+  mutate(
+    TU = Dose_IMD/Ec50s[2] + Dose_EPX/Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+    )
+
+```
+
+
+
+
+::: panel-tabset
+## CA model
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the CA model for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredCA
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCA <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_CA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+p_comp_CA <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_CA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+
+p_CA <- p_facetCA + 
+  inset_element(
+    p_comp_CA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_CA
+```
+
+
+
+
+## SA model (CA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the SA model with CA as reference for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredCASA
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCASA <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_CASA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.0001, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+p_comp_CASA <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_CASA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.0001, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+
+p_CASA <- p_facetCASA + 
+  inset_element(
+    p_comp_CASA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_CASA
+```
+
+
+
+
+## DL model (CA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the DL model with CA as reference for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredCADL
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCADL <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_CADL,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.009, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+p_comp_CADL <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_CADL,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.009, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+
+p_CADL <- p_facetCADL + 
+  inset_element(
+    p_comp_CADL,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_CADL
+```
+
+
+
+
+## IA model
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the IA model for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredIA
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIA <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_IA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+p_comp_IA <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_IA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+
+p_IA <- p_facetIA + 
+  inset_element(
+    p_comp_CA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_IA
+```
+
+
+
+
+## SA model (IA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the SA model with IA as reference for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredIASA
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIASA <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_IASA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.0001, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+p_comp_IASA <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_IASA,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.0001, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+
+p_IASA <- p_facetIASA + 
+  inset_element(
+    p_comp_IASA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_IASA
+```
+
+
+
+
+## DL model (IA ref.)
+
+
+
+
+```{r, warning=F, message=F}
+#| fig-cap: Dose-response curves predicted by the DL model with IA as reference for each mixture ratio. Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.
+#| label: fig-drcIMDEPXratiosPredIADL
+#| fig-width: 8
+#| fig-height: 6
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIADL <- ggplot()+
+  geom_line(
+    data = df_pred_drc_ratio_IADL,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  geom_point(
+    data = df_mix_coc_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    alpha = 0.6,
+    shape = 4
+  )+
+  geom_point(
+    data = df_mix_coc_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color=Ratio_plot,
+      fill = Ratio_plot
+      ),
+    size = 3
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  facet_wrap2(~ Ratio_plot, axes = "x") +
+  #ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.009, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  theme_bw()+
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),  
+    axis.ticks.x = element_line(),    
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines") 
+  )
+
+p_comp_IADL <- ggplot()+
+
+  geom_line(
+    data = df_pred_drc_ratio_IADL,
+    aes(
+      x = TU, 
+      y = Response,
+      color=Ratio_plot
+    )
+  )+
+  scale_color_manual(values = pal_ratio)+
+  scale_fill_manual(values = pal_ratio)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits=c(0.009, 101)
+  )+
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  )+
+  
+  theme_bw()+
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color="black", 
+      fill="grey95", 
+      size=0, 
+      linetype="solid"
+      )
+  )
+
+
+p_IADL <- p_facetIADL + 
+  inset_element(
+    p_comp_IADL,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+    )
+p_IADL
+```
+
+
+
+:::
+
+
+
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_CA.png", 
+  plot=p_CA, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_CASA.png", 
+  plot=p_CASA, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_CADL.png", 
+  plot=p_CADL, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_IA.png", 
+  plot=p_IA, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_IASA.png", 
+  plot=p_IASA, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_pred_drc_ratios_IADL.png", 
+  plot=p_IADL, 
+  width=8, height = 6, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+
+
+
+#### 3D representation
+
+::: panel-tabset
+## CA model
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (CA model). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition. 
+#| label: fig-SurfCAdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_CA <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_CA, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    showlegend = FALSE,
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      )
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_CA
+```
+
+
+
+
+## SA model (CA ref.)
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (SA model with CA as reference). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition.
+#| label: fig-SurfCASAdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_CASA <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_CASA, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  colorbar(title=list(text="Production of cocoons per cosm"))%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_CASA
+```
+
+
+
+
+## DL model (CA ref.)
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (DL model with CA as reference). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition.
+#| label: fig-SurfCADLdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_CADL <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_CADL, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  colorbar(title=list(text="Production of cocoons per cosm"))%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_CADL
+```
+
+
+
+
+## IA model
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (IA model). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition. 
+#| label: fig-SurfIAdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_IA <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_IA, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    showlegend = FALSE,
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      )
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_IA
+```
+
+
+
+
+## SA model (IA ref.)
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (SA model with IA as reference). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition.
+#| label: fig-SurfIASAdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_IASA <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_IASA, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  colorbar(title=list(text="Production of cocoons per cosm"))%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_IASA
+```
+
+
+
+
+## DL model (IA ref.)
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (DL model with IA as reference). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition.
+#| label: fig-SurfIADLdyn
+#| fig-width: 5
+#| fig-height: 4
+
+p_IADL <- plotly::plot_ly(
+  x=grid_C2, 
+  y=grid_C1, 
+  z=~z_IADL, 
+  colors=Nord_frost
+  )%>%
+  add_surface(showlegend = FALSE, showscale=FALSE)%>%
+  layout(scene = list(
+    xaxis = list(title = '[IMD] (mg/kg)'),
+    yaxis = list(title = '[EPX] (mg/kg)'),
+    zaxis = list(title = 'Cocoon production'),
+    camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+    )%>%
+  colorbar(title=list(text="Production of cocoons per cosm"))%>%
+  add_markers(
+    y=df_mix_coc$Dose_EPX,
+    x=df_mix_coc$Dose_IMD,
+    z=df_mix_coc$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 3, 
+      color = Nord_polar[4], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )%>%
+  add_markers(
+    y=df_mix_coc_mean$Dose_EPX,
+    x=df_mix_coc_mean$Dose_IMD,
+    z=df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode="markers",
+    marker = list(
+      size = 7, 
+      color = Nord_polar[1], 
+      symbol = 104
+      ),
+    showlegend = FALSE
+    )
+
+p_IADL
+```
+
+
+
+:::
+
+
+
+
+```{r, include = F}
+
+orca(p_CA, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerCA.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+
+orca(p_CASA, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerCASA.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+
+orca(p_CADL, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerCADL.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+
+orca(p_IA, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerIA.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+
+orca(p_IASA, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerIASA.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+
+orca(p_IADL, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerIADL.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+```
+
+
+
+
+## Step 5 - Evaluation of model fit
+
+
+
+
+```{r dfpredobs, message=F, warning=F}
+
+C_mat=cbind(                                            
+    df_mix_coc_int$Dose_EPX,                             
+    df_mix_coc_int$Dose_IMD                             
+    )
+
+# Calculation of effects for the design concentrations 
+res_CA <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+res_CASA <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="SA",
+  a = CASA_fit$a
+  )
+res_CADL <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="DL",
+  a = CADL_fit$a,
+  b = CADL_fit$b
+  )
+res_CADR <- CA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="DR",
+  a = CADR_fit$a,
+  b = CADR_fit$b
+  )
+
+res_IA <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="none"
+  )
+res_IASA <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="SA",
+  a = IASA_fit$a
+  )
+res_IADL <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="DL",
+  a = IADL_fit$a,
+  b = IADL_fit$b
+  )
+res_IADR <- IA_complete2(
+  C_mat, 
+  Max, Slopes, Ec50s, 
+  interact="DR",
+  a = IADR_fit$a,
+  b = IADR_fit$b
+  )
+
+
+# We add the corresponding response to our design
+df_predobs_CA <- df_mix_coc_int%>%
+  mutate(Predicted=res_CA)
+df_predobs_CASA <- df_mix_coc_int%>%
+  mutate(Predicted=res_CASA)
+df_predobs_CADL <- df_mix_coc_int%>%
+  mutate(Predicted=res_CADL)
+df_predobs_CADR <- df_mix_coc_int%>%
+  mutate(Predicted=res_CADR)
+
+df_predobs_IA <- df_mix_coc_int%>%
+  mutate(Predicted=res_IA)
+df_predobs_IASA <- df_mix_coc_int%>%
+  mutate(Predicted=res_IASA)
+df_predobs_IADL <- df_mix_coc_int%>%
+  mutate(Predicted=res_IADL)
+df_predobs_IADR <- df_mix_coc_int%>%
+  mutate(Predicted=res_IADR)
+```
+
+
+
+
+#### Predicted vs. observed
+
+::: panel-tabset
+## CA model
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (CA model). 
+#| label: fig-CApredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+xmin <- 0.1
+xmax <- 15
+step <- 0.5
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_CA <- ggplot()+
+  geom_point(
+    data = df_predobs_CA,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_CA
+
+```
+
+
+
+
+## SA model (CA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (SA model with CA as reference). 
+#| label: fig-CASApredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_CASA <- ggplot()+
+  geom_point(
+    data = df_predobs_CASA,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_CASA
+
+```
+
+
+
+
+## DL model (CA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (DL model with CA as reference). 
+#| label: fig-CADLpredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_CADL <- ggplot()+
+  geom_point(
+    data = df_predobs_CADL,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_CADL
+
+```
+
+
+
+
+## IA model
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (IA model). 
+#| label: fig-IApredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+xmin <- 0.1
+xmax <- 15
+step <- 0.5
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_IA <- ggplot()+
+  geom_point(
+    data = df_predobs_IA,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_IA
+
+```
+
+
+
+
+## SA model (IA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (SA model with IA as reference). 
+#| label: fig-IASApredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_IASA <- ggplot()+
+  geom_point(
+    data = df_predobs_IASA,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_IASA
+
+```
+
+
+
+
+## DL model (IA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Predicted vs observed (DL model with IA as reference). 
+#| label: fig-IADLpredobs
+#| fig-width: 5
+#| fig-height: 4
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line*fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line/fact_1,
+  x2  = seq_line,
+  y2  = seq_line*fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line/fact_2
+  )
+
+p_IADL <- ggplot()+
+  geom_point(
+    data = df_predobs_IADL,
+    mapping = aes(
+        x = Response,
+        y = Predicted,
+        color = as.factor(Line)
+        ),
+    alpha=0.5,
+    size=1.5
+  )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x1, y=y1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_1, y=y_1),
+    color = col_line1
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x2, y=y2),
+    color = col_line2
+    )+
+  geom_line(
+    data=df_line,
+    mapping=aes(x=x_2, y=y_2),
+    color = col_line2
+    )+
+  
+  geom_abline(
+    slope=1, 
+    intercept = 0, 
+    color = col_line0,
+    linewidth = 1
+    )+
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora,Nord_frost)
+    )+
+  scale_x_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  scale_y_log10(
+    #limits = c(0.15, 1.5)
+    )+
+  #ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  )+
+  theme_minimal()
+p_IADL
+
+```
+
+
+
+:::
+
+
+
+
+```{r, include=F}
+ggsave(
+  filename="Mix_spring_mix_predobs_CA.png", 
+  plot=p_CA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_CA.svg", 
+  plot=p_CA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_predobs_CASA.png", 
+  plot=p_CASA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_CASA.svg", 
+  plot=p_CASA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_predobs_CADL.png", 
+  plot=p_CADL, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_CADL.svg", 
+  plot=p_CADL, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_predobs_IA.png", 
+  plot=p_IA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_IA.svg", 
+  plot=p_IA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_predobs_IASA.png", 
+  plot=p_IASA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_IASA.svg", 
+  plot=p_IASA, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+
+ggsave(
+  filename="Mix_spring_mix_predobs_IADL.png", 
+  plot=p_IADL, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+ggsave(
+  filename="Mix_spring_mix_predobs_IADL.svg", 
+  plot=p_IADL, 
+  width=4, height = 3, 
+  path=here::here("fig/Mixture")
+  )
+```
+
+```{r perpredobs, warning = F, message = F}
+#| tbl-cap: Percentage of predictions falling inside fold 2 and fold 5 for each model.
+#| label: tbl-MIXpredobsfold
+
+calculate_predobs_stats <- function(df) {
+  df <- df |> 
+    mutate(
+      Ratio_predobs = Predicted / Response,
+      Residuals = Predicted - Response
+    )
+  
+  per_fold2 <- mean(df$Ratio_predobs >= 0.5 & df$Ratio_predobs <= 2) * 100
+  per_fold5 <- mean(df$Ratio_predobs >= 0.2 & df$Ratio_predobs <= 5) * 100
+  
+  list(df = df, per_fold2 = per_fold2, per_fold5 = per_fold5)
+}
+
+f_calc_residuals <- function(df){
+  df <- df |> 
+    mutate(
+      Ratio_predobs = Predicted / Response,
+      Residuals = Predicted - Response
+    )
+}
+
+dfs <- list(
+  CA = f_calc_residuals(df_predobs_CA), "CA-SA" = f_calc_residuals(df_predobs_CASA), "CA-DL" = f_calc_residuals(df_predobs_CADL), "CA-DR" = f_calc_residuals(df_predobs_CADR),
+  IA = f_calc_residuals(df_predobs_IA), "IA-SA" = f_calc_residuals(df_predobs_IASA), "IA-DL" = f_calc_residuals(df_predobs_IADL), "IA-DR" = f_calc_residuals(df_predobs_IADR)
+)
+
+results <- lapply(dfs, calculate_predobs_stats)
+
+df_predobs_summary <- data.frame(
+  Reference_model = c(rep("CA", 4), rep("IA", 4)),
+  Model = names(dfs),
+  Per_fold2 = sapply(results, `[[`, "per_fold2"),
+  Per_fold5 = sapply(results, `[[`, "per_fold5")
+)
+df_predobs_summary |> datatable(options = list(dom="t"), class="hover")
+
+```
+
+
+
+
+#### Residuals
+
+::: panel-tabset
+## CA model
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (CA model). 
+#| label: fig-CAresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$CA,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  theme_minimal()
+
+p
+```
+
+
+
+
+## SA model (CA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (SA model with CA as reference). 
+#| label: fig-CASAresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$`CA-SA`,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  #scale_x_log10()+
+  theme_minimal()
+p
+```
+
+
+
+
+## DL model (CA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (DL model with CA as reference). 
+#| label: fig-CADLresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$`CA-DL`,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  #scale_x_log10()+
+  theme_minimal()
+p
+```
+
+
+
+
+## IA model
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (IA model). 
+#| label: fig-IAresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$IA,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  #scale_x_log10()+
+  theme_minimal()
+p
+```
+
+
+
+
+## SA model (IA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (SA model with IA as reference). 
+#| label: fig-IASAresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$`IA-SA`,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  #scale_x_log10()+
+  theme_minimal()
+p
+```
+
+
+
+
+## DL model (IA ref.)
+
+
+
+
+```{r, warning = F, message = F}
+#| fig-cap: Residuals (DL model with IA as reference). 
+#| label: fig-IADLresiduals
+#| fig-width: 5
+#| fig-height: 4
+
+p <- ggplot()+
+  geom_dotplot(
+    data = dfs$`IA-DL`,
+    aes(
+      x = Line,
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis='y', 
+    stackdir='center', 
+    alpha = 0.5,
+    dotsize=0.8
+  )+
+  geom_abline(
+    slope=0,
+    intercept = 0
+  )+
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost)))+
+  #scale_x_log10()+
+  theme_minimal()
+p
+```
+
+
+
+:::
+
+## Summary
+
+
+
+
+```{r, message=F, warning=F}
+#| fig-cap: Estimated surface (IA-SA model). Small grey dots represents the measurements at the replicate level while the bigger black dots represent the mean per condition. 
+#| label: fig-SurfCAres
+#| fig-width: 6
+#| fig-height: 6
+
+
+df_mix_coc_plot_f <- df_mix_coc %>%
+  group_by(Condition) %>%
+  summarise(
+    mean = mean(Nb_cocoons),
+    sd = sd(Nb_cocoons),
+    q2.5 = quantile(Nb_cocoons, 0.025),
+    q97.5 = quantile(Nb_cocoons, 0.975),
+    Dose_IMD = Dose_IMD,
+    Dose_EPX = Dose_EPX,
+    .groups = "drop"
+  ) |> 
+  mutate(
+    zmin = mean - sd,
+    zmax = mean + sd
+  )
+
+p_IASA <- plot_ly(
+  x = grid_C2, 
+  y = grid_C1, 
+  z = ~z_IASA, 
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale=FALSE, opacity = .7) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = '[IMD] (mg/kg)'),
+      yaxis = list(title = '[EPX] (mg/kg)'),
+      zaxis = list(title = 'Cocoon production'),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = 'rgba(0, 0, 0, 0)',
+    plot_bgcolor = 'rgba(0, 0, 0, 0)'
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  # add_markers(
+  #   y = df_mix_coc$Dose_EPX,
+  #   x = df_mix_coc$Dose_IMD,
+  #   z = df_mix_coc$Nb_cocoons,
+  #   type = "scatter3d",
+  #   mode = "markers",
+  #   marker = list(size = 3, color = Nord_polar[4], symbol = 104)
+  # ) %>%
+  add_markers(
+    y = df_mix_coc_mean$Dose_EPX,
+    x = df_mix_coc_mean$Dose_IMD,
+    z = df_mix_coc_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(size = 7, color = Nord_polar[1], symbol = 104),
+    showlegend = FALSE, opacity = 1
+  )
+
+# Ajout des barres d'erreur comme segments
+for (i in seq_len(nrow(df_mix_coc_plot_f))) {
+  
+  p_IASA <- p_IASA %>%
+    add_trace(
+      x = df_mix_coc_plot_f$Dose_IMD[i],
+      y = df_mix_coc_plot_f$Dose_EPX[i],
+        z = c(df_mix_coc_plot_f$zmin[i], df_mix_coc_plot_f$zmax[i]),
+      type = "scatter3d",
+      mode = "lines",
+      line = list(color = Nord_polar[1], width = 2), # bien visible
+      showlegend = FALSE
+    )
+}
+
+p_IASA
+
+```
+
+```{r, warning=F}
+orca(p_IASA, 
+     file = "../../fig/Mixture/Mix_spring_mixsurfaceJonkerIASA_errorbar.png",
+     width = 800,
+     height = 600,
+     scale = 2,
+     format = "png",
+     # → clé ici :
+     #image = "png",
+     mathjax = "local"
+)
+```
+
