@@ -131,7 +131,7 @@ There is no effect of the dose on the initial weight of earthworms (Student test
 
 : Estimated parameters of the dose-response curve for cocoon production of earthworms exposed to Imidacloprid or epoxiconazole and their respective 95% confidence intervals.
 
-Lake-of-fit test : p value = 1.
+lacke-of-fit test : p value = 1.
 
 ![Effect of the pesticides on adult growth rates.](../../fig/Single_expo/Repro_growth_rates.png)
 
@@ -156,7 +156,7 @@ Lake-of-fit test : p value = 1.
 
 : Estimated parameters of the dose-response curves from experiment A. Model with common slope.
 
-F-test - Comparison of the dose-response curve models with or without common slope with data normalized with respective controls :
+!!!!!!!!!!!!! F-test - Comparison of the dose-response curve models with or without common slope with data normalized with respective controls :
 
 | Model            | Model Df | RSS    | Df  | F value | p value |
 |------------------|----------|--------|-----|---------|---------|
@@ -326,6 +326,21 @@ It follows the same principle but the calculation of the effect of the mixture i
 
 ![Density of percentage errors in the estimation of the interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Mix_power_IA_per_error.png)
 
+| Interaction value | Power | Misclassification rate (when estimated interaction is significant) | Median estimation relative error | \>25% error in the estimated interaction value | \>50% error in the estimated interaction value |
+|----|----|----|----|----|----|
+| **CA as reference** |  |  |  |  |  |
+| \> 2 | 100% | 0 | \< 9% | \< 5-7% | \< 0-0.1% |
+| 1 | 97% | 0 | 20% | 32-34% | 5% |
+| 0.5 | 50% | 0 | 20% | 63% | 34% |
+| 0.1 | 5% | 1% | 200% | 92% | 85% |
+| **IA as reference** |  |  |  |  |  |
+| \> 2 | 100% | 0 | \< 15% | \< 13-19% | \< 0.2-0.7% |
+| 1 | 80% | 0 | 30% | 45-49% | 13-17% |
+| 0.5 | 30% | 0-0.12% | 55% | 72% | 47% |
+| 0.1 | 4.5% | 1-1.5% | 280% | 94.5% | 89% |
+
+: Power, misclassification and estimation accuracy of the SA model across interaction strengths under the CA and IA reference models.
+
 # Application of the Jonker framework on our experimental data
 
 ## Dose-response curve prediction for each ratio
@@ -348,7 +363,7 @@ It follows the same principle but the calculation of the effect of the mixture i
 
 : Estimated dose-response curves for each mixture ratios. $Y_{min}$ set to 0.
 
-Lake-of-fit test with likelihood-ratio test : p value = 1.
+lacke-of-fit test with likelihood-ratio test : p value = 1.
 
 ## Dose-response curves fo the single substance tested during experiment B
 
@@ -371,7 +386,7 @@ Lake-of-fit test with likelihood-ratio test : p value = 1.
 | 2nd model | 48      | -489.78 |     |         |         |
 | 1st model | 47      | -490.53 | 1   | -0.0712 | 1.0000  |
 
-: F-test between these two model (ANOVA table)
+: F-test between these two model (ANOVA table) !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ## Mixture model comparisons
 
@@ -388,7 +403,7 @@ Lake-of-fit test with likelihood-ratio test : p value = 1.
 
 : Estimated interaction parameters by the different Jonker interaction models.
 
-Lake-of-fit tests were performed on each model with log-likelihood-ratio tests :
+lacke-of-fit tests were performed on each model with log-likelihood-ratio tests :
 
 -   Lack-of-fit test CA/Anova: D = 100.223, df = 31, p = 3.198157e-09 (LL_anova: -330.1095; LL_CA: -380.2209; k_anova: 35; k_drc: 4)
 -   Lack-of-fit test CA-SA/Anova: D = 100.223, df = 31, p = 3.198295e-09 (LL_anova: -330.1095; LL_CASA: -380.2208; k_anova: 35; k_drc: 4)

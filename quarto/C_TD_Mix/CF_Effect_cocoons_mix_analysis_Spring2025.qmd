@@ -340,8 +340,7 @@ df_mix_coc_EPX_plot <- subset(df_mix_coc, Ratio  %in% c("E", "N")) |>
     ) |>
   dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule)
 
-df_mix_coc_single <- rbind(df_mix_coc_IMD, df_mix_coc_EPX) |> 
-  filter(!(Line %in% c(2)))
+df_mix_coc_single <- rbind(df_mix_coc_IMD, df_mix_coc_EPX)
 
 df_mix_coc_single_mean <- df_mix_coc_single |> 
   aggregate(Nb_cocoons ~ Dose+Molecule, mean)
@@ -440,7 +439,11 @@ drc.mix.IE_notcommonslope<- drm(
   pmodels=data.frame(Molecule, 1, Molecule)
 )
 
-anova(drc.mix.IE_notcommonslope, drc.mix.IE, test="F")
+anova(drc.mix.IE_notcommonslope, drc.mix.IE, test="Chisq")
+
+drc.mix.IE
+
+as.numeric(logLik(drc.mix.IE))
 
 ```
 
@@ -994,6 +997,35 @@ cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_va
 # If p-val < 0.05, we cannot reject H1 = Anova model 
 ```
 
+Inspection of the overdispersion of the data :
+
+```{r}
+m.dispersion <- glm(Nb_cocoons ~ Condition_f, family = poisson, data = df_mix_coc)
+summary(m.dispersion)
+
+# Calculate dispersion parameter
+dispersion <- sum(residuals(m.dispersion, type = "pearson")^2) / m.dispersion$df.residual
+dispersion  # Should be ~1 for Poisson, >1 indicates overdispersion
+
+# Or simply:
+deviance(m.dispersion) / df.residual(m.dispersion)
+
+library(AER)
+dispersiontest(m.dispersion)
+
+library(MASS)
+m.neg.bin <- glm.nb(Nb_cocoons ~ Condition_f, data = df_mix_coc)
+pchisq(2 * (logLik(m.neg.bin) - logLik(m.dispersion)), df = 1, lower.tail = FALSE)
+
+# Rootogram
+library(vcd)
+# Pour un modèle GLM Poisson
+rootogram(goodfit(df_mix_coc$Nb_cocoons, type = "poisson"))
+
+# Residual plots
+plot(fitted(m.dispersion), residuals(m.dispersion, type = "pearson"))
+```
+
 ## Step 2 - Fit of the model to our data
 
 The different Jonker models can be fit to our data.
@@ -1057,13 +1089,13 @@ signif_LL <- 5 # Significative digits for LL printing
 ######## CA ##################################################################
 
 CA_fit <- data.frame(Error = NA)
-CA_fit$Error <- CA_complete2_Poisson(
+CA_fit$Error <- CA_complete2_NB(
   C_mat=cbind(                                                    # <1>
     df_mix_coc_int$Dose_EPX,                                      # <1>
     df_mix_coc_int$Dose_IMD                                       # <1>
     ),                                                            # <1>
   Response=df_mix_coc_int$Response,                               # <1>
-  Max = Max, 
+  Max = Max,
   Slopes = Slopes,
   Ec50s = Ec50s,
   interact="none",                                                # <1>
@@ -1080,6 +1112,31 @@ CA_fit$Ref <- "CA"
 
 CA_fit <- CA_fit |> 
   as.data.frame()
+
+
+##### With fit of the drc 
+
+CA_fit<-CA_complete_fit_speed(                                    # <1>
+  C_mat=cbind(                                                    # <1>
+    df_mix_coc_int$Dose_EPX,                                      # <1>
+    df_mix_coc_int$Dose_IMD                                       # <1>
+    ),                                                            # <1>
+  Response=df_mix_coc_int$Response,                               # <1>
+  interact="none",
+  identical_slopes = TRUE, # <1>
+  error_type = "NB",
+  multicore = TRUE,                                               # <1>
+  mc.cores = 4                                                    # <1>
+  ) |>                                                                # <1>
+  as.data.frame()
+CA_fit$Type <- "CA"
+CA_fit$Ref <- "CA"
+
+LogLikelihood_CA <- -CA_fit$Error                              
+CA_fit$a <- NA
+CA_fit$b <- NA
+# Printing results
+LogLikelihood_CA_print <- signif(LogLikelihood_CA, signif_LL)
 
 ######## IA ##################################################################
 
@@ -1896,7 +1953,7 @@ df_data_solved_surf_CA <- CA_complete2(
   multicore = TRUE
   )
 
-save(df_data_solved_surf_CA, file = here::here("mod/MIX/Surface_CA.RData"))
+# save(df_data_solved_surf_CA, file = here::here("mod/MIX/Surface_CA.RData"))
 
 ########### CASA ################################
 
@@ -1910,7 +1967,7 @@ df_data_solved_surf_CASA <- CA_complete2(
   multicore = TRUE
   )
 
-save(df_data_solved_surf_CASA, file = here::here("mod/MIX/Surface_CASA.RData"))
+# save(df_data_solved_surf_CASA, file = here::here("mod/MIX/Surface_CASA.RData"))
 
 ########### CADL ################################
 
@@ -1925,7 +1982,7 @@ df_data_solved_surf_CADL <- CA_complete2(
   multicore = TRUE
   )
 
-save(df_data_solved_surf_CADL, file = here::here("mod/MIX/Surface_CADL.RData"))
+# save(df_data_solved_surf_CADL, file = here::here("mod/MIX/Surface_CADL.RData"))
 
 ########### CADR ################################
 
@@ -1940,7 +1997,7 @@ df_data_solved_surf_CADR <- CA_complete2(
   multicore = TRUE
   )
 
-save(df_data_solved_surf_CADR, file = here::here("mod/MIX/Surface_CADR.RData"))
+# save(df_data_solved_surf_CADR, file = here::here("mod/MIX/Surface_CADR.RData"))
 
 ########### IA ################################
 
@@ -1952,7 +2009,7 @@ df_data_solved_surf_IA <- IA_complete2(
   interact="none"
   )
 
-save(df_data_solved_surf_IA, file = here::here("mod/MIX/Surface_IA.RData"))
+# save(df_data_solved_surf_IA, file = here::here("mod/MIX/Surface_IA.RData"))
 
 ########### IASA ################################
 
@@ -1965,7 +2022,7 @@ df_data_solved_surf_IASA <- IA_complete2(
   a = a_IASA
   )
 
-save(df_data_solved_surf_IASA, file = here::here("mod/MIX/Surface_IASA.RData"))
+# save(df_data_solved_surf_IASA, file = here::here("mod/MIX/Surface_IASA.RData"))
 
 ########### IADL ################################
 
@@ -1979,7 +2036,7 @@ df_data_solved_surf_IADL <- IA_complete2(
   b = b_IADL
   )
 
-save(df_data_solved_surf_IADL, file = here::here("mod/MIX/Surface_IADL.RData"))
+# save(df_data_solved_surf_IADL, file = here::here("mod/MIX/Surface_IADL.RData"))
 
 ########### IADR ################################
 
@@ -1993,7 +2050,7 @@ df_data_solved_surf_IADR <- IA_complete2(
   b = b_IADR
   )
 
-save(df_data_solved_surf_IADR, file = here::here("mod/MIX/Surface_IADR.RData"))
+# save(df_data_solved_surf_IADR, file = here::here("mod/MIX/Surface_IADR.RData"))
 ```
 
 ```{r simdataCAfit}
@@ -2121,7 +2178,7 @@ grid <- expand.grid(x = grid_C1, y = grid_C2)
 grid$z_CA <- as.vector(z_CA)
 grid$z_IA <- as.vector(z_IA)
 
-bin_contour <- 1
+bin_contour <- 2
 
 p <- ggplot(
   grid, 
@@ -2129,13 +2186,13 @@ p <- ggplot(
 ) +
   geom_contour(
     aes(z = z_CA),
-    color = Nord_polar[4], 
+    color = Nord_polar[4],
     linewidth = 0.8,
     binwidth = bin_contour
   ) +
   geom_contour(
     aes(z = z_IA),
-    color = Nord_frost[3],
+    color = Nord_aurora[4], 
     linewidth = 0.8,
     binwidth = bin_contour
   ) +
@@ -2145,7 +2202,7 @@ p <- ggplot(
     stroke = 0.2,
     size = 4,
     color = Nord_frost[4],
-    skip = 1,
+    #skip = 1,
     label.placer = label_placer_flattest(),
     binwidth = bin_contour
   ) +

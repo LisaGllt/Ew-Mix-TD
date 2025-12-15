@@ -125,16 +125,16 @@ f_read_data_expA_repro <- function(){
     here::here("data/Data_EC50.xlsx"), 
     sheet="Repro"
   ) |> 
-    mutate(                                                  # <1>
-      Dose = as.numeric(Dose),                               # <1>
-      Dose_f = as.factor(round(Dose, 4)),                    # <1>
-      Dose_plot = case_when(                                 # <1>
-        Dose == 0 ~ Val_Ctrl,                                # <1>
-        !(Dose == 0) ~ Dose                                  # <1>
-      ),                                                     # <1>
-      w=w_tot/Nb_ind,                                        # <1>
-      L=w^(1/3)                                              # <1>
-    )                                                      # <1>
+    mutate(                                              
+      Dose = as.numeric(Dose),                            
+      Dose_f = as.factor(round(Dose, 4)),           
+      Dose_plot = case_when(                          
+        Dose == 0 ~ Val_Ctrl,                          
+        !(Dose == 0) ~ Dose                              
+      ),                                              
+      w=w_tot/Nb_ind,                                  
+      L=w^(1/3)                                     
+    )                                                
   
   df_controls <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
     aggregate(Nb_cocoons ~ Molec, FUN = mean)
@@ -170,15 +170,116 @@ f_read_data_expA_repro <- function(){
       .groups = "drop"
     )
   
-  df_res <- data.frame(
-    df_repro = df_repro,
-    df_repro_alive = df_repro_alive,
-    df_repro_alive_mean = df_repro_alive_mean
+  df_res <- list(
+    df_expA_repro = df_repro,
+    df_expA_repro_alive = df_repro_alive,
+    df_expA_repro_alive_mean = df_repro_alive_mean
     
   )
   
   return(df_res)
   
+}
+
+f_read_data_expA_hatchlings <- function(){
+  
+  # Value given to controls for plots
+  Val_Ctrl <- 1e-4
+  Label_Ctrl <- "0 (Ctrl)"
+  
+  df_repro_tot <- read_excel(
+    here::here("data/Data_EC50.xlsx"), 
+    sheet="Repro"
+  ) |> 
+    mutate(                                              
+      Dose = as.numeric(Dose),                            
+      Dose_f = as.factor(round(Dose, 4)),           
+      Dose_plot = case_when(                          
+        Dose == 0 ~ Val_Ctrl,                          
+        !(Dose == 0) ~ Dose                              
+      ),                                              
+      w=w_tot/Nb_ind,                                  
+      L=w^(1/3)                                     
+    )  
+  
+  df_hatchlings_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet="Hatchlings") |>
+    mutate(ID_cosm = ID_cosm) |> 
+    group_by(ID_cosm) %>%
+    arrange(Date) %>%  # S'assurer que les dates sont triées
+    mutate(Nb_juv_cum = cumsum(Nb_juv))  # Calcul du cumul
+  
+  t0_dates <- df_repro_tot %>%
+    filter(t == 0) %>%
+    dplyr::select(ID_cosm, Date) %>%
+    rename(t0_date = Date)
+  
+  nb_cocoons_t28 <- df_repro_tot %>%
+    filter(t == 28) %>%
+    dplyr::select(ID_cosm, Nb_cocoons)
+  
+  
+  df_hatchlings_tot <- df_hatchlings_tot |> 
+    left_join(t0_dates, by = "ID_cosm") |> 
+    mutate(t = as.numeric(difftime(Date, t0_date, units = "days"))) |>   # Calcul du temps relatif
+    left_join(nb_cocoons_t28, by = "ID_cosm") |> 
+    mutate(Percent_Juv = (Nb_juv_cum / Nb_cocoons) * 100) |>   # Calcul du pourcentage
+    left_join(
+      df_expA_repro_tot |>  
+        dplyr::select(ID_cosm, Dose) |>  
+        distinct(), 
+      by = "ID_cosm"
+    )
+  
+  df_hatchlings_f <- df_hatchlings_tot |> 
+    group_by(ID_cosm) |>           # Grouper par individu
+    slice_max(Nb_juv_cum, n = 1) |>   # Sélectionner la ligne avec le maximum
+    ungroup() |>                       # Supprimer le groupement
+    aggregate(Nb_juv_cum ~ Dose+Molec, FUN = mean) |> 
+    mutate(Molecule = Molec)
+  
+  return(df_hatchlings_f)
+}
+
+f_read_data_expA_growth <- function(){
+  # Value given to controls for plots
+  Val_Ctrl <- 1e-4
+  Label_Ctrl <- "0 (Ctrl)"
+  
+  df_growth_tot <- read_excel(
+    here::here("data/Data_EC50.xlsx"), 
+    sheet="Growth"
+  ) |>                                          
+    mutate(                                       
+      Dose = as.numeric(Dose),                    
+      Dose_f = as.factor(round(Dose, 4)),         
+      Dose_plot = case_when(                      
+        Dose == 0 ~ Val_Ctrl,                     
+        !(Dose == 0) ~ Dose                       
+      ),                                          
+      L=w^(1/3)                                   
+    )                                          
+
+  
+  df_growth_EPX <- subset(df_growth_tot, Molec %in% c("Ctrl_2", "EPX")) |> 
+    mutate(Molecule = "EPX")                                          
+  ID_alive_EPX <- subset(df_growth_EPX, t==28 & (!Status=="D"))$ID      
+  df_growth_EPX_alive <- subset(df_growth_EPX, ID %in% ID_alive_EPX)    
+  
+  df_growth_IMD <- subset(df_growth_tot, Molec %in%                      
+                            c("Ctrl_1", "Ctrl_2", "IMD")) |>            
+    mutate(Molecule = "IMD")                                              
+  ID_alive_IMD <- subset(df_growth_IMD, t==28 & (!Status=="D"))$ID       
+  df_growth_IMD_alive <- subset(df_growth_IMD, ID %in% ID_alive_IMD)      
+  
+  df_growth <- rbind(df_growth_EPX, df_growth_IMD)                      
+  df_growth_alive <- rbind(df_growth_EPX_alive, df_growth_IMD_alive)       
+  
+  df_res <- list(
+    df_expA_growth = df_growth,
+    df_expA_growth_alive = df_growth_alive
+  )
+  
+  return(df_res)
 }
 
 # Mixture - Jonker interaction models ----
@@ -294,6 +395,9 @@ CA_complete2 <- function(C_mat, Max, Slopes, Ec50s, a = 0, b = 0, interact = "no
 }
 
 CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, lower = NULL, start = NULL, interact = "none", identical_slopes = FALSE, error_type = "Normal", iter = 500, multicore = FALSE, mc.cores = 4) {
+  
+  tol_drc <- 10^-8
+  
   # 1. If dose-response curves known ----
   if (!is.null(param)) {
     if ((is.null(param$Max)) | (is.null(param$Slopes)) | (is.null(param$Ec50s))) {
@@ -362,6 +466,31 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
         )
 
         return(Res)
+      } else if (error_type == "NB") {
+        res_CA_optim <- optimize(
+          f = function(x) {
+            CA_complete2_NB(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x,
+              interact  = interact,
+              multicore = multicore,
+              mc.cores  = mc.cores
+            )
+          },
+          upper = upper,
+          lower = lower
+        )
+        
+        Res <- list(
+          a     = res_CA_optim$minimum,
+          Error = res_CA_optim$objective
+        )
+        
+        return(Res)
       } else {
         stop("Misspecification of the error model")
       }
@@ -415,7 +544,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
           Res <- list(
@@ -443,7 +572,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
           Res <- list(
@@ -453,7 +582,35 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             Error  = res_CA_nmk$value
           )
           return(Res)
-        } else {
+        } else if (error_type == "NB") {
+          # print("nmk diff slopes NB CA")
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                interact  = interact,
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = tol_drc)
+          )
+          
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2:3]),
+            Ec50s  = c(res_CA_nmk$par[4:5]),
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        }else {
           stop("Misspecification of the error model")
         }
       } # End CA model
@@ -491,7 +648,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
           Res <- list(
@@ -521,9 +678,38 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2:3]),
+            Ec50s  = c(res_CA_nmk$par[4:5]),
+            a      = res_CA_nmk$par[6],
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                a         = x[6],
+                interact  = interact,
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = tol_drc)
+          )
+          
           Res <- list(
             Max    = res_CA_nmk$par[1],
             Slopes = c(res_CA_nmk$par[2:3]),
@@ -572,7 +758,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
           Res <- list(
@@ -583,7 +769,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
           )
           return(Res)
         } else if (error_type == "Poisson") {
-          print("nk common slopes Poisson CA")
+          # print("nk common slopes Poisson CA")
           res_CA_nmk <- nmkb(
             par = start,
             fn = function(x) {
@@ -600,9 +786,37 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]),
+            Ec50s  = c(res_CA_nmk$par[3:4]),
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          # print("nk common slopes NB CA")
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[2]),
+                Ec50s     = c(x[3], x[4]),
+                interact  = interact,
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            },
+            upper   = upper,
+            lower   = lower,
+            control = list(tol = tol_drc)
+          )
+          
           Res <- list(
             Max    = res_CA_nmk$par[1],
             Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]),
@@ -649,7 +863,7 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
           Res <- list(
@@ -678,9 +892,38 @@ CA_complete2_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, 
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
 
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]),
+            Ec50s  = c(res_CA_nmk$par[3:4]),
+            a      = res_CA_nmk$par[5],
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[2]),
+                Ec50s     = c(x[3], x[4]),
+                a         = x[5],
+                interact  = interact,
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            },
+            upper   = upper,
+            lower   = lower,
+            control = list(tol = tol_drc)
+          )
+          
           Res <- list(
             Max    = res_CA_nmk$par[1],
             Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]),
@@ -742,12 +985,102 @@ CA_complete2_Poisson <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b =
   if (any(res_CA <= 0)) {
     return(-Inf)
   }
-  res_CA_Poisson <- -sum(Response * log(res_CA) - res_CA - lfactorial(Response)) # - Loglikelihood
-
+  # res_CA_Poisson <- -sum(Response * log(res_CA) - res_CA - lfactorial(Response)) # - Loglikelihood
+  res_CA_Poisson <- -sum(dpois(Response, lambda = res_CA, log = TRUE))
+  
   return(res_CA_Poisson)
 }
 
+CA_complete2_QuasiPoisson <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none", multicore = FALSE, mc.cores = 4) {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_CA <- CA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact,
+    multicore = multicore,
+    mc.cores  = mc.cores
+  )
+  
+  # Pour stabilité numérique, éviter log(0)
+  if (any(res_CA <= 0)) {
+    return(-Inf)
+  }
+  
+  # Number of parameters
+  if (interact == "none"){
+    p <- 0
+  } else if (interact == "SA") {
+    p <- 1
+  } else if (interact %in% c("DR", "DL")) {
+    p <- 2
+  }
+  
+  term1 <- ifelse(Response == 0, 0, Response * log(Response / res_CA))
+  term2 <- Response - res_CA
+  deviance_Poisson <- 2 * sum(term1 - term2)
+  
+  df_residual <- length(Response) - p
+  dev <- deviance_quasipoisson(Response, res_CA)
+  phi <- dev / df_residual
+  
+  # Pseudo Log-Vraissemblance
+  res_CA_QuasiPoisson <- -sum(Response * log(res_CA) - res_CA - lfactorial(Response)) / phi # - Loglikelihood
+  
+  return(res_CA_QuasiPoisson)
+}
+
+CA_complete2_NB <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none", multicore = FALSE, mc.cores = 4) {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_CA <- CA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact,
+    multicore = multicore,
+    mc.cores  = mc.cores
+  )
+  
+  # Pour stabilité numérique, éviter log(0)
+  if (any(res_CA <= 0)) {
+    return(-Inf)
+  }
+  
+  neg_loglik_for_theta <- function(log_theta, y, mu) {
+    theta <- exp(log_theta)  # contrainte >0
+    -sum(dnbinom(y, size = theta, mu = res_CA, log = TRUE))
+  }
+  res <- optim(par = log(1), fn = neg_loglik_for_theta, y = Response, mu = res_CA,
+               method = "Brent", lower = log(1e-8), upper = log(1e6)) 
+  
+  est_theta <- exp(res$par)
+  print(est_theta)
+  
+  res_CA_NB <- -sum(dnbinom(Response, size = est_theta, mu = res_CA, log = TRUE))[1]
+  
+  # Log-Vraissemblance
+  
+  return(res_CA_NB)
+}
+
 CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, lower = NULL, start = NULL, interact = "none", identical_slopes = FALSE, error_type = "Normal", iter = 500, multicore = FALSE, mc.cores = 4) {
+  
+  tol_drc <- 10^-8
+  
   # 1. Dose-response curves known ----
   if (!is.null(param)) {
     if ((is.null(param$Max)) | (is.null(param$Slopes)) | (is.null(param$Ec50s))) {
@@ -793,6 +1126,29 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
         res_CA_optim <- optimize(
           f = function(x) {
             CA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x,
+              interact  = interact,
+              multicore = multicore,
+              mc.cores  = mc.cores
+            )
+          },
+          upper = upper,
+          lower = lower
+        )
+        Res <- list(
+          a     = res_CA_optim$minimum,
+          Error = res_CA_optim$objective
+        )
+        return(Res)
+      } else if (error_type == "NB") {
+        res_CA_optim <- optimize(
+          f = function(x) {
+            CA_complete2_NB(
               C_mat     = C_mat,
               Response  = Response,
               Max       = param$Max,
@@ -870,6 +1226,32 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           Error = res_CA_optim$value
         )
         return(Res)
+      } else if (error_type == "NB") {
+        res_CA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            CA_complete2_NB(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact,
+              multicore = multicore,
+              mc.cores  = mc.cores
+            )
+          }
+        )
+        cat(res_CA_optim$convergence)
+        
+        Res <- list(
+          a     = res_CA_optim$par[1],
+          b     = res_CA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_CA_optim$value
+        )
+        return(Res)
       } else {
         stop("Misspecification of the error model")
       }
@@ -908,6 +1290,31 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           par = rep(0, dim(C_mat)[2]),
           fn = function(x) {
             CA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact,
+              multicore = multicore,
+              mc.cores  = mc.cores
+            )
+          }
+        )
+        cat(res_CA_optim$convergence)
+        Res <- list(
+          a     = res_CA_optim$par[1],
+          b     = res_CA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_CA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "NB") {
+        res_CA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            CA_complete2_NB(
               C_mat     = C_mat,
               Response  = Response,
               Max       = param$Max,
@@ -984,6 +1391,31 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           Error = res_CA_optim$value
         )
         return(Res)
+      } else if (error_type == "NB") {
+        res_CA_optim <- optim(
+          par = c(0, 0),
+          fn = function(x) {
+            CA_complete2_NB(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2],
+              interact  = interact,
+              multicore = multicore,
+              mc.cores  = mc.cores
+            )
+          }
+        )
+        cat(res_CA_optim$convergence)
+        Res <- list(
+          a     = res_CA_optim$par[1],
+          b     = res_CA_optim$par[2],
+          Error = res_CA_optim$value
+        )
+        return(Res)
       } else {
         stop("Misspecification of the error model")
       }
@@ -1031,7 +1463,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_CA_nmk$par[1],
@@ -1057,7 +1489,33 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2:3]),
+            Ec50s  = c(res_CA_nmk$par[4:5]),
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                interact  = interact,
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_CA_nmk$par[1],
@@ -1101,7 +1559,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_CA_nmk$par[1],
@@ -1130,7 +1588,35 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1],
+            Slopes = c(res_CA_nmk$par[2:3]), 
+            Ec50s  = c(res_CA_nmk$par[4:5]), 
+            a      = res_CA_nmk$par[6], 
+            Error  = res_CA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], 
+                interact  = interact, 
+                multicore = multicore, 
+                mc.cores  = mc.cores
+              )
+            },
+            upper   = upper,
+            lower   = lower,
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_CA_nmk$par[1],
@@ -1177,7 +1663,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1207,7 +1693,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               },
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1217,6 +1703,36 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             b      = res_CA_nmk$par[7:(7 + (dim(C_mat)[2] - 1) - 1)], 
             Error  = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6],
+                b         = x[7:length(x)], 
+                interact  = interact, 
+                multicore = multicore, 
+                mc.cores  = mc.cores
+              )
+            },
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2:3]), 
+            Ec50s  = c(res_CA_nmk$par[4:5]), 
+            a      = res_CA_nmk$par[6], 
+            b      = res_CA_nmk$par[7:(7 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1253,7 +1769,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1284,7 +1800,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
               upper   = upper, 
               lower   = lower, 
-              control = list(tol = 10^-6)
+              control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1294,6 +1810,36 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             b      = res_CA_nmk$par[7], 
             Error  = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], b = x[7],
+                interact  = interact, 
+                multicore = multicore, 
+                mc.cores  = mc.cores
+              )
+            }, 
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2:3]), 
+            Ec50s  = c(res_CA_nmk$par[4:5]), 
+            a      = res_CA_nmk$par[6], 
+            b      = res_CA_nmk$par[7], 
+            Error  = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1333,7 +1879,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1359,7 +1905,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1367,6 +1913,32 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             Ec50s  = c(res_CA_nmk$par[3:4]), 
             Error  = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3], x[4]), 
+                interact  = interact, 
+                multicore = multicore, 
+                mc.cores  = mc.cores
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]), 
+            Ec50s  = c(res_CA_nmk$par[3:4]), 
+            Error  = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1402,7 +1974,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1430,7 +2002,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max = res_CA_nmk$par[1], 
@@ -1439,6 +2011,34 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             a = res_CA_nmk$par[5],
             Error = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat = C_mat, 
+                Response = Response, 
+                Max = x[1], 
+                Slopes = c(x[2], x[2]), 
+                Ec50s = c(x[3], x[4]), 
+                a = x[5], 
+                interact = interact,
+                multicore = multicore,
+                mc.cores = mc.cores
+              )
+            }, 
+            upper = upper, 
+            lower = lower,
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]), 
+            Ec50s = c(res_CA_nmk$par[3:4]), 
+            a = res_CA_nmk$par[5],
+            Error = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1476,7 +2076,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper,
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1],
@@ -1506,7 +2106,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1516,6 +2116,36 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             b      = res_CA_nmk$par[6:(6 + (dim(C_mat)[2] - 1) - 1)], 
             Error  = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6:length(x)], 
+                interact  = interact, 
+                multicore = multicore,
+                mc.cores  = mc.cores
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]), 
+            Ec50s  = c(res_CA_nmk$par[3:4]), 
+            a      = res_CA_nmk$par[5],
+            b      = res_CA_nmk$par[6:(6 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1552,7 +2182,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1582,7 +2212,7 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
               }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
             )
           Res <- list(
             Max    = res_CA_nmk$par[1], 
@@ -1592,6 +2222,36 @@ CA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             b      = res_CA_nmk$par[6], 
             Error  = res_CA_nmk$value
             )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_CA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              CA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6], 
+                interact  = interact, 
+                multicore = multicore, 
+                mc.cores  = mc.cores
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_CA_nmk$par[1], 
+            Slopes = c(res_CA_nmk$par[2], res_CA_nmk$par[2]), 
+            Ec50s  = c(res_CA_nmk$par[3:4]), 
+            a      = res_CA_nmk$par[5],
+            b      = res_CA_nmk$par[6], 
+            Error  = res_CA_nmk$value
+          )
           return(Res)
         } else {
           stop("Misspecification of the error model")
@@ -1743,12 +2403,97 @@ IA_complete2_Poisson <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b =
   if (any(res_IA <= 0)) {
     return(-Inf)
   }
-  res_IA_Poisson <- -sum(Response * log(res_IA) - res_IA - lfactorial(Response)) # - Loglikelihood
+  # res_IA_Poisson <- -sum(Response * log(res_IA) - res_IA - lfactorial(Response)) # - Loglikelihood
+  
+  res_IA_Poisson <- -sum(dpois(Response, lambda = res_IA, log = TRUE)) # - Loglikelihood
   
   return(res_IA_Poisson)
 }
 
+IA_complete2_QuasiPoisson <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none") {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_IA <- IA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact
+  )
+  
+  # Pour stabilité numérique, éviter log(0)
+  if (any(res_IA <= 0)) {
+    return(-Inf)
+  }
+  
+  # Number of parameters
+  if (interact == "none"){
+    p <- 0
+  } else if (interact == "SA") {
+    p <- 1
+  } else if (interact %in% c("DR", "DL")) {
+    p <- 2
+  }
+  
+  term1 <- ifelse(Response == 0, 0, Response * log(Response / res_IA))
+  term2 <- Response - res_IA
+  deviance_Poisson <- 2 * sum(term1 - term2)
+  
+  df_residual <- length(Response) - p
+  dev <- deviance_quasipoisson(Response, res_IA)
+  phi <- dev / df_residual
+  
+  # Pseudo Log-Vraissemblance
+  res_IA_QuasiPoisson <- -sum(Response * log(res_IA) - res_IA - lfactorial(Response)) / phi # - Loglikelihood
+  
+  return(res_IA_QuasiPoisson)
+}
+
+IA_complete2_NB <- function(C_mat, Response, Max, Slopes, Ec50s, a = 0, b = 0, interact = "none") {
+  
+  if (length(Response) != (dim(C_mat)[1])) {
+    stop("Should be as many responses as there are conditions")
+  }
+  
+  res_IA <- IA_complete2(
+    C_mat     = C_mat,
+    Max       = Max,
+    Slopes    = Slopes,
+    Ec50s     = Ec50s,
+    a         = a,
+    b         = b,
+    interact  = interact
+  )
+  
+  # Pour stabilité numérique, éviter log(0)
+  if (any(res_IA <= 0)) {
+    return(-Inf)
+  }
+  
+  neg_loglik_for_theta <- function(log_theta, y, mu) {
+    theta <- exp(log_theta)  # contrainte >0
+    -sum(dnbinom(y, size = theta, mu = res_IA, log = TRUE))
+  }
+  res <- optim(par = log(1), fn = neg_loglik_for_theta, y = Response, mu = res_IA,
+               method = "Brent", lower = log(1e-8), upper = log(1e6)) 
+  
+  est_theta <- exp(res$par)
+  print(est_theta)
+  # Log-Vraissemblance
+  res_IA_NB <- -sum(dnbinom(Response, size = est_theta, mu = res_IA, log = TRUE)) # - Loglikelihood
+  
+  return(res_IA_NB)
+}
+
 IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, lower = NULL, start = NULL, interact = "none", identical_slopes = FALSE, error_type = "Normal", iter = 500, multicore = FALSE, mc.cores = 4) {
+  
+  tol_drc <- 10^-8
+  
   # 1. Dose-response curves known ----
   if (!is.null(param)) {
     if ((is.null(param$Max)) | (is.null(param$Slopes)) | (is.null(param$Ec50s))) {
@@ -1809,6 +2554,27 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           Error = res_IA_optim$objective
         )
         return(Res)
+      } else if (error_type == "NB") {
+        res_IA_optim <- optimize(
+          f = function(x) {
+            IA_complete2_NB(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x,
+              interact  = interact
+            )
+          },
+          upper = upper,
+          lower = lower
+        )
+        Res <- list(
+          a     = res_IA_optim$minimum,
+          Error = res_IA_optim$objective
+        )
+        return(Res)
       } else {
         stop("Misspecification of the error model")
       }
@@ -1844,6 +2610,30 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           par = rep(0, dim(C_mat)[2]),
           fn = function(x) {
             IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "NB") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_NB(
               C_mat     = C_mat,
               Response  = Response,
               Max       = param$Max,
@@ -1917,6 +2707,29 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           Error = res_IA_optim$value
         )
         return(Res)
+      } else if (error_type == "NB") {
+        res_IA_optim <- optim(
+          par = rep(0, dim(C_mat)[2]),
+          fn = function(x) {
+            IA_complete2_NB(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2:length(x)],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2:(2 + (dim(C_mat)[2] - 1) - 1)],
+          Error = res_IA_optim$value
+        )
+        return(Res)
       } else {
         stop("Misspecification of the error model")
       }
@@ -1951,6 +2764,29 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
           par = c(0, 0),
           fn = function(x) {
             IA_complete2_Poisson(
+              C_mat     = C_mat,
+              Response  = Response,
+              Max       = param$Max,
+              Slopes    = param$Slopes,
+              Ec50s     = param$Ec50s,
+              a         = x[1],
+              b         = x[2],
+              interact  = interact
+            )
+          }
+        )
+        cat(res_IA_optim$convergence)
+        Res <- list(
+          a     = res_IA_optim$par[1],
+          b     = res_IA_optim$par[2],
+          Error = res_IA_optim$value
+        )
+        return(Res)
+      } else if (error_type == "NB") {
+        res_IA_optim <- optim(
+          par = c(0, 0),
+          fn = function(x) {
+            IA_complete2_NB(
               C_mat     = C_mat,
               Response  = Response,
               Max       = param$Max,
@@ -2014,7 +2850,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1],
@@ -2038,7 +2874,31 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]),
+            Ec50s  = c(res_IA_nmk$par[4:5]),
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat,
+                Response  = Response,
+                Max       = x[1],
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]),
+                interact  = interact
+              )
+            },
+            upper = upper,
+            lower = lower,
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1],
@@ -2080,7 +2940,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper = upper,
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1],
@@ -2107,7 +2967,33 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper   = upper,
             lower   = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1],
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start,
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], 
+                interact  = interact
+              )
+            },
+            upper   = upper,
+            lower   = lower,
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1],
@@ -2152,7 +3038,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2180,7 +3066,35 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             },
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7:(7 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]),
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6],
+                b         = x[7:length(x)], 
+                interact  = interact
+              )
+            },
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2224,7 +3138,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2253,7 +3167,35 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper   = upper, 
             lower   = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2:3]), 
+            Ec50s  = c(res_IA_nmk$par[4:5]), 
+            a      = res_IA_nmk$par[6], 
+            b      = res_IA_nmk$par[7], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[3]), 
+                Ec50s     = c(x[4], x[5]), 
+                a         = x[6], b = x[7],
+                interact  = interact
+              )
+            }, 
+            upper   = upper, 
+            lower   = lower, 
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2300,7 +3242,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2324,7 +3266,31 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3], x[4]), 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2365,7 +3331,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2391,7 +3357,33 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower,
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s = c(res_IA_nmk$par[3:4]), 
+            a = res_IA_nmk$par[5],
+            Error = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat = C_mat, 
+                Response = Response, 
+                Max = x[1], 
+                Slopes = c(x[2], x[2]), 
+                Ec50s = c(x[3], x[4]), 
+                a = x[5], 
+                interact = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower,
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max = res_IA_nmk$par[1], 
@@ -2435,7 +3427,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper,
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1],
@@ -2463,7 +3455,35 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5],
+            b      = res_IA_nmk$par[6:(6 + (dim(C_mat)[2] - 1) - 1)], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response, 
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6:length(x)], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2507,7 +3527,7 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 
@@ -2535,7 +3555,35 @@ IA_complete_fit_speed <- function(C_mat, Response, param = NULL, upper = NULL, l
             }, 
             upper = upper, 
             lower = lower, 
-            control = list(tol = 10^-6)
+            control = list(tol = tol_drc)
+          )
+          Res <- list(
+            Max    = res_IA_nmk$par[1], 
+            Slopes = c(res_IA_nmk$par[2], res_IA_nmk$par[2]), 
+            Ec50s  = c(res_IA_nmk$par[3:4]), 
+            a      = res_IA_nmk$par[5],
+            b      = res_IA_nmk$par[6], 
+            Error  = res_IA_nmk$value
+          )
+          return(Res)
+        } else if (error_type == "NB") {
+          res_IA_nmk <- nmkb(
+            par = start, 
+            fn = function(x) {
+              IA_complete2_NB(
+                C_mat     = C_mat, 
+                Response  = Response,
+                Max       = x[1], 
+                Slopes    = c(x[2], x[2]), 
+                Ec50s     = c(x[3:4]), 
+                a         = x[5], 
+                b         = x[6], 
+                interact  = interact
+              )
+            }, 
+            upper = upper, 
+            lower = lower, 
+            control = list(tol = tol_drc)
           )
           Res <- list(
             Max    = res_IA_nmk$par[1], 

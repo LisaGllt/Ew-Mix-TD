@@ -11,69 +11,15 @@ To be able to study the mixture and based on the Jonker simple interaction model
 ## Tests of different joint dose-response model for EPX and IMD
 
 ```{r data, warning=F, message=F}
-# Value given to controls for plot
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
+
 Val_Ctrl <- 1e-4
 Label_Ctrl <- "0 (Ctrl)"
 
-# Data EC50
-
-df_repro_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet="Repro") |> 
-  mutate(
-    Dose = as.numeric(Dose),
-    Dose_plot = case_when(
-      Dose == 0 ~ Val_Ctrl,
-      !(Dose == 0) ~ Dose
-    ),
-    Dose_f = as.factor(round(Dose, 4)),
-    w=w_tot/Nb_ind,
-    L=w^(1/3),
-    )
-
-# Data for EPX
-df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |> 
-  mutate(Molecule = "EPX")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_EPX <- subset(df_repro_EPX, t==28 & (!Status=="D"))$ID_cosm
-df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)
-
-# Data for IMD
-df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |> 
-  mutate(Molecule = "IMD")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_IMD <- subset(df_repro_IMD, t==28 & (!Status=="D"))$ID_cosm
-df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)
-
-df_repro <- rbind(df_repro_EPX, df_repro_IMD)
-df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)
-
-Control_IMD <- mean(subset(df_repro_IMD_alive, Dose == 0)$Nb_cocoons, na.rm=T)
-Control_EPX <- mean(subset(df_repro_EPX_alive, Dose == 0)$Nb_cocoons, na.rm=T)
-
-df_repro_EPX_alive <- df_repro_EPX_alive |> 
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX *100
-    ) 
-df_repro_IMD_alive <- df_repro_IMD_alive |> 
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
-    ) 
-
-
-df_repro_alive <- df_repro_alive |> 
-  mutate(
-    r_Nb_cocoons = case_when(
-      Molecule == "IMD" ~ Nb_cocoons / Control_IMD,
-      Molecule == "EPX" ~ Nb_cocoons / Control_EPX
-    ) * 100
-    ) 
-
-df_repro_alive_mean <- df_repro_alive |>
-  dplyr::group_by(Dose, Dose_plot, Molecule) |>
-  dplyr::summarise(
-    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
-    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
-    .groups = "drop"
-  )
+path_mixture <- here::here("fig/Mixture/Design")
 ```
 
 ### Definition of the different models
@@ -82,7 +28,7 @@ df_repro_alive_mean <- df_repro_alive |>
 # No common parameter
 drc.1<- drm(
   r_Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
+  data = df_expA_repro,
   type="continuous",
   fct=LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
@@ -115,7 +61,7 @@ CI.1$pmax <- pm.1[,3]
 # Common Ymax
 drc.2<- drm(
   r_Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
+  data = df_expA_repro,
   type="continuous",
   fct=LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
@@ -139,7 +85,7 @@ CI.2$pmax <- pm.2[,3]
 # Common slope
 drc.3<- drm(
   r_Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
+  data = df_expA_repro,
   type="continuous",
   fct=LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
@@ -163,7 +109,7 @@ CI.3$pmax <- pm.3[,3]
 # Common Ymax and slope
 drc.4<- drm(
   r_Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
+  data = df_expA_repro,
   type="continuous",
   fct=LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
@@ -220,7 +166,7 @@ plot_drc_1 <- ggplot()+
     linewidth=line_width
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -231,7 +177,7 @@ plot_drc_1 <- ggplot()+
     alpha=0.4
     )+
   geom_point(
-    data=df_repro_alive_mean, 
+    data=df_expA_repro_mean, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -292,7 +238,7 @@ plot_drc_2 <- ggplot()+
     linewidth=line_width
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -303,7 +249,7 @@ plot_drc_2 <- ggplot()+
     alpha=0.4
     )+
   geom_point(
-    data=df_repro_alive_mean, 
+    data=df_expA_repro_mean, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -363,7 +309,7 @@ plot_drc_3 <- ggplot()+
     linewidth=line_width
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -374,7 +320,7 @@ plot_drc_3 <- ggplot()+
     alpha=0.4
     )+
   geom_point(
-    data=df_repro_alive_mean, 
+    data=df_expA_repro_mean, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -434,7 +380,7 @@ plot_drc_4 <- ggplot()+
     linewidth=line_width
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -445,7 +391,7 @@ plot_drc_4 <- ggplot()+
     alpha=0.4
     )+
   geom_point(
-    data=df_repro_alive_mean, 
+    data=df_expA_repro_mean, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -496,16 +442,16 @@ plot_save
 
 ```{r, include=F}
 ggsave(
-  filename="Repro_comp_drc_models.png", 
+  filename="ExpA_repro_comp_drc_models.png", 
   plot=plot_save, 
   width=12, height = 8, 
-  path=here::here("fig/Single_expo")
+  path=path_mixture
   )
 ggsave(
-  filename="Repro_comp_drc_models.svg", 
+  filename="ExpA_repro_comp_drc_models.svg", 
   plot=plot_save, 
   width=12, height = 8, 
-  path=here::here("fig/Single_expo")
+  path=path_mixture
   )
 ```
 
@@ -533,7 +479,7 @@ plot_drc.4.show <- ggplot()+
     linewidth=line_width
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons, 
@@ -544,7 +490,7 @@ plot_drc.4.show <- ggplot()+
     alpha=0.4
     )+
     geom_point(
-     data=df_repro_alive_mean, 
+     data=df_expA_repro_mean, 
      aes(
        x=Dose_plot, 
        y=r_Nb_cocoons, 
@@ -583,18 +529,18 @@ plot_drc.4.show <- ggplot()+
 
 ```{r, include=F}
 ggsave(
-  filename="Repro_drc_mixmodel.png", 
+  filename="ExpA_repro_drc_mixmodel.png", 
   plot=plot_drc.4.show, 
   width=5, 
   height = 4, 
-  path=here::here("fig/Single_expo")
+  path=path_mixture
   )
 ggsave(
-  filename="Repro_drc_mixmodel.svg", 
+  filename="ExpA_repro_drc_mixmodel.svg", 
   plot=plot_drc.4.show, 
   width=5, 
   height = 4, 
-  path=here::here("fig/Single_expo")
+  path=path_mixture
   )
 ```
 
@@ -621,7 +567,7 @@ The drc.1 model is not the best biologically speaking because Ymax should be the
 anova(
   drc.1, 
   drc.2, 
-  test="F"
+  test="Chisq"
   )
 ```
 
@@ -629,7 +575,7 @@ anova(
 anova(
   drc.1, 
   drc.3, 
-  test="F"
+  test="Chisq"
   )
 ```
 
@@ -637,7 +583,7 @@ anova(
 anova(
   drc.1, 
   drc.4, 
-  test="F"
+  test="Chisq"
   )
 ```
 
@@ -645,7 +591,7 @@ anova(
 anova(
   drc.2, 
   drc.4, 
-  test="F"
+  test="Chisq"
   )
 ```
 
@@ -702,7 +648,7 @@ Normality test and homogeneity of variance test for the drc.4 model.
 # Residus normality
 shapiro.test(residuals(drc.4))
 # Residus variance homogeneity
-bartlett.test(residuals(drc.4), as.factor(subset(df_repro_alive, t==28)$Dose))
+bartlett.test(residuals(drc.4), as.factor(subset(df_expA_repro, t==28)$Dose))
 ```
 
 ### Summary of the drc.4 model
@@ -989,18 +935,27 @@ interactive_plot
 
 ```{r, include=F}
 ggsave(
-  filename="Repro_design_exp.png", 
+  filename="Mixture_design_exp.png", 
   plot=plot_design, 
   width=5, 
   height = 4, 
-  path=here::here("fig/Mixture")
+  path=path_mixture
   )
+
 ggsave(
-  filename="Repro_design_exp.svg", 
+  filename="Mixture_design_exp.jpg", 
   plot=plot_design, 
   width=5, 
   height = 4, 
-  path=here::here("fig/Mixture")
+  path=path_mixture
+  )
+
+ggsave(
+  filename="Mixture_design_exp.svg", 
+  plot=plot_design, 
+  width=5, 
+  height = 4, 
+  path=path_mixture
   )
 ```
 
@@ -1051,7 +1006,7 @@ plot_drc_th <- ggplot()+
       )
     )+
   geom_point(
-    data=df_repro_alive, 
+    data=df_expA_repro, 
     aes(
       x=Dose_plot, 
       y=r_Nb_cocoons,
@@ -1107,18 +1062,18 @@ plot_drc_th
 
 ```{r, include=F}
 ggsave(
-  filename="Repro_design_effect_range.png", 
+  filename="Mixture_design_effect_range.png", 
   plot=plot_drc_th, 
   width=8, 
   height = 4, 
-  path=here::here("fig/Mixture")
+  path=path_mixture
   )
 ggsave(
-  filename="Repro_design_effect_range.svg", 
+  filename="Mixture_design_effect_range.svg", 
   plot=plot_drc_th, 
   width=8, 
   height = 4, 
-  path=here::here("fig/Mixture")
+  path=path_mixture
   )
 ```
 
