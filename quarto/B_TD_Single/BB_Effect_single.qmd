@@ -197,7 +197,7 @@ Label_Ctrl <- "0 (Ctrl)"
 
 #### Initial conditions
 
-We can first take a look at the initial weights of individuals (@fig-initRepro).
+We can first take a look at the initial weights of individuals (@fig-initExpARepro).
 
 ```{r, warning=F, message=F}
 #| fig-cap: Initial weights of adult earthworms in experiment A. 
