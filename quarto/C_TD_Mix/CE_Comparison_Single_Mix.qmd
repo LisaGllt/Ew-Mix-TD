@@ -7,6 +7,7 @@ palette <- colorRampPalette(c("#5E81AC", "#88C0D0"))
 col_mix <- Nord_polar[4]
 pal_ratio <- c("#88C0D0", col_mix, col_mix, col_mix, "#5E81AC",col_mix)
 
+path_fig <- here::here("fig/Mixture/Comp_expA_expB")
 
 ```
 
@@ -22,199 +23,30 @@ Because the single substances were tested again during the mixture experiment, t
 Val_Ctrl <- 1e-4
 Label_Ctrl <- "0 (Ctrl)"
 
-# Data EC50
 
-df_repro_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet = "Repro") |>
-  mutate(
-    Dose = as.numeric(Dose),
-    Dose_plot = case_when(
-      Dose == 0 ~ Val_Ctrl,
-      !(Dose == 0) ~ Dose
-    ),
-    Dose_f = as.factor(round(Dose, 4)),
-    w = w_tot / Nb_ind,
-    L = w^(1 / 3),
-  )
-# Data for EPX
-df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |>
-  mutate(Molecule = "EPX")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_EPX <- subset(df_repro_EPX, t == 28 & (!Status == "D"))$ID_cosm
-df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)
-
-# Data for IMD
-df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |>
-  mutate(Molecule = "IMD")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_IMD <- subset(df_repro_IMD, t == 28 & (!Status == "D"))$ID_cosm
-df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)
-df_repro <- rbind(df_repro_EPX, df_repro_IMD)
-df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)
-
-Control_IMD <- mean(subset(df_repro_IMD_alive, Dose == 0)$Nb_cocoons, na.rm = T)
-Control_EPX <- mean(subset(df_repro_EPX_alive, Dose == 0)$Nb_cocoons, na.rm = T)
-
-df_repro_EPX_alive <- df_repro_EPX_alive |>
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
-  )
-
-df_repro_IMD_alive <- df_repro_IMD_alive |>
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
-  )
-
-df_repro_alive <- df_repro_alive |>
-  mutate(
-    r_Nb_cocoons = case_when(
-      Molecule == "IMD" ~ Nb_cocoons / Control_IMD,
-      Molecule == "EPX" ~ Nb_cocoons / Control_EPX
-    ) * 100
-  )
-
-df_repro_alive_mean <- df_repro_alive |>
-  dplyr::group_by(Dose, Dose_plot, Molecule) |>
-  dplyr::summarise(
-    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
-    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
-    .groups = "drop"
-  )
+# Data from experiment A (Single substances experiement)
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
 
 # Retriving EC50 
 df_drc_param <- read.csv(here::here("data/DRC_parameters_cocoons_really_used.csv"))
 EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
 IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
 
+# Data from experiment B (Mixture experiment)
+data_expB                 <- f_read_data_expB()
+df_expB_growth            <- data_expB$df_expB_growth
+df_expB_repro             <- data_expB$df_expB_repro
+df_expB_repro_mean        <- data_expB$df_expB_repro_mean
+df_expB_repro_single      <- data_expB$df_expB_repro_single
+df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
 
-# Mixture data
-
-df_mix_ind <- read_excel(here::here("data/Data_Mix.xlsx"), sheet = "ReproSpring2025weight") |>
-  mutate(
-    Condition = paste0(Ratio, Line),
-    Nb_rep = as.factor(Nb_rep),
-    w = as.numeric(w),
-    L = w^(1 / 3),
-    TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX / EPX_EC50_drc,
-    Dose_IMD_plot = case_when(
-      Dose_IMD == 0 ~ Val_Ctrl,
-      !(Dose_IMD == 0) ~ Dose_IMD
-    ),
-    Dose_EPX_plot = case_when(
-      Dose_EPX == 0 ~ Val_Ctrl,
-      !(Dose_EPX == 0) ~ Dose_EPX
-    ),
-    TU_drc_plot = case_when(
-      TU_drc == 0 ~ Val_Ctrl,
-      !(TU_drc == 0) ~ TU_drc
-    )
-  )
-
-df_mix_coc <- read_excel(here::here("data/Data_Mix.xlsx"), sheet = "ReproSpring2025coc") |>
-  mutate(
-    Condition = paste0(Ratio, Line),
-    w_coc = w_coc_tot / (Nb_cocoons - Nb_cocoons_crushed),
-    TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX / EPX_EC50_drc,
-    Dose_IMD_plot = case_when(
-      Dose_IMD == 0 ~ Val_Ctrl,
-      !(Dose_IMD == 0) ~ Dose_IMD
-    ),
-    Dose_EPX_plot = case_when(
-      Dose_EPX == 0 ~ Val_Ctrl,
-      !(Dose_EPX == 0) ~ Dose_EPX
-    ),
-    TU_drc_plot = case_when(
-      TU_drc == 0 ~ Val_Ctrl,
-      !(TU_drc == 0) ~ TU_drc
-    )
-  )
-
-df_coc_mean_controls <- subset(df_mix_coc, Dose_IMD == 0 & Dose_EPX == 0) |> 
-  aggregate(Nb_cocoons ~ Lot, FUN = mean)
-
-Mean_coc_controls <- mean(subset(df_mix_coc, Dose_IMD == 0 & Dose_EPX == 0)$Nb_cocoons)
-
-#Shift <- 1e-6
-
-df_mix_coc <- df_mix_coc |> 
-  mutate(
-    r_Nb_cocoons = Nb_cocoons/Mean_coc_controls
-    )
-
-df_mix_coc <- df_mix_coc |>
-  mutate(
-    Trans_r_Nb_cocoons = sqrt(r_Nb_cocoons)
-    )
-
-df_conc_mix <- df_mix_coc |> 
-  dplyr::select(Condition, Dose_IMD, Dose_EPX)%>%
-  distinct(Condition, .keep_all = TRUE)
-
-df_mix_cocsize <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025cocsize") |> 
-  mutate(
-    Condition = paste0(Ratio, Line),
-    v_coc = 4/3*pi*Coc_height*Coc_width^2,
-  ) |> 
-  left_join(df_conc_mix, by = "Condition") |> 
-  mutate(TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX/EPX_EC50_drc)
-
-df_mix_cocsize_cosm <- df_mix_cocsize |> 
-  aggregate(v_coc ~ Ratio + Line + Nb_rep + TU_drc, FUN = mean) |> 
-  mutate(Condition = paste0(Ratio, Line))
-
-df_mix_coc <- df_mix_coc |> 
-  full_join(df_mix_cocsize_cosm, by = c("Condition", "Nb_rep", "Ratio", "Line", "TU_drc")) |> 
-  mutate(
-    Id_Cond = w_coc/v_coc
-    )
-
-df_mix_coc_mean <- df_mix_coc |>
-  dplyr::group_by(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc) |>
-  dplyr::summarise(
-    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
-    w_coc = mean(w_coc, na.rm = TRUE),
-    v_coc = mean(v_coc, na.rm = TRUE),
-    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
-    Trans_r_Nb_cocoons = mean(Trans_r_Nb_cocoons, na.rm = TRUE),
-    #Nb_cocoons_normalized = mean(Nb_cocoons_normalized, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-df_mix_coc_IMD_mean <- subset(df_mix_coc_mean, Dose_EPX ==0)
-df_mix_coc_EPX_mean <- subset(df_mix_coc_mean, Dose_IMD ==0)
-
-
-
-df_mix_coc_sd <- df_mix_coc |>
-  dplyr::group_by(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc) |>
-  dplyr::summarise(
-    Nb_cocoons = sd(Nb_cocoons, na.rm = TRUE),
-    w_coc = sd(w_coc, na.rm = TRUE),
-    v_coc = sd(v_coc, na.rm = TRUE),
-    r_Nb_cocoons = sd(r_Nb_cocoons, na.rm = TRUE),
-    Trans_r_Nb_cocoons = sd(Trans_r_Nb_cocoons, na.rm = TRUE),
-    #Nb_cocoons_normalized = mean(Nb_cocoons_normalized, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-df_mix_coc_cv <- df_mix_coc_mean |>
-  dplyr::rename_with(~ paste0(.x, "_mean"), -c(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc)) |>
-  dplyr::left_join(
-    df_mix_coc_sd |> 
-      dplyr::rename_with(~ paste0(.x, "_sd"), -c(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc)),
-    by = c("Condition", "Dose_IMD", "Dose_EPX", "Dose_IMD_plot", "Dose_EPX_plot", "Ratio", "Line", "TU_drc")
-  ) |>
-  dplyr::mutate(
-    CV_Nb_cocoons = Nb_cocoons_sd / Nb_cocoons_mean,
-    CV_w_coc = w_coc_sd / w_coc_mean,
-    CV_v_coc = v_coc_sd / v_coc_mean,
-    CV_r_Nb_cocoons = r_Nb_cocoons_sd / r_Nb_cocoons_mean,
-    CV_Trans_r_Nb_cocoons = Trans_r_Nb_cocoons_sd / Trans_r_Nb_cocoons_mean
-  )
-
-# mean(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
-# min(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
-# max(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
-# median(df_mix_coc_cv$CV_Nb_cocoons, na.rm=TRUE)
+# Retriving EC50 
+df_drc_param <- read.csv(here::here("data/DRC_parameters_cocoons_really_used.csv"))
+EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
+IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
 
 ```
 
@@ -227,86 +59,77 @@ We can first take a look at the initial weights of individuals from the mixture 
 #| label: fig-init
 #| fig-width: 10
 #| fig-height: 4
-
 pal_lot <- c(Nord_frost[3], Nord_polar[4])
 
 # Weights at t=0
 p <- ggplot(
-  data=subset(df_mix_ind,t==0), 
+  data = subset(df_expB_growth, t == 0),
   aes(
-    x=Condition, 
-    y=w
-    )
-  )+
-
+    x = Condition,
+    y = w
+  )
+) +
   geom_boxplot(
-    alpha=0.2,
+    alpha = 0.2,
     color = Nord_polar[1]
-    )+
+  ) +
   geom_dotplot(
     aes(
-    color=Lot, 
-    fill=Lot
+      color = Lot,
+      fill = Lot
     ),
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.5, 
-    alpha=0.7
-    )+
-  
-  scale_color_manual(values=pal_lot)+
-  scale_fill_manual(values=pal_lot)+
-
-  labs(x="Condition", y="Weight (mg)")+
-  
-
-  theme_classic(12)+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.5,
+    alpha = 0.7
+  ) +
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
+  labs(x = "Condition", y = "Weight (mg)") +
+  theme_classic(12) +
   theme(
-    #legend.position = "none", 
-    legend.title=element_text(size=sizetitle-2,face="bold"),
-    legend.text = element_text(size=sizetitle-2,face="plain"),
-    
-    title=element_text(size=sizetitle, face="bold"), 
-    
+    # legend.position = "none",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    legend.text = element_text(size = sizetitle - 2, face = "plain"),
+    title = element_text(size = sizetitle, face = "bold"),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size=sizetitle,face="plain"),
-    
-    #axis.text.x = element_blank(),
-    axis.line.x=element_blank(),
-    axis.ticks.x=element_blank(),
-    
+    axis.title.y = element_text(size = sizetitle, face = "plain"),
+
+    # axis.text.x = element_blank(),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
     strip.background = element_rect(
-      color="black", 
-      fill="grey95", 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
     )
+  )
 p
 ```
 
-```{r, include=F}
+```{r saveinit, include=F}
 ggsave(
-  filename="Mix_initial_weights_Spring.png",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_initial_weights.png",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_initial_weights_Spring.jpg",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_initial_weights.jpg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_initial_weights_Spring.svg",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_initial_weights.svg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_fig
+)
 ```
 
 ## Comparison of the controls
@@ -317,20 +140,19 @@ ggsave(
 #| fig-width: 4
 #| fig-height: 5
 
-df_mix_coc_ctrl <- subset(df_mix_coc, Ratio == "N") |> 
-  dplyr::select(Nb_cocoons) |> 
+df_expB_repro_ctrl <- subset(df_expB_repro, Ratio == "N") |>
+  dplyr::select(Nb_cocoons) |>
   mutate(Experiment = "Experiment B")
 
-df_repro_alive_ctrl <- subset(df_repro_IMD_alive, Dose == 0) |> 
-  dplyr::select(Nb_cocoons, Lot) |> 
+df_expA_repro_ctrl <- subset(df_expA_repro, Dose == 0) |>
+  dplyr::select(Nb_cocoons, Lot) |>
   mutate(Experiment = case_when(
     Lot == "A" ~ "Experiment A\nSpring 2024",
     Lot == "B" ~ "Experiment A\nSummer 2024"
-    )
-    ) |> 
+  )) |>
   dplyr::select(Nb_cocoons, Experiment)
 
-df_controls <- rbind(df_repro_alive_ctrl,df_mix_coc_ctrl) 
+df_controls <- rbind(df_expA_repro_ctrl, df_expB_repro_ctrl)
 df_controls$Experiment <- factor(df_controls$Experiment, levels = c("Experiment A\nSpring 2024", "Experiment A\nSummer 2024", "Experiment B"))
 
 p <- ggplot(
@@ -339,38 +161,50 @@ p <- ggplot(
     x = Experiment,
     y = Nb_cocoons
   )
-)+
+) +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.8, 
-    alpha=0.7,
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.8,
+    alpha = 0.7,
     color = Nord_aurora[4],
     fill = Nord_aurora[4]
-    )+
+  ) +
   labs(
     x = "",
     y = "Number of cocoons produced per cosm (#)"
-  )+
-  theme_minimal()+
+  ) +
+  theme_minimal() +
   theme(
-    axis.text.x = element_text(angle=45, hjust=1)
+    axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
 p
 ```
 
-```{r, message=F, warning=F}
+```{r savecompctrl, include=F}
+ggsave(
+  filename = "Comp_expA_expB_ctrl.png",
+  plot = p,
+  width = 4, height = 5,
+  path = path_fig
+)
+ggsave(
+  filename = "Comp_expA_expB_ctrl.jpg",
+  plot = p,
+  width = 4, height = 5,
+  path = path_fig
+)
+```
+
+```{r testcompctrl, message=F, warning=F}
 #| code-fold: show
 
 pairwise.wilcox.test(df_controls$Nb_cocoons, df_controls$Experiment, p.adjust.method = "bonferroni", exact=F)
 
-#wilcox.test(Nb_cocoons ~ Experiment, data = df_controls)
-
 lm.controls <- lm(Nb_cocoons ~ Experiment, data = df_controls)
 lsmeans(lm.controls,pairwise~Experiment,adjust='bonferroni')
 
-#t.test(Nb_cocoons ~ Experiment, data = df_controls, var.equal = FALSE)
 ```
 
 The controls of the two different experiments are not significatively different.
@@ -381,38 +215,30 @@ The controls of the two different experiments are not significatively different.
 
 We then get the dose-response curves of the single substances from experiment A and experiment B.
 
-```{r drcsingle, warning=F, message=F}
+```{r drcexpA, warning=F, message=F}
 
-Dose_x <- expand.grid(
-  exp(
-    seq(
-      log(0.0001),log(5000),
-      by=(log(5000)-log(0.0001))/100
-    )
-  )
-)
-
-drc.ExpA<- drm(
-  Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
-  type="Poisson",
-  fct=LL.4(
+drc.ExpA <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expA_repro,
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(Molecule, Molecule, Molecule)
+  pmodels = data.frame(Molecule, Molecule, Molecule)
 )
 
-CI.ExpA <- data.frame(
-  Dose = c(Dose_x$Var1, Dose_x$Var1),
-  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+data_CI_ExpA <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.ExpA,
+  signif_param = 3
 )
 
-pm.ExpA <- predict(drc.ExpA, newdata=CI.ExpA, interval="confidence")
-CI.ExpA$p <- pm.ExpA[,1]
-CI.ExpA$pmin <- pm.ExpA[,2]
-CI.ExpA$pmax <- pm.ExpA[,3]
+df_CI_ExpA <- data_CI_ExpA$df_CI
+df_param.ExpA <- data_CI_ExpA$df_param
 
 EPX_EC50_ExpA <- coef(drc.ExpA)[5]
 IMD_EC50_ExpA <- coef(drc.ExpA)[6]
@@ -423,33 +249,12 @@ summary(drc.ExpA)
 
 ### Experiment B - Dose-response curves
 
-```{r drcmix, warning=F, message=F}
-
-df_mix_coc_IMD <- subset(df_mix_coc, Ratio %in% c("I", "N")) |>
-  mutate(
-    Dose = Dose_IMD,
-    Dose_plot = Dose_IMD_plot,
-    Molecule = "IMD"
-  ) |>
-  dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule, r_Nb_cocoons)
-
-df_mix_coc_EPX <- subset(df_mix_coc, Ratio %in% c("E", "N")) |>
-  mutate(
-    Dose = Dose_EPX,
-    Dose_plot = Dose_EPX_plot,
-    Molecule = "EPX"
-  ) |>
-  dplyr::select(Dose, Dose_plot, Nb_cocoons, Molecule, r_Nb_cocoons)
-
-df_mix_coc_single <- rbind(df_mix_coc_IMD, df_mix_coc_EPX)
-
-df_mix_coc_single_mean <- df_mix_coc_single |>
-  aggregate(Nb_cocoons ~ Dose + Dose_plot + Molecule, mean)
+```{r drcexpB, warning=F, message=F}
 
 # Common Ymax and slope
 drc.ExpB <- drm(
   Nb_cocoons ~ Dose, Molecule,
-  data = df_mix_coc_single,
+  data = df_expB_repro_single,
   type = "Poisson",
   fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
@@ -459,18 +264,19 @@ drc.ExpB <- drm(
   pmodels = data.frame(Molecule, Molecule, Molecule)
 )
 
-CI.ExpB <- data.frame(
-  Dose = c(Dose_x$Var1, Dose_x$Var1),
-  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+data_CI_ExpB <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.ExpB,
+  signif_param = 3
 )
 
-pm.ExpB <- predict(drc.ExpB, newdata = CI.ExpB, interval = "confidence")
-CI.ExpB$p <- pm.ExpB[, 1]
-CI.ExpB$pmin <- pm.ExpB[, 2]
-CI.ExpB$pmax <- pm.ExpB[, 3]
+df_CI_ExpB <- data_CI_ExpB$df_CI
+df_param.ExpB <- data_CI_ExpB$df_param
 
-EPX_EC50_ExpB <- coef(drc.ExpB)[3]
-IMD_EC50_ExpB <- coef(drc.ExpB)[4]
+EPX_EC50_ExpB <- coef(drc.ExpB)[5]
+IMD_EC50_ExpB <- coef(drc.ExpB)[6]
 
 summary(drc.ExpB)
 
@@ -483,6 +289,25 @@ summary(drc.ExpB)
 #| label: fig-drcIMDEPXcomp
 #| fig-width: 8
 #| fig-height: 4
+df_expA_repro_IMD <- df_expA_repro |>
+  filter(Molecule == "IMD")
+df_expA_repro_EPX <- df_expA_repro |>
+  filter(Molecule == "EPX")
+
+df_expA_repro_IMD_mean <- df_expA_repro_mean |>
+  filter(Molecule == "IMD")
+df_expA_repro_EPX_mean <- df_expA_repro_mean |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_IMD <- df_expB_repro_single |>
+  filter(Molecule == "IMD")
+df_expB_repro_single_EPX <- df_expB_repro_single |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_IMD_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "IMD")
+df_expB_repro_single_EPX_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "EPX")
 
 x <- seq(0.0001, 5000, 0.01)
 line_width <- 1.2
@@ -493,7 +318,7 @@ col_EPX_dark <- colorspace::darken(col_EPX, darkening)
 
 p_E <- ggplot() +
   geom_ribbon(
-    data = subset(CI.ExpB, Molecule == "EPX"),
+    data = subset(df_CI_ExpB, Molecule == "EPX"),
     aes(
       x = Dose,
       y = p,
@@ -502,10 +327,9 @@ p_E <- ggplot() +
     ),
     alpha = 0.2,
     fill = col_EPX_dark,
-    # color = col_IMD
   ) +
   geom_ribbon(
-    data = subset(CI.ExpA, Molecule == "EPX"),
+    data = subset(df_CI_ExpA, Molecule == "EPX"),
     aes(
       x = Dose,
       y = p,
@@ -514,10 +338,9 @@ p_E <- ggplot() +
     ),
     alpha = 0.2,
     fill = col_EPX,
-    # color = col_IMD
   ) +
   geom_line(
-    data = subset(CI.ExpB, Molecule == "EPX"),
+    data = subset(df_CI_ExpB, Molecule == "EPX"),
     aes(
       x = Dose,
       y = p
@@ -526,7 +349,7 @@ p_E <- ggplot() +
     linewidth = line_width
   ) +
   geom_line(
-    data = subset(CI.ExpA, Molecule == "EPX"),
+    data = subset(df_CI_ExpA, Molecule == "EPX"),
     aes(
       x = Dose,
       y = p
@@ -535,7 +358,7 @@ p_E <- ggplot() +
     linewidth = line_width
   ) +
   geom_point(
-    data = df_mix_coc_EPX,
+    data = df_expB_repro_single_EPX,
     aes(
       x = Dose_plot,
       y = Nb_cocoons
@@ -545,30 +368,30 @@ p_E <- ggplot() +
     shape = 4
   ) +
   geom_point(
-    data = df_repro_EPX_alive,
+    data = df_expA_repro_EPX,
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = Nb_cocoons
-      ),
+    ),
     color = col_EPX,
     alpha = 0.5,
     shape = 4
   ) +
   geom_point(
-    data = df_mix_coc_EPX_mean,
+    data = df_expB_repro_single_EPX_mean,
     aes(
-      x = Dose_EPX_plot, 
+      x = Dose_plot,
       y = Nb_cocoons
-      ),
+    ),
     color = col_EPX_dark,
     size = 3
   ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "EPX"),
+    data = subset(df_expA_repro_EPX_mean, Molecule == "EPX"),
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = Nb_cocoons
-      ),
+    ),
     color = col_EPX,
     size = 3
   ) +
@@ -591,7 +414,7 @@ p_E <- ggplot() +
 
 p_I <- ggplot() +
   geom_ribbon(
-    data = subset(CI.ExpB, Molecule == "IMD"),
+    data = subset(df_CI_ExpB, Molecule == "IMD"),
     aes(
       x = Dose,
       y = p,
@@ -603,7 +426,7 @@ p_I <- ggplot() +
     # color = col_IMD
   ) +
   geom_ribbon(
-    data = subset(CI.ExpA, Molecule == "IMD"),
+    data = subset(df_CI_ExpA, Molecule == "IMD"),
     aes(
       x = Dose,
       y = p,
@@ -615,7 +438,7 @@ p_I <- ggplot() +
     # color = col_IMD
   ) +
   geom_line(
-    data = subset(CI.ExpB, Molecule == "IMD"),
+    data = subset(df_CI_ExpB, Molecule == "IMD"),
     aes(
       x = Dose,
       y = p
@@ -624,7 +447,7 @@ p_I <- ggplot() +
     linewidth = line_width
   ) +
   geom_line(
-    data = subset(CI.ExpA, Molecule == "IMD"),
+    data = subset(df_CI_ExpA, Molecule == "IMD"),
     aes(
       x = Dose,
       y = p
@@ -633,7 +456,7 @@ p_I <- ggplot() +
     linewidth = line_width
   ) +
   geom_point(
-    data = df_mix_coc_IMD,
+    data = df_expB_repro_single_IMD,
     aes(
       x = Dose_plot,
       y = Nb_cocoons
@@ -643,7 +466,7 @@ p_I <- ggplot() +
     shape = 4
   ) +
   geom_point(
-    data = df_repro_IMD_alive,
+    data = df_expA_repro_IMD,
     aes(
       x = Dose_plot,
       y = Nb_cocoons
@@ -653,16 +476,16 @@ p_I <- ggplot() +
     shape = 4
   ) +
   geom_point(
-    data = df_mix_coc_IMD_mean,
+    data = df_expB_repro_single_IMD_mean,
     aes(
-      x = Dose_IMD_plot,
+      x = Dose_plot,
       y = Nb_cocoons
     ),
     color = col_IMD_dark,
     size = 3
   ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "IMD"),
+    data = subset(df_expA_repro_IMD_mean, Molecule == "IMD"),
     aes(
       x = Dose_plot,
       y = Nb_cocoons
@@ -691,28 +514,22 @@ p <- p_E + p_I
 p
 ```
 
-```{r, include=F}
+```{r savecompdrc, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_compEC50.png", 
-  plot=p, 
-  width=8, height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Comp_expA_expB_drc.png",
+  plot = p,
+  width = 8, height = 4,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_compEC50.jpg", 
-  plot=p, 
-  width=8, height = 4, 
-  path=here::here("fig/Mixture")
-  )
-# ggsave(
-#   filename="Mix_spring_cocoons_compEC50.svg", 
-#   plot=p, 
-#   width=6, height = 6, 
-#   path=here::here("fig/Mixture")
-#   )
+  filename = "Comp_expA_expB_drc.jpg",
+  plot = p,
+  width = 8, height = 4,
+  path = path_fig
+)
 ```
 
-```{r, results="hide", warning=F, message = F}
+```{r synthparamdrc, results="hide", warning=F, message = F}
 pEC50EPXExpA <- ED(drc.ExpA, 50, interval = "delta")[1,1]
 pEC50EPXExpB <- ED(drc.ExpB, 50, interval = "delta")[1,1]
 pEC50IMDExpA <- ED(drc.ExpA, 50, interval = "delta")[2,1]
@@ -774,6 +591,21 @@ p <- ggplot(
 p
 ```
 
+```{r savecompec, include=F}
+ggsave(
+  filename = "Comp_expA_expB_ec50.png",
+  plot = p,
+  width = 6, height = 4,
+  path = path_fig
+)
+ggsave(
+  filename = "Comp_expA_expB_ec50.jpg",
+  plot = p,
+  width = 6, height = 4,
+  path = path_fig
+)
+```
+
 ```{r, warning=F, message=F}
 #| tbl-cap: Inter-experiment comparison of dose-response curves for EPX & IMD.
 #| label: tbl-MIXcompdrc
@@ -784,13 +616,13 @@ df_drc_comp <- data.frame(
     coef(drc.ExpA)[1], coef(drc.ExpA)[2],
     coef(drc.ExpA)[3], coef(drc.ExpA)[4],
     coef(drc.ExpA)[5], coef(drc.ExpA)[6]
-    ),
+  ),
   ExpB = c(
     coef(drc.ExpB)[1], coef(drc.ExpB)[2],
     coef(drc.ExpB)[3], coef(drc.ExpB)[4],
     coef(drc.ExpB)[5], coef(drc.ExpB)[6]
-    )
-  ) |>
+  )
+) |>
   mutate(
     Ratio = ExpA / ExpB,
     Per_difference = (ExpB - ExpA) / ExpA * 100
@@ -801,80 +633,81 @@ df_drc_comp |> datatable(options = list(dom = "t"), class = "hover")
 
 ```
 
-```{r, warning=F, message=F}
-
-df_repro_alive_simple_IMD <- df_repro_alive |> 
-  filter(Molecule == "IMD") |> 
-  dplyr::select(Molecule, Dose, Nb_cocoons) |> 
+```{r statcompdrc, warning=F, message=F}
+df_expA_repro_simple_IMD <- df_expA_repro |>
+  filter(Molecule == "IMD") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
   mutate(Experiment = "A")
 
-df_repro_alive_simple_EPX<- df_repro_alive |> 
-  filter(Molecule == "EPX") |> 
-  dplyr::select(Molecule, Dose, Nb_cocoons) |> 
+df_expA_repro_simple_EPX <- df_expA_repro |>
+  filter(Molecule == "EPX") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
   mutate(Experiment = "A")
 
-df_mix_coc_single_IMD <- df_mix_coc_single |> 
-  filter(Molecule == "IMD") |> 
-  dplyr::select(Molecule, Dose, Nb_cocoons) |> 
+df_expB_repro_simple_IMD <- df_expB_repro_single |>
+  filter(Molecule == "IMD") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
   mutate(Experiment = "B")
 
-df_mix_coc_single_EPX <- df_mix_coc_single |> 
-  filter(Molecule == "EPX") |> 
-  dplyr::select(Molecule, Dose, Nb_cocoons) |> 
+df_expB_repro_simple_EPX <- df_expB_repro_single |>
+  filter(Molecule == "EPX") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
   mutate(Experiment = "B")
 
-df_comp_IMD <- rbind(df_repro_alive_simple_IMD, df_mix_coc_single_IMD)
-df_comp_EPX <- rbind(df_repro_alive_simple_EPX, df_mix_coc_single_EPX)
+df_comp_IMD <- rbind(df_expA_repro_simple_IMD, df_expB_repro_simple_IMD)
+df_comp_EPX <- rbind(df_expA_repro_simple_EPX, df_expB_repro_simple_EPX)
 
-drc.compIMD<- drm(
-  Nb_cocoons~Dose, Experiment, 
+drc.compIMD <- drm(
+  Nb_cocoons ~ Dose, Experiment,
   data = df_comp_IMD,
-  type="Poisson",
-  fct=LL.4(
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(Experiment, Experiment, Experiment)
+  pmodels = data.frame(Experiment, Experiment, Experiment)
 )
 
-drc.compEPX<- drm(
-  Nb_cocoons~Dose, Experiment, 
+drc.compEPX <- drm(
+  Nb_cocoons ~ Dose, Experiment,
   data = df_comp_EPX,
-  type="Poisson",
-  fct=LL.4(
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(Experiment, Experiment, Experiment)
+  pmodels = data.frame(Experiment, Experiment, Experiment)
 )
 
-drc.compIMD_same_ec<- drm(
-  Nb_cocoons~Dose, Experiment, 
+drc.compIMD_same_ec <- drm(
+  Nb_cocoons ~ Dose, Experiment,
   data = df_comp_IMD,
-  type="Poisson",
-  fct=LL.4(
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(Experiment, Experiment, 1)
+  pmodels = data.frame(Experiment, Experiment, 1)
 )
 
-drc.compEPX_same_ec<- drm(
-  Nb_cocoons~Dose, Experiment, 
+drc.compEPX_same_ec <- drm(
+  Nb_cocoons ~ Dose, Experiment,
   data = df_comp_EPX,
-  type="Poisson",
-  fct=LL.4(
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(Experiment, Experiment, 1)
+  pmodels = data.frame(Experiment, Experiment, 1)
 )
 
+cat("For IMD :")
 anova(drc.compIMD_same_ec, drc.compIMD, test = "F")
+cat("\nFor EPX :")
 anova(drc.compEPX_same_ec, drc.compEPX, test = "F")
 
 ```

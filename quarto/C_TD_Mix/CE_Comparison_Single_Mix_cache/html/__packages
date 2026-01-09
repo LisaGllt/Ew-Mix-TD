@@ -37,6 +37,7 @@ rnaturalearth
 sf
 scales
 colorspace
+ggh4x
 Rcpp
 brms
 StanHeaders

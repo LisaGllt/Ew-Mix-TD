@@ -4,39 +4,37 @@ source(file = here::here("functions/fun.R"))
 f_load_libraries_colors()
 
 color_red <- c(
-  "#F2DADB",  # Very light  
-  "#E8B6B9",  # Lighter  
-  "#D88C91",  # Light  
-  "#BF616A",  # Base color  
-  "#9F4E56",  # Darker  
-  "#7F3D44",  # Even darker  
-  "#5F2C32"   # Very dark  
+  "#F2DADB", # Very light
+  "#E8B6B9", # Lighter
+  "#D88C91", # Light
+  "#BF616A", # Base color
+  "#9F4E56", # Darker
+  "#7F3D44", # Even darker
+  "#5F2C32" # Very dark
 )
 
 color_green <- c(
-  "#EEF4E6",  # Very light  
-  "#D4E2C1",  # Lighter  
-  "#B8CC9E",  # Light  
-  "#A3BE8C",  # Base color  
-  "#86A06F",  # Darker  
-  "#6B8356",  # Even darker  
-  "#4F663D"   # Very dark  
+  "#EEF4E6", # Very light
+  "#D4E2C1", # Lighter
+  "#B8CC9E", # Light
+  "#A3BE8C", # Base color
+  "#86A06F", # Darker
+  "#6B8356", # Even darker
+  "#4F663D" # Very dark
 )
 
 color_blue <- c(
-  "#E3E9F1",  # Very light  
-  "#B8C7DC",  # Lighter  
-  "#8FA5C7",  # Light  
-  "#5E81AC",  # Base color  
-  "#48648A",  # Darker  
-  "#354B6B",  # Even darker  
-  "#22324D"   # Very dark  
+  "#E3E9F1", # Very light
+  "#B8C7DC", # Lighter
+  "#8FA5C7", # Light
+  "#5E81AC", # Base color
+  "#48648A", # Darker
+  "#354B6B", # Even darker
+  "#22324D" # Very dark
 )
-
-
 ```
 
-# Power analysis
+# Power analysis {#sec-power}
 
 We want to investiguate what is the minimal interaction that can be estimated with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).
 
@@ -54,28 +52,25 @@ EPX_EC50 <- df_drc_param$coef.drc.4.[3]
 IMD_EC50 <- df_drc_param$coef.drc.4.[4]
 y_min <- 0
 
-C_mat = cbind(df_design$EPX,df_design$IMD)
-Max = Y_max
-Slopes = c(slope, slope)
-Ec50s = c(EPX_EC50, IMD_EC50)
-
+C_mat <- cbind(df_design$EPX, df_design$IMD)
+Max <- Y_max
+Slopes <- c(slope, slope)
+Ec50s <- c(EPX_EC50, IMD_EC50)
 ```
 
-We create a function that will simulate the response of `Nb_pop` experiments consisting of our experimental design with `Nb_rep` replicates for an exposure to a mixture with each of the interaction parameter value ($a$) contained in the list `l_interaction_a`. The interaction will then be estimated with the Jonker simple interaction model and categorized as significant or non-significant (Log-Likelihood ratio test against the nulle model).
-
-!!!!!!!!!!! REMETTRE LES BONNES FONCTIONS !!!!!!!!!!!!
+For each reference model, we create a function that will simulate the response of `Nb_pop` experiments consisting of our experimental design with `Nb_rep` replicates for an exposure to a mixture with each of the interaction parameter value ($a$) contained in the list `l_interaction_a`. The interaction will then be estimated with the Jonker simple interaction model and categorized as significant or non-significant (Log-Likelihood ratio test against the nulle model). Due to the high computational requirements, these functions were executed on the calculation servers (CCRT) of the CEA (Commissariat à l'énergie atomique et aux énergies alternatives, a french research organisation).
 
 ```{r fpower}
 #| code-show: show
 
-f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
+f_power_design_CA <- function(Nb_rep, l_interaction_a, Nb_pop, param){
   
   res <- data.frame()
-
+  
   for (Nb_rep_j in Nb_rep){
     for (interaction_a_i in l_interaction_a){
-    
-      print(interaction_a_i)
+      
+     print(interaction_a_i)
       
       a_i <- interaction_a_i
       
@@ -86,11 +81,11 @@ f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
         interact="SA", 
         a=a_i
       )
-    
+      
       # We add the corresponding response to our design
       df_dose_rep_i <- df_design%>%
         mutate(rep_Y=res_CA_theorical_design_i)
-    
+      
       df_dose_rep_i <- df_dose_rep_i[,-c(1, 4)]
       
       for(k in 1:Nb_pop){
@@ -102,7 +97,7 @@ f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
           Y=c(),
           EPX=c(),
           IMD=c()
-          )
+        )
         
         for(i in 1:length(df_dose_rep_i$EPX)){
           
@@ -117,88 +112,266 @@ f_power_design <- function(Nb_rep, l_interaction_a, Nb_pop, param){
             Y_sim=Y_sim,
             EPX=EPX,
             IMD=IMD
-            )
+          )
           df_sim_data_k <- rbind(df_sim_data_k, df_sim_data_j)
         }
-        # Fit of the model 
-        res_CA_SA_fit_k<-CA_complete2_fit_speed(
+        
+        # CA model
+        res_CA_LL_k <- CA_complete2_Poisson(
           C_mat=cbind(                      
             df_sim_data_k$EPX,                
             df_sim_data_k$IMD                 
             ),                              
           Response=df_sim_data_k$Y_sim,       
+          interact="none",                      
+          Max = Max,
+          Slopes = Slopes,
+          Ec50s = Ec50s
+        )
+        
+        # Fit of the model SA
+        res_CA_SA_fit_k<-CA_complete2_fit_speed(
+          C_mat=cbind(                      
+            df_sim_data_k$EPX,                
+            df_sim_data_k$IMD                 
+          ),                              
+          Response=df_sim_data_k$Y_sim,       
           interact="SA",                      
-          param=param                         
-          )
+          param=param,
+          error_type = "Poisson"
+        )
         res_a_k <- res_CA_SA_fit_k$a
-      
+        
+        res_CA_SA_LL_k <- CA_complete2_Poisson(
+          C_mat=cbind(                      
+            df_sim_data_k$EPX,                
+            df_sim_data_k$IMD                 
+          ),                              
+          Response=df_sim_data_k$Y_sim,       
+          interact= "SA",
+          a = res_a_k,                      
+          Max = Max,
+          Slopes = Slopes,
+          Ec50s = Ec50s
+        )
+        
+        # LL ratio test
+        
+        LL0 <- res_CA_LL_k
+        LL1 <- res_CA_SA_LL_k
+        
+        p0 <- 0
+        p1 <- 1
+        
+        D <- -2 * (LL1 - LL0)
+        p_val_k <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+        
+        Signif_k <- (p_val_k <= 0.05)
+        
         res_k <- data.frame(
           Simulated_interaction = a_i,
           Estimated_interaction = res_a_k,
+          p_val = p_val_k,
+          Signif = Signif_k,
           ID_pop = ID_pop,
           Nb_rep = Nb_rep_j
-          )
+        )
         res <- rbind(res, res_k)
       }
       
-      
-      print("Calculations done for given interaction")
+      #print("Calculations done for given interaction")
       
     }
-    print("Calculations done for given Nb_rep")
+    #print("Calculations done for given Nb_rep")
   }
   
   return(res)
 }
 
+f_power_design_IA <- function(Nb_rep, l_interaction_a, Nb_pop, param){
+  
+  res <- data.frame()
+  
+  for (Nb_rep_j in Nb_rep){
+    for (interaction_a_i in l_interaction_a){
+      
+      print(interaction_a_i)
+      
+      a_i <- interaction_a_i
+      
+      # Calculation of the theorical response
+      res_IA_theorical_design_i <- IA_complete2(
+        C_mat, 
+        Max, Slopes, Ec50s, 
+        interact="SA", 
+        a=a_i
+      )
+      
+      # We add the corresponding response to our design
+      df_dose_rep_i <- df_design%>%
+        mutate(rep_Y=res_IA_theorical_design_i)
+      
+      df_dose_rep_i <- df_dose_rep_i[,-c(1, 4)]
+      
+      for(k in 1:Nb_pop){
+        
+        set.seed(121212+k)
+        ID_pop <- k
+        # Population simulation 
+        df_sim_data_k <- data.frame(
+          Y=c(),
+          EPX=c(),
+          IMD=c()
+        )
+        
+        for(i in 1:length(df_dose_rep_i$EPX)){
+          
+          Y_th <- df_dose_rep_i$rep_Y[i]
+          Y_sim <- rpois(Nb_rep_j, Y_th) # <1>
+          
+          EPX <- rep(df_dose_rep_i$EPX[i], Nb_rep_j)
+          IMD <- rep(df_dose_rep_i$IMD[i], Nb_rep_j)
+          
+          df_sim_data_j <- data.frame(
+            Y_th=rep(Y_th, Nb_rep_j),
+            Y_sim=Y_sim,
+            EPX=EPX,
+            IMD=IMD
+          )
+          df_sim_data_k <- rbind(df_sim_data_k, df_sim_data_j)
+        }
+        
+        # IA model
+        res_IA_LL_k <- IA_complete2_Poisson(
+          C_mat=cbind(                      
+            df_sim_data_k$EPX,                
+            df_sim_data_k$IMD                 
+          ),                              
+          Response=df_sim_data_k$Y_sim,       
+          interact="none",                      
+          Max = Max,
+          Slopes = Slopes,
+          Ec50s = Ec50s
+        )
+        
+        # Fit of the model SA
+        res_IA_SA_fit_k<-IA_complete_fit_speed(
+          C_mat=cbind(                      
+            df_sim_data_k$EPX,                
+            df_sim_data_k$IMD                 
+          ),                              
+          Response=df_sim_data_k$Y_sim,       
+          interact="SA",                      
+          param=param,
+          error_type = "Poisson"
+        )
+        res_a_k <- res_IA_SA_fit_k$a
+        
+        res_IA_SA_LL_k <- IA_complete2_Poisson(
+          C_mat=cbind(                      
+            df_sim_data_k$EPX,                
+            df_sim_data_k$IMD                 
+          ),                              
+          Response=df_sim_data_k$Y_sim,       
+          interact= "SA",
+          a = res_a_k,                      
+          Max = Max,
+          Slopes = Slopes,
+          Ec50s = Ec50s
+        )
+        
+        # LL ratio test
+        
+        LL0 <- res_IA_LL_k
+        LL1 <- res_IA_SA_LL_k
+        
+        p0 <- 0
+        p1 <- 1
+        
+        D <- -2 * (LL1 - LL0)
+        p_val_k <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+        
+        Signif_k <- (p_val_k <= 0.05)
+        
+        res_k <- data.frame(
+          Simulated_interaction = a_i,
+          Estimated_interaction = res_a_k,
+          p_val = p_val_k,
+          Signif = Signif_k,
+          ID_pop = ID_pop,
+          Nb_rep = Nb_rep_j
+        )
+        res <- rbind(res, res_k)
+      }
+      
+      #print("Calculations done for given interaction")
+      
+    }
+    #print("Calculations done for given Nb_rep")
+  }
+  
+  return(res)
+}
 ```
 
 ### With CA as reference
 
 ```{r defparampowerCA}
 #| code-show: show
+
 Nb_rep <- c(4)
 tmp <- c(10, 7, 5, 2, 1, 0.5, 0.1, 0.01, 0.001)
 l_interaction_a <- c(tmp, -rev(tmp))
 Nb_pop <- 5000
-# df_boot_res <- f_power_design(Nb_rep, l_interaction_a, Nb_pop, param)
-# save(df_boot_res,file = here::here("mod/MIX/Res_boot_design_CARData"))
+# df_boot_res_CA <- f_power_design_CA(Nb_rep, l_interaction_a, Nb_pop, param)
+# save(df_boot_res_CA,file = here::here("mod/MIX/Res_boot_design_CA.RData"))
 load(file = here::here("mod/MIX/Res_boot_design_CA.RData"))
+
+l_interaction_a_ordered <- as.vector(rbind(tmp, -tmp))
+
+df_boot_res_CA <- df_boot_res_CA |>
+  mutate(
+    Simulated_interaction_f = factor(
+      Simulated_interaction,
+      levels = l_interaction_a_ordered
+    )
+  )
 ```
 
 ```{r respowerCA}
 df_boot_res_CA_print <- df_boot_res_CA |> mutate(
-  Per_error = round((Estimated_interaction - Simulated_interaction) / Simulated_interaction*100, 5),
+  Per_error = round((Estimated_interaction - Simulated_interaction) / Simulated_interaction * 100, 5),
   Estimated_interaction = round(Estimated_interaction, 5),
   Error = Estimated_interaction - Simulated_interaction
 )
 df_boot_res_CA_line <- data.frame(
   Simulated_interaction = l_interaction_a,
   Line = l_interaction_a
-  )
+)
 ```
 
 ```{r fpdirectionCA}
 library(bayestestR)
-f_pdir <- function(df){
-  Nb_rep_unique = unique(df$Nb_rep)
-  Simulated_interaction_unique = unique(df$Simulated_interaction)
-  
+f_pdir <- function(df) {
+  Nb_rep_unique <- unique(df$Nb_rep)
+  Simulated_interaction_unique <- unique(df$Simulated_interaction)
+
   res <- data.frame(
     Nb_rep = c(),
     Simulated_interaction = c(),
-    P_direction = c())
-  
-  for(Nb_rep_i in Nb_rep_unique){
-    for(Simulated_interaction_i in Simulated_interaction_unique){
-      
+    P_direction = c()
+  )
+
+  for (Nb_rep_i in Nb_rep_unique) {
+    for (Simulated_interaction_i in Simulated_interaction_unique) {
       p_dir <- p_direction(subset(df, Nb_rep == Nb_rep_i & Simulated_interaction == Simulated_interaction_i)$Estimated_interaction)
-      
+
       res_i <- data.frame(
-    Nb_rep = Nb_rep_i,
-    Simulated_interaction = Simulated_interaction_i,
-    P_direction = p_dir[2])
-      
+        Nb_rep = Nb_rep_i,
+        Simulated_interaction = Simulated_interaction_i,
+        P_direction = p_dir[2]
+      )
+
       res <- rbind(res, res_i)
     }
   }
@@ -207,67 +380,74 @@ f_pdir <- function(df){
 
 df_boot_res_CA_pdir <- f_pdir(df_boot_res_CA_print)
 
-df_boot_res_CA_line <- df_boot_res_CA_line |> 
+df_boot_res_CA_line <- df_boot_res_CA_line |>
   left_join(df_boot_res_CA_pdir, by = join_by(Simulated_interaction))
 
+df_boot_res_CA_line <- df_boot_res_CA_line |>
+  mutate(
+    Simulated_interaction_f = factor(
+      Simulated_interaction,
+      levels = l_interaction_a_ordered
+    )
+  )
 ```
 
 Thanks to this algorithm, we can estimate the density of error of estimation and the probability of direction of the model for each interaction level.
 
 ```{r, warning=F, message=F}
-#| fig-cap: Density of errors of estimation and probability of direction. 
+#| fig-cap: Density of errors of estimation and probability of direction. Light blue lines correspond to the estimated interaction. Dark blue lines locate the zero on the x-axis.
 #| label: fig-pererrorpdirCA
 #| fig-width: 8
-#| fig-height: 16
+#| fig-height: 14
 
 alpha_dens <- 0.5
 p <- ggplot(
-  data = df_boot_res_CA_print, 
+  data = df_boot_res_CA_print,
   aes(x = Estimated_interaction)
-  )+
+) +
   stat_halfeye(
-    adjust=0.5,
-    alpha=alpha_dens,
+    adjust = 0.5,
+    alpha = alpha_dens,
     fill = Nord_polar[1]
-    )+
+  ) +
   geom_vline(
     data = df_boot_res_CA_line,
     aes(xintercept = Line),
     color = Nord_frost[2],
     size = 1.2
-  )+
+  ) +
   geom_vline(
     xintercept = 0,
     color = Nord_frost[4],
     size = 1.2
-  )+
+  ) +
   geom_text(
     data = df_boot_res_CA_line,
     aes(
-      x = Simulated_interaction-0.25,
+      x = Simulated_interaction - 0.25,
       y = 1,
-      label = paste("Pdirection = ", round(pd,2))
-      )
-  )+
+      label = paste("Pdirection = ", round(pd, 2))
+    )
+  ) +
   facet_wrap(
-    ~Simulated_interaction,
-    scales="free",
-    ncol=2
-    )+
+    ~Simulated_interaction_f,
+    scales = "free",
+    ncol = 2
+  ) +
   # facet_wrap(
   #   ~ Nb_rep+Simulated_interaction,
   #   scales = "free"
   #   )+
-  #xlim(xmin=-50, xmax=50)+
+  # xlim(xmin=-50, xmax=50)+
   labs(
     x = "Estimated interaction",
     y = "Density"
-  )+
-  lims(y=c(0,1.2))+
-  #theme_minimal()+
+  ) +
+  lims(y = c(0, 1.2)) +
+  # theme_minimal()+
   theme(
-    strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 10)
+    strip.background = element_rect(fill = Nord_polar[1]),
+    strip.text = element_text(color = "white", size = 10)
   )
 
 p
@@ -275,17 +455,17 @@ p
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_power_CA_dens_error.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_CA_dens_error.png",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ggsave(
-  filename="Mix_power_CA_dens_error.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_CA_dens_error.svg",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ```
 
 @fig-pererrorpdir shows that at least when the interaction is above 1, there is a very low probability of being wrong about the direction of the interaction with our experimental design.
@@ -294,56 +474,55 @@ ggsave(
 #| fig-cap: Density of percentage of estimation errors
 #| label: fig-pererrorCA
 #| fig-width: 8
-#| fig-height: 8
+#| fig-height: 12
 
 alpha_dens <- 0.5
 p <- ggplot(
-  data = df_boot_res_CA_print, 
+  data = df_boot_res_CA_print,
   aes(
     x = Per_error
-    )
-  )+
+  )
+) +
   stat_halfeye(
-    adjust=0.5,
-    alpha=alpha_dens,
+    adjust = 0.5,
+    alpha = alpha_dens,
     fill = Nord_polar[1]
-    )+
-  facet_wrap( 
-    ~Simulated_interaction,
-    scales="free",
-    ncol=2
-    )+
-  xlim(xmin=-50, xmax=50)+
+  ) +
+  facet_wrap(
+    ~Simulated_interaction_f,
+    scales = "free",
+    ncol = 2
+  ) +
+  xlim(xmin = -50, xmax = 50) +
   labs(
     x = "Percentage of error compared to the simulated value",
     y = "Density"
-  )+
-  #theme_minimal()+
+  ) +
+  # theme_minimal()+
   theme(
-    strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 10)
+    strip.background = element_rect(fill = Nord_polar[1]),
+    strip.text = element_text(color = "white", size = 10)
   )
 p
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_power_CA_per_error.png", 
-  plot=p, 
-  width=6, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_CA_per_error.png",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 
 ggsave(
-  filename="Mix_power_CA_per_error.svg", 
-  plot=p, 
-  width=6, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_CA_per_error.svg",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ```
 
 ```{r, message=F, warning=F}
-
 df_boot_res_CA_print_summary <- df_boot_res_CA_print %>%
   mutate(
     Direction = case_when(
@@ -351,23 +530,19 @@ df_boot_res_CA_print_summary <- df_boot_res_CA_print %>%
       Signif & (Simulated_interaction * Estimated_interaction < 0) ~ "Opposite",
       TRUE ~ "other"
     )
-  ) |> 
+  ) |>
   group_by(Simulated_interaction) %>%
   summarise(
     Mean_error = signif(mean(abs(Per_error)), 3),
     Median_error = signif(median(abs(Per_error)), 3),
-    
     n_total = n(),
     n_signif = sum(Signif),
     n_Direction_OK = sum(Direction == "OK"),
     n_Direction_Opposite = sum(Direction == "Opposite"),
-    
-    Per_signif_true_interaction_all = signif(mean(Direction == "OK")*100, 3),
-    Per_signif_opposite_interaction_all = signif(mean(Direction == "Opposite")*100, 3),
-    
+    Per_signif_true_interaction_all = signif(mean(Direction == "OK") * 100, 3),
+    Per_signif_opposite_interaction_all = signif(mean(Direction == "Opposite") * 100, 3),
     Per_signif_true_interaction = signif(ifelse(n_signif > 0, n_Direction_OK / n_signif * 100, NA), 3),
     Per_signif_opposite_interaction = signif(ifelse(n_signif > 0, n_Direction_Opposite / n_signif * 100, NA), 3),
-    
     Per_error_above_10 = signif(mean(abs(Per_error) > 10) * 100, 3),
     Per_error_above_25 = signif(mean(abs(Per_error) > 25) * 100, 3),
     Per_error_above_50 = signif(mean(abs(Per_error) > 50) * 100, 3),
@@ -378,15 +553,14 @@ df_boot_res_CA_print_summary <- df_boot_res_CA_print %>%
 
 df_boot_res_CA_print_summary |> datatable(
   options = list(
-    dom = 't',
+    dom = "t",
     autoWidth = TRUE,
     columnDefs = list(
-      list(className = 'dt-left', targets = "_all")
-      )
-    ), 
-  class="hover"
-  ) 
-
+      list(className = "dt-left", targets = "_all")
+    )
+  ),
+  class = "hover"
+)
 ```
 
 With our design, we can quantify absolute interaction value above 1 reasonnably well.
@@ -399,44 +573,53 @@ Nb_rep <- c(4)
 tmp <- c(10, 7, 5, 2, 1, 0.5, 0.1, 0.01, 0.001)
 l_interaction_a <- c(tmp, -rev(tmp))
 Nb_pop <- 5000
-# df_boot_res <- f_power_design(Nb_rep, l_interaction_a, Nb_pop, param)
-# save(df_boot_res,file = here::here("mod/MIX/Res_boot_design_IARData"))
+# df_boot_res_IA <- f_power_design_IA(Nb_rep, l_interaction_a, Nb_pop, param)
+# save(df_boot_res_IA,file = here::here("mod/MIX/Res_boot_design_IA.RData"))
 load(file = here::here("mod/MIX/Res_boot_design_IA.RData"))
+
+df_boot_res_IA <- df_boot_res_IA |>
+  mutate(
+    Simulated_interaction_f = factor(
+      Simulated_interaction,
+      levels = l_interaction_a_ordered
+    )
+  )
 ```
 
 ```{r respower}
 df_boot_res_IA_print <- df_boot_res_IA |> mutate(
-  Per_error = round((Estimated_interaction - Simulated_interaction) / Simulated_interaction*100, 5),
+  Per_error = round((Estimated_interaction - Simulated_interaction) / Simulated_interaction * 100, 5),
   Estimated_interaction = round(Estimated_interaction, 5),
   Error = Estimated_interaction - Simulated_interaction
 )
 df_boot_res_IA_line <- data.frame(
   Simulated_interaction = l_interaction_a,
   Line = l_interaction_a
-  )
+)
 ```
 
 ```{r fpdirection}
 library(bayestestR)
-f_pdir <- function(df){
-  Nb_rep_unique = unique(df$Nb_rep)
-  Simulated_interaction_unique = unique(df$Simulated_interaction)
-  
+f_pdir <- function(df) {
+  Nb_rep_unique <- unique(df$Nb_rep)
+  Simulated_interaction_unique <- unique(df$Simulated_interaction)
+
   res <- data.frame(
     Nb_rep = c(),
     Simulated_interaction = c(),
-    P_direction = c())
-  
-  for(Nb_rep_i in Nb_rep_unique){
-    for(Simulated_interaction_i in Simulated_interaction_unique){
-      
+    P_direction = c()
+  )
+
+  for (Nb_rep_i in Nb_rep_unique) {
+    for (Simulated_interaction_i in Simulated_interaction_unique) {
       p_dir <- p_direction(subset(df, Nb_rep == Nb_rep_i & Simulated_interaction == Simulated_interaction_i)$Estimated_interaction)
-      
+
       res_i <- data.frame(
-    Nb_rep = Nb_rep_i,
-    Simulated_interaction = Simulated_interaction_i,
-    P_direction = p_dir[2])
-      
+        Nb_rep = Nb_rep_i,
+        Simulated_interaction = Simulated_interaction_i,
+        P_direction = p_dir[2]
+      )
+
       res <- rbind(res, res_i)
     }
   }
@@ -445,67 +628,74 @@ f_pdir <- function(df){
 
 df_boot_res_IA_pdir <- f_pdir(df_boot_res_IA_print)
 
-df_boot_res_IA_line <- df_boot_res_IA_line |> 
+df_boot_res_IA_line <- df_boot_res_IA_line |>
   left_join(df_boot_res_IA_pdir, by = join_by(Simulated_interaction))
 
+df_boot_res_IA_line <- df_boot_res_IA_line |>
+  mutate(
+    Simulated_interaction_f = factor(
+      Simulated_interaction,
+      levels = l_interaction_a_ordered
+    )
+  )
 ```
 
 Thanks to this algorithm, we IAn estimate the density of error of estimation and the probability of direction of the model for each interaction level.
 
 ```{r, warning=F, message=F}
-#| fig-IAp: Density of errors of estimation and probability of direction. 
+#| fig-IAp: Density of errors of estimation and probability of direction. Light blue lines correspond to the estimated interaction. Dark blue lines locate the zero on the x-axis.
 #| label: fig-pererrorpdir
 #| fig-width: 8
-#| fig-height: 16
+#| fig-height: 14
 
 alpha_dens <- 0.5
 p <- ggplot(
-  data = df_boot_res_IA_print, 
+  data = df_boot_res_IA_print,
   aes(x = Estimated_interaction)
-  )+
+) +
   stat_halfeye(
-    adjust=0.5,
-    alpha=alpha_dens,
+    adjust = 0.5,
+    alpha = alpha_dens,
     fill = Nord_polar[1]
-    )+
+  ) +
   geom_vline(
     data = df_boot_res_IA_line,
     aes(xintercept = Line),
     color = Nord_frost[2],
     size = 1.2
-  )+
+  ) +
   geom_vline(
     xintercept = 0,
     color = Nord_frost[4],
     size = 1.2
-  )+
+  ) +
   geom_text(
     data = df_boot_res_IA_line,
     aes(
-      x = Simulated_interaction-0.25,
+      x = Simulated_interaction - 0.25,
       y = 1,
-      label = paste("Pdirection = ", round(pd,2))
-      )
-  )+
+      label = paste("Pdirection = ", round(pd, 2))
+    )
+  ) +
   facet_wrap(
-    ~Simulated_interaction,
-    scales="free",
-    ncol=2
-    )+
+    ~Simulated_interaction_f,
+    scales = "free",
+    ncol = 2
+  ) +
   # facet_wrap(
   #   ~ Nb_rep+Simulated_interaction,
   #   sIAles = "free"
   #   )+
-  #xlim(xmin=-50, xmax=50)+
+  # xlim(xmin=-50, xmax=50)+
   labs(
     x = "Estimated interaction",
     y = "Density"
-  )+
-  lims(y=c(0,1.2))+
-  #theme_minimal()+
+  ) +
+  lims(y = c(0, 1.2)) +
+  # theme_minimal()+
   theme(
-    strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 10)
+    strip.background = element_rect(fill = Nord_polar[1]),
+    strip.text = element_text(color = "white", size = 10)
   )
 
 p
@@ -513,17 +703,17 @@ p
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_power_IA_dens_error.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_IA_dens_error.png",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ggsave(
-  filename="Mix_power_IA_dens_error.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_IA_dens_error.svg",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ```
 
 @fig-pererrorpdir shows that at least when the interaction is above 1, there is a very low probability of being wrong about the direction of the interaction with our experimental design.
@@ -532,56 +722,55 @@ ggsave(
 #| fig-IAp: Density of percentage of estimation errors
 #| label: fig-pererror
 #| fig-width: 8
-#| fig-height: 8
+#| fig-height: 12
 
 alpha_dens <- 0.5
 p <- ggplot(
-  data = df_boot_res_IA_print, 
+  data = df_boot_res_IA_print,
   aes(
     x = Per_error
-    )
-  )+
+  )
+) +
   stat_halfeye(
-    adjust=0.5,
-    alpha=alpha_dens,
+    adjust = 0.5,
+    alpha = alpha_dens,
     fill = Nord_polar[1]
-    )+
-  facet_wrap( 
-    ~Simulated_interaction,
-    scales="free",
-    ncol=2
-    )+
-  xlim(xmin=-50, xmax=50)+
+  ) +
+  facet_wrap(
+    ~Simulated_interaction_f,
+    scales = "free",
+    ncol = 2
+  ) +
+  xlim(xmin = -50, xmax = 50) +
   labs(
     x = "Percentage of error compared to the simulated value",
     y = "Density"
-  )+
-  #theme_minimal()+
+  ) +
+  # theme_minimal()+
   theme(
-    strip.background = element_rect(fill=Nord_polar[1]),
-    strip.text = element_text(color="white", size = 10)
+    strip.background = element_rect(fill = Nord_polar[1]),
+    strip.text = element_text(color = "white", size = 10)
   )
 p
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_power_IA_per_error.png", 
-  plot=p, 
-  width=6, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_IA_per_error.png",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 
 ggsave(
-  filename="Mix_power_IA_per_error.svg", 
-  plot=p, 
-  width=6, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "Mix_power_IA_per_error.svg",
+  plot = p,
+  width = 8, height = 12,
+  path = here::here("fig/Mixture/Power")
+)
 ```
 
 ```{r, message=F, warning=F}
-
 df_boot_res_IA_print_summary <- df_boot_res_IA_print %>%
   mutate(
     Direction = case_when(
@@ -589,23 +778,19 @@ df_boot_res_IA_print_summary <- df_boot_res_IA_print %>%
       Signif & (Simulated_interaction * Estimated_interaction < 0) ~ "Opposite",
       TRUE ~ "other"
     )
-  ) |> 
+  ) |>
   group_by(Simulated_interaction) %>%
   summarise(
     Mean_error = signif(mean(abs(Per_error)), 3),
     Median_error = signif(median(abs(Per_error)), 3),
-    
     n_total = n(),
     n_signif = sum(Signif),
     n_Direction_OK = sum(Direction == "OK"),
     n_Direction_Opposite = sum(Direction == "Opposite"),
-    
-    Per_signif_true_interaction_all = signif(mean(Direction == "OK")*100, 3),
-    Per_signif_opposite_interaction_all = signif(mean(Direction == "Opposite")*100, 3),
-    
+    Per_signif_true_interaction_all = signif(mean(Direction == "OK") * 100, 3),
+    Per_signif_opposite_interaction_all = signif(mean(Direction == "Opposite") * 100, 3),
     Per_signif_true_interaction = signif(ifelse(n_signif > 0, n_Direction_OK / n_signif * 100, NA), 3),
     Per_signif_opposite_interaction = signif(ifelse(n_signif > 0, n_Direction_Opposite / n_signif * 100, NA), 3),
-    
     Per_error_above_10 = signif(mean(abs(Per_error) > 10) * 100, 3),
     Per_error_above_25 = signif(mean(abs(Per_error) > 25) * 100, 3),
     Per_error_above_50 = signif(mean(abs(Per_error) > 50) * 100, 3),
@@ -616,15 +801,14 @@ df_boot_res_IA_print_summary <- df_boot_res_IA_print %>%
 
 df_boot_res_IA_print_summary |> datatable(
   options = list(
-    dom = 't',
+    dom = "t",
     autoWidth = TRUE,
     columnDefs = list(
-      list(className = 'dt-left', targets = "_all")
-      )
-    ), 
-  class="hover"
-  ) 
-
+      list(className = "dt-left", targets = "_all")
+    )
+  ),
+  class = "hover"
+)
 ```
 
 With our design, we can quantify absolute interaction value above 5 reasonnably well.

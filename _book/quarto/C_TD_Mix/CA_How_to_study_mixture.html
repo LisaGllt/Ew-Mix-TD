@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; How to study a binary mixture ? – **Toxic cocktails in soils** - Unravelling the effect of a fungicide and insecticide mixture on earthworm growth and reproduction </title>
+<title>5&nbsp; How to study a binary mixture ? – **Toxic cocktails in soils** - Evidence for synergistic effects of a pesticide mixture on earthworm life-history traits</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -163,7 +163,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title"><strong>Toxic cocktails in soils</strong> - Unravelling the effect of a fungicide and insecticide mixture on earthworm growth and reproduction</span>
+    <span class="navbar-title"><strong>Toxic cocktails in soils</strong> - Evidence for synergistic effects of a pesticide mixture on earthworm life-history traits</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -468,19 +468,19 @@ a[1-b\times q_A(c_A)\  q_B(c_B)]\ z_A z_B &amp; \text{for the DL model} \\
 <p><span id="eq-minim"><span class="math display">\[
 \frac{c_A}{f^{-1}_A(Y)}+\frac{c_B}{f^{-1}_B(Y)}-\text{exp}(G)
 \tag{5.9}\]</span></span></p>
-<p>For step 2, a function <code>CA_complete_fit_speed()</code> was written. Parameter estimation for the interaction models requires maximum likelihood estimation (MLE). The optimization procedure depends on the assumed error distribution: for normally distributed errors, this is equivalent to minimizing the residual sum of squares (calculated with the function <code>CA_complete2_RSS()</code>), while for Poisson-distributed errors, the log-likelihood function (<a href="#eq-LLPoisson" class="quarto-xref">Equation&nbsp;<span>5.10</span></a>) (calculated with the function <code>CA_complete2_Poisson()</code>) is directly maximized.</p>
+<p>For step 2, a function <code>CA_complete_fit_speed()</code> was written. Parameter estimation for the interaction models requires maximum likelihood estimation (MLE). The optimization procedure depends on the assumed error distribution: for normally distributed errors, this is equivalent to minimizing the residual sum of squares (calculated with the function <code>CA_complete2_RSS()</code>), while for Poisson-distributed errors, the log-likelihood function (<a href="#eq-LLPoisson" class="quarto-xref">Equation&nbsp;<span>5.10</span></a>) (calculated with the function <code>CA_complete2_Poisson()</code>) is directly maximized. All functions are available in the file <code>functions/fun.R</code>.</p>
 <p>Let <span class="math inline">\(\mathbf{y}=(y_1, y_2, \dots, y_n)\)</span> be the vector of observed responses, <span class="math inline">\(\mathbf{\theta}\)</span> the parameter vector to be estimated, and <span class="math inline">\(f(.|\mathbf{\theta})\)</span> the density function conditional to the parameters. Then, the likelihood function is defined as :</p>
 <p><span class="math display">\[
-\mathcal{L}(\theta | \mathbf{y})=\prod_{i=1}^nf(y_i|\theta)
+\mathcal{L}(\mathbf{\theta} | \mathbf{y})=\prod_{i=1}^nf(y_i|\mathbf{\theta})
 \]</span></p>
 <p>The log-likelihood function, which is computationally more tractable, is given by:</p>
 <p><span class="math display">\[
-l(\theta|\mathbf{y}) = \ln(\mathcal{L}(\theta | \mathbf{y})) = \sum^n_{i=1} \ln(f(y_i|\theta))\\
+l(\mathbf{\theta}|\mathbf{y}) = \ln(\mathcal{L}(\mathbf{\theta} | \mathbf{y})) = \sum^n_{i=1} \ln(f(y_i|\mathbf{\theta}))\\
 \]</span></p>
 <p>For count data (cocoon production), assuming <span class="math inline">\(y_i \sim \mathcal{P}(\lambda_i)\)</span> where <span class="math inline">\(\lambda_i = g(\mathbf{x_i}; \theta)\)</span> represents the expected response given covariates <span class="math inline">\(\mathbf{x_i}\)</span>, the log-likelihood becomes:</p>
 <p><span id="eq-LLPoisson"><span class="math display">\[
 \begin{aligned}
-l(\theta|\mathbf{y}) &amp;=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i}}{y_i!}\right) \\
+l(\mathbf{\theta}|\mathbf{y}) &amp;=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i}}{y_i!}\right) \\
 &amp;= \sum^n_{i=1} [y_i \ln(\lambda_i) - \lambda_i - \ln(y_i!)]\\
 &amp;= \sum^n_{i=1} [y_i \ln(g(x_i;\theta)) - g(x_i;\theta) - \ln(y_i!)]
 \end{aligned}
@@ -1177,25 +1177,25 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>\frac{c_A}{f^{-1}_A(Y)}+\frac{c_B}{f^{-1}_B(Y)}-\text{exp}(G)</span>
 <span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>$$ {#eq-minim}</span>
 <span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>For step 2, a function <span class="in">`CA_complete_fit_speed()`</span> was written. Parameter estimation for the interaction models requires maximum likelihood estimation (MLE). The optimization procedure depends on the assumed error distribution: for normally distributed errors, this is equivalent to minimizing the residual sum of squares (calculated with the function <span class="in">`CA_complete2_RSS()`</span>), while for Poisson-distributed errors, the log-likelihood function (@eq-LLPoisson) (calculated with the function <span class="in">`CA_complete2_Poisson()`</span>) is directly maximized.</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>For step 2, a function <span class="in">`CA_complete_fit_speed()`</span> was written. Parameter estimation for the interaction models requires maximum likelihood estimation (MLE). The optimization procedure depends on the assumed error distribution: for normally distributed errors, this is equivalent to minimizing the residual sum of squares (calculated with the function <span class="in">`CA_complete2_RSS()`</span>), while for Poisson-distributed errors, the log-likelihood function (@eq-LLPoisson) (calculated with the function <span class="in">`CA_complete2_Poisson()`</span>) is directly maximized. All functions are available in the file <span class="in">`functions/fun.R`</span>.</span>
 <span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>Let $\mathbf{y}=(y_1, y_2, \dots, y_n)$ be the vector of observed responses, $\mathbf{\theta}$ the parameter vector to be estimated, and $f(.|\mathbf{\theta})$ the density function conditional to the parameters. Then, the likelihood function is defined as :</span>
 <span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\theta | \mathbf{y})=\prod_{i=1}^nf(y_i|\theta)</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\mathbf{\theta} | \mathbf{y})=\prod_{i=1}^nf(y_i|\mathbf{\theta})</span>
 <span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>The log-likelihood function, which is computationally more tractable, is given by:</span>
 <span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>l(\theta|\mathbf{y}) = \ln(\mathcal{L}(\theta | \mathbf{y})) = \sum^n_{i=1} \ln(f(y_i|\theta))<span class="sc">\\</span></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>l(\mathbf{\theta}|\mathbf{y}) = \ln(\mathcal{L}(\mathbf{\theta} | \mathbf{y})) = \sum^n_{i=1} \ln(f(y_i|\mathbf{\theta}))<span class="sc">\\</span></span>
 <span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>For count data (cocoon production), assuming $y_i \sim \mathcal{P}(\lambda_i)$ where $\lambda_i = g(\mathbf{x_i}; \theta)$ represents the expected response given covariates $\mathbf{x_i}$, the log-likelihood becomes:</span>
 <span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>l(\theta|\mathbf{y}) &amp;=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i}}{y_i!}\right) <span class="sc">\\</span></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>l(\mathbf{\theta}|\mathbf{y}) &amp;=\sum^n_{i=1} \ln\left( \frac{e^{-\lambda_i}\lambda_i^{y_i}}{y_i!}\right) <span class="sc">\\</span></span>
 <span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>&amp;= \sum^n_{i=1} <span class="co">[</span><span class="ot">y_i \ln(\lambda_i) - \lambda_i - \ln(y_i!)</span><span class="co">]</span><span class="sc">\\</span></span>
 <span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>&amp;= \sum^n_{i=1} <span class="co">[</span><span class="ot">y_i \ln(g(x_i;\theta)) - g(x_i;\theta) - \ln(y_i!)</span><span class="co">]</span></span>
 <span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>

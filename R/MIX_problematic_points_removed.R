@@ -429,10 +429,10 @@ LogLikelihood_CA_print <- signif(LogLikelihood_CA, signif_LL)
 CA_fit_filter <- data.frame(Error = NA)
 CA_fit_filter$Error <- CA_complete2_Poisson(
   C_mat=cbind(                                                    # <1>
-    df_mix_coc_int$Dose_EPX,                                      # <1>
-    df_mix_coc_int$Dose_IMD                                       # <1>
+    df_mix_coc_int_filter$Dose_EPX,                                      # <1>
+    df_mix_coc_int_filter$Dose_IMD                                       # <1>
   ),                                                            # <1>
-  Response=df_mix_coc_int$Response,                               # <1>
+  Response=df_mix_coc_int_filter$Response,                               # <1>
   Max = Max_filter,
   Slopes = Slopes_filter,
   Ec50s = Ec50s_filter,
@@ -479,10 +479,10 @@ LogLikelihood_IA_print <- signif(LogLikelihood_IA, signif_LL)
 IA_fit_filter <- data.frame(Error = NA)
 IA_fit_filter$Error <- IA_complete2_Poisson(
   C_mat=cbind(                                                    # <1>
-    df_mix_coc_int$Dose_EPX,                                      # <1>
-    df_mix_coc_int$Dose_IMD                                       # <1>
+    df_mix_coc_int_filter$Dose_EPX,                                      # <1>
+    df_mix_coc_int_filter$Dose_IMD                                       # <1>
   ),                                                            # <1>
-  Response=df_mix_coc_int$Response,                               # <1>
+  Response=df_mix_coc_int_filter$Response,                               # <1>
   Max = Max_filter,
   Slopes = Slopes_filter,
   Ec50s = Ec50s_filter,
@@ -525,10 +525,10 @@ LogLikelihood_CASA_print <- signif(LogLikelihood_CASA, signif_LL)
 
 CASA_fit_filter<-CA_complete_fit_speed(                                    # <1>
   C_mat=cbind(                                                    # <1>
-    df_mix_coc_int$Dose_EPX,                                      # <1>
-    df_mix_coc_int$Dose_IMD                                       # <1>
+    df_mix_coc_int_filter$Dose_EPX,                                      # <1>
+    df_mix_coc_int_filter$Dose_IMD                                       # <1>
   ),                                                            # <1>
-  Response=df_mix_coc_int$Response,                               # <1>
+  Response=df_mix_coc_int_filter$Response,                               # <1>
   interact="SA",                                                  # <1>
   param=param_filter,                                                   # <1>
   error_type = "Poisson",
@@ -573,10 +573,10 @@ LogLikelihood_IASA_print <- signif(LogLikelihood_IASA, signif_LL)
 
 IASA_fit_filter<-IA_complete_fit_speed(                                    # <1>
   C_mat=cbind(                                                    # <1>
-    df_mix_coc_int$Dose_EPX,                                      # <1>
-    df_mix_coc_int$Dose_IMD                                       # <1>
+    df_mix_coc_int_filter$Dose_EPX,                                      # <1>
+    df_mix_coc_int_filter$Dose_IMD                                       # <1>
   ),                                                            # <1>
-  Response=df_mix_coc_int$Response,                               # <1>
+  Response=df_mix_coc_int_filter$Response,                               # <1>
   interact="SA",                                                  # <1>
   param=param_filter,                                                   # <1>
   error_type = "Poisson",
@@ -594,7 +594,269 @@ IASA_fit_filter$b <- NA
 a_IASA_filter_print <- signif(a_IASA_filter, 3)
 LogLikelihood_IASA_filter_print <- signif(LogLikelihood_IASA_filter, signif_LL)
 
+# 5. Test des modèles ----
+
+df_mix_coc_int_filter_anova <- df_mix_coc_int_filter |> 
+  mutate(
+    Dose_EPX_f = as.factor(Dose_EPX),
+    Dose_IMD_f = as.factor(Dose_IMD),
+    Dose_IMD_EPX_f = paste0(Dose_EPX_f, Dose_IMD_f)
+  )
+
+anova.mix_filter <- glm(
+  Response ~ Dose_IMD_EPX_f, 
+  family = poisson(link = "log"), 
+  data = df_mix_coc_int_filter_anova
+)
+
+df_mix_coc_int_anova <- df_mix_coc_int |> 
+  mutate(
+    Dose_EPX_f = as.factor(Dose_EPX),
+    Dose_IMD_f = as.factor(Dose_IMD),
+    Dose_IMD_EPX_f = paste0(Dose_EPX_f, Dose_IMD_f)
+  )
+
+anova.mix <- glm(
+  Response ~ Dose_IMD_EPX_f, 
+  family = poisson(link = "log"), 
+  data = df_mix_coc_int_anova
+)
 
 
+## Lacke-of-fit ----
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CA[1]
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CA_filter[1]
+LL_anova <- as.numeric(logLik(anova.mix_filter))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix_filter), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_IA[1]
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_IA_filter[1]
+LL_anova <- as.numeric(logLik(anova.mix_filter))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix_filter), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CASA[1]
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_CASA_filter[1]
+LL_anova <- as.numeric(logLik(anova.mix_filter))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix_filter), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test CASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+LL_drc <- LogLikelihood_IASA[1]
+LL_anova <- as.numeric(logLik(anova.mix))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+
+# Log-vraisemblances
+LL_drc <- LogLikelihood_IASA_filter[1]
+LL_anova <- as.numeric(logLik(anova.mix_filter))
+
+# Nombre de paramètres
+k_drc <- 4
+k_anova <- attr(logLik(anova.mix_filter), "df")
+
+# Test du rapport de vraisemblance
+# H0 : le modèle drc est adéquat
+# H1 : le modèle ANOVA (saturé) s'ajuste mieux
+D <- -2 * (LL_drc - LL_anova)
+df_test <- k_anova - k_drc
+
+# Vérification
+cat("LL_anova:", LL_anova, " - LL_drc:", LL_drc, "\n")
+cat("k_anova:", k_anova, "- k_drc:", k_drc, "- df:", df_test, "\n")
+
+p_val <- pchisq(D, df = df_test, lower.tail = FALSE)
+cat("Lack-of-fit test IASA/Anova: D =", round(D, 3), ", df =", df_test, ", p =", p_val, "\n")
+
+
+## Comparisons ----
+
+LL0 <- LogLikelihood_IA    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_IASA   # log-vraisemblance du modèle (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IA/SA - D =", D, "p =", p_val, "\n")
+
+LL0 <- LogLikelihood_CA    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_CASA    # log-vraisemblance du modèle (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison CA/SA - D =", D, "p =", p_val, "\n")
+
+
+
+
+LL0 <- LogLikelihood_IA_filter    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_IASA_filter    # log-vraisemblance du modèle (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison IA/SA - D =", D, "p =", p_val, "\n")
+
+LL0 <- LogLikelihood_CA_filter    # log-vraisemblance du modèle IA
+LL1 <- LogLikelihood_CASA_filter    # log-vraisemblance du modèle (IA reference)
+
+p0 <- 0         # nombre de paramètres additionnels dans le modèle IA (par rapport à ta base)
+p1 <- 1         # un paramètre d'interaction dans le modèle SA (IA reference)
+
+D <- -2 * (LL0 - LL1)
+p_val <- pchisq(D, df = p1 - p0, lower.tail = FALSE)
+
+cat("Comparison CA/SA - D =", D, "p =", p_val, "\n")
 
 

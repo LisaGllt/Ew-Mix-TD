@@ -1,10 +1,14 @@
 ```{r lib, include=F}
 library(here)
 source(file = here::here("functions/fun.R"))
+
 f_load_libraries_colors()
 
 palette <- colorRampPalette(c("#5E81AC", "#88C0D0"))
-pal_ratio <- c("#88C0D0", "#81A1C1", "#81A1C1", "#81A1C1", "#5E81AC", Nord_polar[4])
+col_mix <- Nord_polar[4]
+pal_ratio <- c("#88C0D0", col_mix, col_mix, col_mix, "#5E81AC",col_mix)
+
+path_fig <- here::here("fig/Mixture/Spring")
 ```
 
 # Results of the mixture experiments - Effects on other endpoints
@@ -17,262 +21,29 @@ pal_ratio <- c("#88C0D0", "#81A1C1", "#81A1C1", "#81A1C1", "#5E81AC", Nord_polar
 Val_Ctrl <- 1e-4
 Label_Ctrl <- "0 (Ctrl)"
 
-# Data EC50
 
-df_repro_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet="Repro") |> 
-  mutate(
-    Dose = as.numeric(Dose),
-    Dose_plot = case_when(
-      Dose == 0 ~ Val_Ctrl,
-      !(Dose == 0) ~ Dose
-    ),
-    Dose_f = as.factor(round(Dose, 4)),
-    w=w_tot/Nb_ind,
-    L=w^(1/3),
-    )
-
-# Data for EPX
-df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |> 
-  mutate(Molecule = "EPX")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_EPX <- subset(df_repro_EPX, t==28 & (!Status=="D"))$ID_cosm
-df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)
-
-# Data for IMD
-df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |> 
-  mutate(Molecule = "IMD")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_IMD <- subset(df_repro_IMD, t==28 & (!Status=="D"))$ID_cosm
-df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)
-
-df_repro <- rbind(df_repro_EPX, df_repro_IMD)
-df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)
-
-Control_IMD <- mean(subset(df_repro_IMD_alive, Dose == 0)$Nb_cocoons, na.rm=T)
-Control_EPX <- mean(subset(df_repro_EPX_alive, Dose == 0)$Nb_cocoons, na.rm=T)
-
-df_repro_EPX_alive <- df_repro_EPX_alive |> 
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX *100
-    ) 
-df_repro_IMD_alive <- df_repro_IMD_alive |> 
-  mutate(
-    r_Nb_cocoons = Nb_cocoons / Control_EPX * 100
-    ) 
-
-
-df_repro_alive <- df_repro_alive |> 
-  mutate(
-    r_Nb_cocoons = case_when(
-      Molecule == "IMD" ~ Nb_cocoons / Control_IMD,
-      Molecule == "EPX" ~ Nb_cocoons / Control_EPX
-    ) * 100
-    ) 
-
-df_repro_alive_mean <- df_repro_alive |>
-  dplyr::group_by(Dose, Dose_plot, Molecule) |>
-  dplyr::summarise(
-    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
-    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
-    .groups = "drop"
-  )
+# Data from experiment A (Single substances experiement)
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
 
 # Retriving EC50 
 df_drc_param <- read.csv(here::here("data/DRC_parameters_cocoons_really_used.csv"))
 EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
 IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
 
-
-# Mixture data
-
-df_mix_ind <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025weight") |> 
-  mutate(
-    Condition = paste0(Ratio, Line),
-    Nb_rep = as.factor(Nb_rep),
-    w = as.numeric(w),
-    L = w^(1/3),
-    TU_drc = Dose_IMD/IMD_EC50_drc + Dose_EPX/EPX_EC50_drc,
-    
-    Dose_IMD_plot = case_when(
-      Dose_IMD == 0 ~ Val_Ctrl,
-      !(Dose_IMD == 0) ~ Dose_IMD
-    ),
-    Dose_EPX_plot = case_when(
-      Dose_EPX == 0 ~ Val_Ctrl,
-      !(Dose_EPX == 0) ~ Dose_EPX
-    ),
-    TU_drc_plot = case_when(
-      TU_drc == 0 ~ Val_Ctrl,
-      !(TU_drc == 0) ~ TU_drc
-    )
-  )
-
-df_mix_growth_mean <- df_mix_ind |> 
-  aggregate(w~Ratio+Line+Nb_rep, FUN = mean)
-
-df_mix_coc <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025coc") |> 
-  mutate(
-    Condition = paste0(Ratio, Line),
-    w_coc = w_coc_tot/(Nb_cocoons-Nb_cocoons_crushed),
-    TU_drc = Dose_IMD/IMD_EC50_drc + Dose_EPX/EPX_EC50_drc,
-    Nb_rep = as.factor(Nb_rep),
-    
-    Dose_IMD_plot = case_when(
-      Dose_IMD == 0 ~ Val_Ctrl,
-      !(Dose_IMD == 0) ~ Dose_IMD
-    ),
-    Dose_EPX_plot = case_when(
-      Dose_EPX == 0 ~ Val_Ctrl,
-      !(Dose_EPX == 0) ~ Dose_EPX
-    ),
-    TU_drc_plot = case_when(
-      TU_drc == 0 ~ Val_Ctrl,
-      !(TU_drc == 0) ~ TU_drc
-    )
-  )|> 
-  left_join(df_mix_growth_mean, by = c("Nb_rep", "Ratio", "Line"))
-
-coc_mean_controls <- subset(df_mix_coc, Dose_IMD == 0 & Dose_EPX == 0) |> 
-  aggregate(Nb_cocoons ~ Lot, FUN = mean)
-
-df_mix_coc <- df_mix_coc |> 
-  mutate(
-    r_Nb_cocoons = 
-      sqrt(case_when(
-        Lot == "D" ~ Nb_cocoons/coc_mean_controls$Nb_cocoons[1],
-        Lot == "E" ~ Nb_cocoons/coc_mean_controls$Nb_cocoons[2]
-        )),
-    Trans_r_Nb_cocoons = sqrt(r_Nb_cocoons)
-    )
-
-df_conc_mix <- df_mix_coc |> 
-  dplyr::select(Condition, Dose_IMD, Dose_EPX)%>%
-  distinct(Condition, .keep_all = TRUE)
-
-df_mix_cocsize <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025cocsize") |> 
-  mutate(
-    Condition = paste0(Ratio, Line),
-    v_coc = 4/3*pi*Coc_height*Coc_width^2,
-    Nb_rep = as.factor(Nb_rep)
-  ) |> 
-  left_join(df_conc_mix, by = "Condition") |> 
-  mutate(
-    TU_drc = Dose_IMD / IMD_EC50_drc + Dose_EPX/EPX_EC50_drc,
-    Dose_IMD_plot = case_when(
-      Dose_IMD == 0 ~ Val_Ctrl,
-      !(Dose_IMD == 0) ~ Dose_IMD
-    ),
-    Dose_EPX_plot = case_when(
-      Dose_EPX == 0 ~ Val_Ctrl,
-      !(Dose_EPX == 0) ~ Dose_EPX
-    )
-    )
-
-df_mix_cocsize_cosm <- df_mix_cocsize |> 
-  aggregate(v_coc ~ Ratio + Line + Nb_rep + TU_drc, FUN = mean) |> 
-  mutate(Condition = paste0(Ratio, Line))
-
-df_mix_coc <- df_mix_coc |> 
-  full_join(df_mix_cocsize_cosm, by = c("Condition", "Nb_rep", "Ratio", "Line", "TU_drc")) |> 
-  mutate(
-    Id_Cond = w_coc/v_coc
-    )
-
-df_mix_coc_mean <- df_mix_coc |>
-  dplyr::group_by(Condition, Dose_IMD, Dose_EPX, Dose_IMD_plot, Dose_EPX_plot, Ratio, Line, TU_drc) |>
-  dplyr::summarise(
-    Nb_cocoons = mean(Nb_cocoons, na.rm = TRUE),
-    w_coc = mean(w_coc, na.rm = TRUE),
-    v_coc = mean(v_coc, na.rm = TRUE),
-    r_Nb_cocoons = mean(r_Nb_cocoons, na.rm = TRUE),
-    Trans_r_Nb_cocoons = mean(Trans_r_Nb_cocoons, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-df_mix_coc_IMD_mean <- subset(df_mix_coc_mean, Dose_EPX ==0)
-df_mix_coc_EPX_mean <- subset(df_mix_coc_mean, Dose_IMD ==0)
-
-Date_D28_LotD <- dmy("23/04/2025")
-Date_D28_LotE <- dmy("29/04/2025")
-
-df_mix_hatch_wide_D <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025hatchlingsLotD") |> 
-  dplyr::select(-Reste) |> 
-  mutate(across(`23/04/2025`:`20/06/2025`, ~replace_na(.x, 0))) |> 
-  mutate(
-    ID_rep = paste0(Ratio, Line, Nb_rep),
-    Condition = paste0(Ratio,Line)
-  )
-
-df_mix_hatch_wide_E <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproSpring2025hatchlingsLotE") |> 
-  dplyr::select(-Reste)|> 
-  mutate(across(`29/04/2025`:`20/06/2025`, ~replace_na(.x, 0))) |> 
-  mutate(
-    ID_rep = paste0(Ratio, Line, Nb_rep),
-    Condition = paste0(Ratio,Line)
-  )
-
-df_mix_hatch_long_D <- df_mix_hatch_wide_D %>%
-  pivot_longer(
-    cols = matches("\\d{2}/\\d{2}/\\d{4}"), 
-    names_to = "Date",
-    values_to = "Nb_hatch"
-  ) %>%
-  mutate(Date = dmy(Date)) 
-
-df_mix_hatch_long_E <- df_mix_hatch_wide_E %>%
-  pivot_longer(
-    cols = matches("\\d{2}/\\d{2}/\\d{4}"), 
-    names_to = "Date",
-    values_to = "Nb_hatch"
-  ) %>%
-  mutate(Date = dmy(Date)) 
-
-df_mix_hatch_long <- rbind(df_mix_hatch_long_D, df_mix_hatch_long_E)
-
-df_mix_hatch_long_D_rep <- df_mix_hatch_long_D %>%
-  arrange(ID_rep, Date) %>%
-  group_by(ID_rep) %>%
-  mutate(Cumul_hatch = cumsum(Nb_hatch)) %>%
-  ungroup()
-
-df_mix_hatch_long_E_rep <- df_mix_hatch_long_E %>%
-  arrange(ID_rep, Date) %>%
-  group_by(ID_rep) %>%
-  mutate(Cumul_hatch = cumsum(Nb_hatch)) %>%
-  ungroup()
-
-df_mix_hatch <- rbind(df_mix_hatch_long_D_rep, df_mix_hatch_long_E_rep) |> 
-  mutate(
-    t = case_when(
-      Lot == "D" ~ as.numeric(Date - Date_D28_LotD),
-      Lot == "E" ~ as.numeric(Date - Date_D28_LotE)
-    ),
-    Cumul_per_hatch = Cumul_hatch/Tot_coc
-  )
-
-tot_coc_per_condition <- df_mix_coc %>%
-  group_by(Condition) %>%
-  summarise(Tot_coc_cond = sum(Nb_cocoons, na.rm = TRUE), .groups = "drop")
-
-df_mix_hatch_mean <- df_mix_hatch_long |> 
-  mutate(
-    t = case_when(
-      Lot == "D" ~ as.numeric(Date - Date_D28_LotD),
-      Lot == "E" ~ as.numeric(Date - Date_D28_LotE)
-    )
-  ) |> 
-  arrange(Condition, t, Ratio, Line) |> 
-  group_by(Condition, Date, t, Ratio, Line) |> 
-  summarise(
-    Nb_hatch = sum(Nb_hatch, na.rm = TRUE),
-    .groups = "drop"
-  ) |>
-  arrange(Condition, t, Ratio, Line) |> 
-  group_by(Condition) |> 
-  mutate(Cumul_hatch = cumsum(Nb_hatch)) |> 
-  ungroup() |> 
-  left_join(tot_coc_per_condition, by = "Condition") |> 
-  mutate(Cumul_perc_hatch = Cumul_hatch / Tot_coc_cond * 100)
+# Data from experiment B (Mixture experiment)
+data_expB                 <- f_read_data_expB()
+df_expB_growth            <- data_expB$df_expB_growth
+df_expB_growth_mean       <- data_expB$df_expB_growth_mean
+df_expB_repro             <- data_expB$df_expB_repro
+df_expB_repro_mean        <- data_expB$df_expB_repro_mean
+df_expB_repro_single      <- data_expB$df_expB_repro_single
+df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
+df_expB_cocsize           <- data_expB$df_expB_cocsize
+df_expB_hatch             <- data_expB$df_expB_hatch
+df_expB_hatch_mean        <- data_expB$df_expB_hatch_mean
 
 ```
 
@@ -290,78 +61,50 @@ pal_lot <- c(Nord_frost[3], Nord_polar[4])
 
 # Weights at t=0
 p <- ggplot(
-  data=subset(df_mix_ind,t==0), 
+  data = subset(df_expB_growth, t == 0),
   aes(
-    x=Condition, 
-    y=w
-    )
-  )+
-
+    x = Condition,
+    y = w
+  )
+) +
   geom_boxplot(
-    alpha=0.2,
+    alpha = 0.2,
     color = Nord_polar[1]
-    )+
+  ) +
   geom_dotplot(
     aes(
-    color=Lot, 
-    fill=Lot
+      color = Lot,
+      fill = Lot
     ),
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.5, 
-    alpha=0.7
-    )+
-  
-  scale_color_manual(values=pal_lot)+
-  scale_fill_manual(values=pal_lot)+
-
-  labs(x="Condition", y="Weight (mg)")+
-  
-
-  theme_classic(12)+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.5,
+    alpha = 0.7
+  ) +
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
+  labs(x = "Condition", y = "Weight (mg)") +
+  theme_classic(12) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(size=sizetitle-2,face="bold"),
-    legend.text = element_text(size=sizetitle-2,face="plain"),
-    
-    title=element_text(size=sizetitle, face="bold"), 
-    
+    legend.position = "none",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    legend.text = element_text(size = sizetitle - 2, face = "plain"),
+    title = element_text(size = sizetitle, face = "bold"),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size=sizetitle,face="plain"),
-    
-    #axis.text.x = element_blank(),
-    axis.line.x=element_blank(),
-    axis.ticks.x=element_blank(),
-    
-    
+    axis.title.y = element_text(size = sizetitle, face = "plain"),
+
+    # axis.text.x = element_blank(),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
     strip.background = element_rect(
-      color="black", 
-      fill="grey95", 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
     )
+  )
 p
 ```
-
-```{r, include=F}
-ggsave(
-  filename="Mix_spring_initial_weights.png",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
-ggsave(
-  filename="Mix_spring_initial_weights.svg",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
-```
-
-!!!!! Test effet condition sur la masse init des vers !!!!!!
 
 ## Effects on growth of individuals
 
@@ -372,24 +115,23 @@ ggsave(
 #| fig-height: 8
 
 p <- ggplot(
-  data = df_mix_ind, 
+  data = df_expB_growth,
   aes(
-    x = t, 
-    y = w, 
-    group = ID, 
+    x = t,
+    y = w,
+    group = ID,
     color = Ratio
-    )
-  )+
-  geom_point()+
-  geom_line(alpha=0.7)+
-  facet_wrap(~Condition, ncol = 7)+
-  #facet_grid(rows = vars(Ratio), cols = vars(Line))+
-  scale_color_manual(values = pal_ratio)+
+  )
+) +
+  geom_point() +
+  geom_line(alpha = 0.7) +
+  facet_wrap(~Condition, ncol = 7) +
+  scale_color_manual(values = pal_ratio) +
   labs(
     x = "Time (days)",
     y = "Weight of the earthworm (mg)"
-  )+
-  theme_bw()+
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
@@ -397,37 +139,39 @@ p
 
 ```
 
-```{r, include=F}
+```{r savegrowthcurves, include=F}
 ggsave(
-  filename="Mix_spring_growth_curves.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_curves.png",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_growth_curves.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_curves.svg",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 
 Calculation of growth rates :
 
 ```{r calcgrowthrates, message = F, warning=F}
-f_growth_rate <- function(data){
+f_growth_rate <- function(data) {
   a_init <- 0.1
   a_i <- c()
-  
+
   # Calculation of the growth rate for each individual
-  for(i in subset(data, t==0)$ID){
-    data_i <- data.frame(L = subset(data, ID==i)$L,
-                         t = subset(data, ID==i)$t)
-    L0_i <- subset(data, ID==i & t==0)$L
-    if(length(na.omit(data_i$L))==2){ # If only 2 data points
-      a.Est <- (subset(data_i, !t==0)$L-subset(data_i, t==0)$L)/
-        subset(data_i, !t==0)$t
-    }else{
+  for (i in subset(data, t == 0)$ID) {
+    data_i <- data.frame(
+      L = subset(data, ID == i)$L,
+      t = subset(data, ID == i)$t
+    )
+    L0_i <- subset(data, ID == i & t == 0)$L
+    if (length(na.omit(data_i$L)) == 2) { # If only 2 data points
+      a.Est <- (subset(data_i, !t == 0)$L - subset(data_i, t == 0)$L) /
+        subset(data_i, !t == 0)$t
+    } else {
       a.Est <- NA
     }
     a_i <- rbind(a_i, a.Est)
@@ -435,10 +179,10 @@ f_growth_rate <- function(data){
   return(a_i)
 }
 
-a_i <- f_growth_rate(df_mix_ind)
+a_i <- f_growth_rate(df_expB_growth)
 
-df_mix_ind_grate <- cbind(subset(df_mix_ind, t == 0), a_i)
-df_mix_ind_grate_mean <- df_mix_ind_grate |> 
+df_expB_growth_grate <- cbind(subset(df_expB_growth, t == 0), a_i)
+df_expB_growth_grate_mean <- df_expB_growth_grate |>
   aggregate(a_i ~ Condition + Dose_EPX + Dose_IMD + Ratio + TU_drc, FUN = "mean")
 
 ```
@@ -450,68 +194,69 @@ df_mix_ind_grate_mean <- df_mix_ind_grate |>
 #| fig-height: 8
 
 p <- ggplot(
-  data = df_mix_ind_grate, 
+  data = df_expB_growth_grate,
   aes(
-    x = "", 
-    y = a_i, 
-    #group = Nb_rep, 
+    x = "",
+    y = a_i,
+    # group = Nb_rep,
   )
-)+
+) +
   geom_boxplot(
     color = Nord_polar[4]
-  )+
+  ) +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=2, 
-    alpha=0.7,
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 2,
+    alpha = 0.7,
     aes(
       color = Ratio,
       fill = Ratio
-      )
-  )+
+    )
+  ) +
   facet_wrap(
     ~Condition,
     ncol = 7,
-    #scales = "free"
-    )+
-  #facet_grid(rows = vars(Ratio), cols = vars(Line))+
-  #scale_y_log10()+
-  scale_color_manual(values = pal_ratio)+
-  scale_fill_manual(values = pal_ratio)+
+    # scales = "free"
+  ) +
+  # facet_grid(rows = vars(Ratio), cols = vars(Line))+
+  # scale_y_log10()+
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
   labs(
     x = "Condition",
-    y = expression("Growth rate (mg"^(1/3)*"/d)")
-  )+
-  theme_bw()+
+    y = expression("Growth rate (mg"^(1 / 3) * "/d)")
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
 p
 ```
 
-```{r, include=F}
+```{r savegrates, include=F}
 ggsave(
-  filename="Mix_spring_growth_rates.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_rates.png",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_growth_rates.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_rates.svg",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 
 ```{r lmcocgrate}
-df_grate_lm <- subset(df_mix_ind_grate, !Ratio == "N")
+df_grate_lm <- subset(df_expB_growth_grate, !Ratio == "N")
 
 lm.grate <- lm(a_i ~ Ratio:TU_drc, data = df_grate_lm)
 summary(lm.grate)
-
 ```
+
+There is an effect of all mixtures ratios on growth.
 
 ## Effects on reproduction
 
@@ -529,40 +274,41 @@ See @sec-MIXSpringJonker for a more detailed analysis.
 #| fig-height: 8
 
 p <- ggplot(
-  data = df_mix_coc, 
+  data = df_expB_repro,
   aes(
-    x = "Condition", 
-    y = Nb_cocoons, 
-    )
-  )+
-  #geom_boxplot()+
+    x = "Condition",
+    y = Nb_cocoons,
+    color = Ratio, 
+    fill = Ratio
+  )
+) +
+  # geom_boxplot()+
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=2, 
-    alpha=0.5,
-    aes(color = Ratio, fill = Ratio)
-  )+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 2,
+    alpha = 0.5
+  ) +
   geom_dotplot(
-    binaxis='y',
-    stackdir='center',
-    dotsize=3,
-    alpha=1,
-    data = df_mix_coc_mean,
+    data = df_expB_repro_mean,
     aes(
       color = Ratio,
       fill = Ratio
-      )
-  )+
-  facet_wrap(~Condition, ncol = 7)+
-  #facet_grid(rows = vars(Ratio), cols = vars(Line))+
-  scale_color_manual(values = pal_ratio)+
-  scale_fill_manual(values = pal_ratio)+
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 3,
+    alpha = 1,
+  ) +
+  facet_wrap(~Condition, ncol = 7) +
+  # facet_grid(rows = vars(Ratio), cols = vars(Line))+
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
   labs(
     x = "Condition",
     y = "Number of cocoons produced in one cosm"
-  )+
-  theme_bw()+
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
@@ -578,16 +324,19 @@ p
 #| fig-width: 8
 #| fig-height: 8
 
-df_mix_coc <- df_mix_coc |> 
+df_expB_repro <- df_expB_repro |> 
+  left_join(df_expB_growth_mean) |> 
   mutate(
     RatioRW = Nb_cocoons/(2*w)
   )
 
 p <- ggplot(
-  data = df_mix_coc, 
+  data = df_expB_repro, 
   aes(
     x = "Condition", 
     y = RatioRW, 
+    color = Ratio, 
+    fill = Ratio
     )
   )+
   #geom_boxplot()+
@@ -595,8 +344,7 @@ p <- ggplot(
     binaxis='y', 
     stackdir='center', 
     dotsize=2, 
-    alpha=0.5,
-    aes(color = Ratio, fill = Ratio)
+    alpha=0.5
   )+
 
   facet_wrap(~Condition, ncol = 7)+
@@ -617,23 +365,21 @@ p
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_boxplot.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_per_g_earthworm.png",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_boxplot.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_per_g_earthworm.svg",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 :::
 
 ### Cocoons weight
-
-!!!! Fitter des NEC + slope ? !!!!!
 
 ```{r cocweight, warning=F, message=F}
 #| fig-cap: Mean weight of cocoons produced by each cosme and per condition. 
@@ -641,45 +387,43 @@ ggsave(
 #| fig-width: 8
 #| fig-height: 8
 
-p <- ggplot(
-  
-  )+
-  geom_boxplot()+
+p <- ggplot() +
+  geom_boxplot() +
   geom_dotplot(
-    data = df_mix_coc,
+    data = df_expB_repro,
     aes(
       x = "",
-      y = w_coc, 
+      y = w_coc,
       color = Ratio,
       fill = Ratio
-      ),
-    binaxis='y',
-    stackdir='center',
-    dotsize=2,
-    alpha=0.5
-  )+
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 2,
+    alpha = 0.5
+  ) +
   geom_dotplot(
-    data = df_mix_coc_mean, 
+    data = df_expB_repro_mean,
     aes(
-      x = "", 
-      y = w_coc, 
+      x = "",
+      y = w_coc,
       color = Ratio,
       fill = Ratio
-      ),
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=3, 
-    alpha=1
-  )+
-  facet_wrap(~Condition, ncol = 7)+
-  #facet_grid(rows = vars(Ratio), cols = vars(Line))+
-  scale_color_manual(values = pal_ratio)+
-  scale_fill_manual(values = pal_ratio)+
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 3,
+    alpha = 1
+  ) +
+  facet_wrap(~Condition, ncol = 7) +
+  # facet_grid(rows = vars(Ratio), cols = vars(Line))+
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
   labs(
     x = "Condition",
     y = "Mean weight of cocoons produced in one cosm"
-  )+
-  theme_bw()+
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
@@ -687,28 +431,28 @@ p
 
 ```
 
-```{r, include=F}
+```{r savecocoonweight, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_weight_boxplot.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_weight.png",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_weight_boxplot.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_weight.svg",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 
 ```{r lmcocw, warning=F, message=F}
-df_coc_weight_lm <- subset(df_mix_coc, !Ratio == "N")
-
+df_coc_weight_lm <- subset(df_expB_repro, !Ratio == "N")
 lm.cocw <- lm(w_coc ~ Ratio:TU_drc, data = df_coc_weight_lm)
 summary(lm.cocw)
-
 ```
+
+There is an effect of IMD and EPX as single substances on cocoon weight.
 
 ```{r drcweigthcoc, warning=F, message=F}
 #| fig-cap: Mean weight of cocoons in cosms exposed to IMD or EPX only. 
@@ -717,83 +461,83 @@ summary(lm.cocw)
 #| fig-height: 6
 
 p_IMD <- ggplot(
-  data = subset(df_mix_coc, Dose_EPX == 0),
+  data = subset(df_expB_repro, Dose_EPX == 0),
   aes(
     x = Dose_IMD_plot,
     y = w_coc
   )
-)+
+) +
   geom_point(
-    alpha=0.5,
+    alpha = 0.5,
     color = col_IMD
-  )+
+  ) +
   geom_point(
-    data = subset(df_mix_coc_mean, Dose_EPX == 0),
-      aes(
-        x = Dose_IMD_plot,
-        y = w_coc
-      ),
+    data = subset(df_expB_repro_mean, Dose_EPX == 0),
+    aes(
+      x = Dose_IMD_plot,
+      y = w_coc
+    ),
     size = 3,
     color = col_IMD
-  )+
+  ) +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), 
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
+  ) +
   labs(
     x = "Imidacloprid concentration (mg/kg)",
     y = "Mean weight of cocoons\nproduced in one cosm (mg)"
-  )+
+  ) +
   theme_minimal()
 
 p_EPX <- ggplot(
-  data = subset(df_mix_coc, Dose_IMD ==0),
+  data = subset(df_expB_repro, Dose_IMD == 0),
   aes(
     x = Dose_EPX_plot,
     y = w_coc
   )
-)+
+) +
   geom_point(
-    alpha=0.5,
+    alpha = 0.5,
     color = col_EPX
-  )+
+  ) +
   geom_point(
-    data = subset(df_mix_coc_mean, Dose_IMD == 0),
-      aes(
-        x = Dose_EPX_plot,
-        y = w_coc
-      ),
+    data = subset(df_expB_repro_mean, Dose_IMD == 0),
+    aes(
+      x = Dose_EPX_plot,
+      y = w_coc
+    ),
     size = 3,
     color = col_EPX
-  )+
+  ) +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), 
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
+  ) +
   labs(
     x = "Epoxiconazole concentration (mg/kg)",
     y = "Mean weight of cocoons\nproduced in one cosm (mg)"
-  )+
+  ) +
   theme_minimal()
 
-p <- p_IMD/p_EPX
+p <- p_IMD / p_EPX
 p
 
 ```
 
-```{r, include=F}
+```{r savecocweightdrc, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_weight_drc.png", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_weight_drc.png",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_weigth_drc.svg", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_weigth_drc.svg",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ```
 
 ### Cocoons volume
@@ -805,40 +549,40 @@ ggsave(
 #| fig-height: 8
 
 p <- ggplot(
-  data = df_mix_cocsize,
+  data = df_expB_cocsize,
   aes(
     x = Coc_height,
     y = Coc_width,
     color = Lot
   )
-)+
+) +
   geom_point(
     alpha = 0.5
-  )+
-  facet_wrap(~Condition, ncol = 7)+
-  scale_color_manual(values = pal_lot)+
-  scale_fill_manual(values = pal_lot)+
+  ) +
+  facet_wrap(~Condition, ncol = 7) +
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
   labs(
     x = "Length of cocoons produced (mm)",
     y = "Width of cocoons produced (mm)"
-  )+
+  ) +
   theme_bw()
 p
 ```
 
-```{r, include=F}
+```{r savecocsizecorr, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_size_corr_boxplot.png", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_size_corr.png",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_size_corr_boxplot.svg", 
-  plot=p, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_size_corr.svg",
+  plot = p,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 
 ```{r, warning=F, message=F}
@@ -848,59 +592,60 @@ ggsave(
 #| fig-height: 8
 
 p_V <- ggplot(
-  data = df_mix_cocsize, 
+  data = df_expB_cocsize,
   aes(
-    x = "Condition", 
-      y = v_coc
-    )
-  )+
-  geom_boxplot()+
+    x = "Condition",
+    y = v_coc
+  )
+) +
+  geom_boxplot() +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=2, 
-    alpha=0.7,
     aes(
       color = Ratio,
       fill = Ratio
-      ),
-  )+
-  facet_wrap(~Condition, ncol = 7)+
-  scale_color_manual(values = pal_ratio)+
-  scale_fill_manual(values = pal_ratio)+
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 2,
+    alpha = 0.7,
+  ) +
+  facet_wrap(~Condition, ncol = 7) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
   labs(
     x = "Condition",
-    y = expression("Estimated volume of cocoons produced (mm"^3*")")
-  )+
-  theme_bw()+
+    y = expression("Estimated volume of cocoons produced (mm"^3 * ")")
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
 p_V
 ```
 
-```{r, include=F}
+```{r savecocvolume, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_vol_boxplot.png", 
-  plot=p_V, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_volume.png",
+  plot = p_V,
+  width = 8, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_vol_boxplot.svg", 
-  plot=p_V, 
-  width=8, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_volume.svg",
+  plot = p_V,
+  width = 8, height = 8,
+  path = path_fig
+)
 ```
 
 ```{r lmcocv, warning=F, message=F}
-df_coc_vol_lm <- subset(df_mix_cocsize, !Ratio == "N")
+df_coc_vol_lm <- subset(df_expB_cocsize, !Ratio == "N")
 
 lm.cocv <- lm(v_coc ~ Ratio:TU_drc, data = df_coc_vol_lm)
 summary(lm.cocv)
-
 ```
+
+No effect on cocoon volume.
 
 ```{r drcvolcoc, warning=F, message=F}
 #| fig-cap: Mean Volume of cocoons in cosms exposed to IMD or EPX only. 
@@ -911,85 +656,67 @@ summary(lm.cocv)
 Max_x <- 500
 
 p_IMD <- ggplot(
-  data = subset(df_mix_cocsize, Dose_EPX == 0),
+  data = subset(df_expB_cocsize, Dose_EPX == 0),
   aes(
     x = Dose_IMD_plot,
     y = v_coc
   )
-)+
+) +
   geom_point(
-    alpha=0.5,
+    alpha = 0.5,
     color = col_IMD
-  )+
-  geom_point(
-    data = subset(df_mix_coc_mean, Dose_EPX == 0),
-      aes(
-        x = Dose_IMD_plot,
-        y = v_coc
-      ),
-    size = 3,
-    color = col_IMD
-  )+
+  ) +
   scale_x_log10(
-    limits= c(Val_Ctrl, Max_x),
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), 
+    limits = c(Val_Ctrl, Max_x),
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
+  ) +
   labs(
     x = "Imidacloprid concentration (mg/kg)",
-    y = expression("Estimated volume of\ncocoons produced (mm"^3*")")
-  )+
+    y = expression("Estimated volume of\ncocoons produced (mm"^3 * ")")
+  ) +
   theme_minimal()
 
 p_EPX <- ggplot(
-  data = subset(df_mix_cocsize, Dose_IMD ==0),
+  data = subset(df_expB_cocsize, Dose_IMD == 0),
   aes(
     x = Dose_EPX_plot,
     y = v_coc
   )
-)+
+) +
   geom_point(
-    alpha=0.5,
+    alpha = 0.5,
     color = col_EPX
-  )+
-  geom_point(
-    data = subset(df_mix_coc_mean, Dose_IMD == 0),
-      aes(
-        x = Dose_EPX_plot,
-        y = v_coc
-      ),
-    size = 3,
-    color = col_EPX
-  )+
+  ) +
   scale_x_log10(
-    limits= c(Val_Ctrl, Max_x),
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), 
+    limits = c(Val_Ctrl, Max_x),
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
+  ) +
   labs(
     x = "Epoxiconazole concentration (mg/kg)",
-    y = expression("Estimated volume of\ncocoons produced (mm"^3*")")
-  )+
+    y = expression("Estimated volume of\ncocoons produced (mm"^3 * ")")
+  ) +
   theme_minimal()
 
-p <- p_IMD/p_EPX
+p <- p_IMD / p_EPX
 p
 
 ```
 
-```{r, include=F}
+```{r savecocvoldrc, include=F}
 ggsave(
-  filename="Mix_spring_cocoons_vol_drc.png", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_vol_drc.png",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_spring_cocoons_vol_drc.svg", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_vol_drc.svg",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ```
 
 ### Hatchling time and success
@@ -1003,29 +730,29 @@ Per replicate :
 #| fig-height: 6
 
 p <- ggplot(
-  data = df_mix_hatch,
+  data = df_expB_hatch,
   aes(
-    x =t,
+    x = t,
     y = Cumul_per_hatch,
     color = Ratio,
     group = ID_rep
   )
-)+
-  geom_line()+
+) +
+  geom_line() +
   geom_abline(
     intercept = 1,
     slope = 0,
     linetype = "dotted",
     color = Nord_polar[4]
-  )+
-  facet_wrap(~Condition, ncol=7)+
-  scale_color_manual(values = pal_ratio)+
-  scale_fill_manual(values = pal_ratio)+
+  ) +
+  facet_wrap(~Condition, ncol = 7) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
   labs(
     x = "Time (days)",
-    y = "Cumulative number of hatchlings"
-  )+
-  theme_bw()+
+    y = "Cumulative percentage of hatchlings"
+  ) +
+  theme_bw() +
   theme(
     legend.position = "none"
   )
@@ -1042,42 +769,57 @@ Per condition :
 #| fig-height: 6
 
 p <- ggplot(
-  data = df_mix_hatch_mean,
+  data = df_expB_hatch_mean,
   aes(
     x = t,
     y = Cumul_perc_hatch,
-    color = as.factor(Line), 
+    color = as.factor(Line),
     group = Condition
   )
-)+
-  geom_line()+
+) +
+  geom_line() +
   geom_abline(
     intercept = 100,
     slope = 0,
     linetype = "dotted",
     color = Nord_polar[4]
-  )+
-  facet_wrap(~Ratio, ncol=7)+
+  ) +
+  facet_wrap(~Ratio, ncol = 7) +
   # scale_color_manual(values = pal_ratio)+
   # scale_fill_manual(values = pal_ratio)+
   scale_color_manual(
-    values = rev(nord(palette = "aurora", n=8)),
-    name="Line"
-    )+
+    values = rev(nord(palette = "aurora", n = 8)),
+    name = "Line"
+  ) +
   scale_fill_manual(
-    values = rev(nord(palette = "aurora", n=8)),
-    name="Line"
-    )+
+    values = rev(nord(palette = "aurora", n = 8)),
+    name = "Line"
+  ) +
   labs(
     x = "Time (days)",
     y = "Mean cumulative percentage of hatchlings"
-  )+
-  theme_bw()+
+  ) +
+  theme_bw() +
   theme(
     legend.position = "right"
   )
 p
 
+```
+
+```{r savehatch, include=F}
+ggsave(
+  filename = "ExpB_cocoon_hatch.png",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
+ggsave(
+  filename = "ExpB_cocoon_hatch.svg",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
 ```
 
 ```{r, warning = F, message = F}
@@ -1087,37 +829,35 @@ p
 #| fig-height: 6
 
 p <- ggplot(
-  data = subset(df_mix_hatch_mean, Ratio %in% c("E", "I", "N")),
+  data = subset(df_expB_hatch_mean, Ratio %in% c("E", "I", "N")),
   aes(
     x = t,
     y = Cumul_perc_hatch,
-    color = as.factor(Line), 
+    color = as.factor(Line),
     group = Condition
   )
-)+
-  geom_line()+
+) +
+  geom_line() +
   geom_abline(
     intercept = 100,
     slope = 0,
     linetype = "dotted",
     color = Nord_polar[4]
-  )+
-  facet_wrap(~Ratio, ncol=7)+
-  # scale_color_manual(values = pal_ratio)+
-  # scale_fill_manual(values = pal_ratio)+
+  ) +
+  facet_wrap(~Ratio, ncol = 7) +
   scale_color_manual(
-    values = rev(nord(palette = "aurora", n=8)),
-    name="Line"
-    )+
+    values = rev(nord(palette = "aurora", n = 8)),
+    name = "Line"
+  ) +
   scale_fill_manual(
-    values = rev(nord(palette = "aurora", n=8)),
-    name="Line"
-    )+
+    values = rev(nord(palette = "aurora", n = 8)),
+    name = "Line"
+  ) +
   labs(
     x = "Time (days)",
     y = "Mean cumulative percentage of hatchlings"
-  )+
-  theme_bw()+
+  ) +
+  theme_bw() +
   theme(
     legend.position = "right"
   )
@@ -1130,5 +870,15 @@ p
 A few observations could be made while monitoring hatchlings :
 
 -   Usually, *Aporrectodea caliginosa* gives only one hatchling per cocoon. Here, it happened a few times that there were two. Each time it was seen, one very small earthworm was with a more normal weight earthworm. All occurence could not be witnessed as we could not observe all cocoons hatch.
--   Some hatchlings were really small (@fig-smallhatch), probably because of the previous point but it could also have happened in cocoons resulting in only one individual.
--   A small number of hatchlings were with malformations like two bodies (happenned, twice, @fig-twobodieshatch), or anormal masses (happened twice, @fig-cancerhatch).
+-   Some hatchlings were really small (@fig-smallhatch1 & @fig-smallhatch2), probably because of the previous point but it could also have happened in cocoons resulting in only one individual.
+-   A small number of hatchlings were with malformations like two bodies (happenned twice, @fig-twobodieshatch1, @fig-twobodieshatch2), or anormal masses (happened twice, @fig-cancerhatch).
+
+![Photo of a very small hatchling from condition E3 replicate 2](../../photos/MIX_Photos_diformed_babies/E3.2_Very_small.jpg){#fig-smallhatch1}
+
+![Photo of a very small hatchling from condition G6 replicate 2](../../photos/MIX_Photos_diformed_babies/G6.2_Very_small.jpg){#fig-smallhatch2}
+
+![Photo of a hatchling with a double body from condition E6 replicate 3](../../photos/MIX_Photos_diformed_babies/E6.3_double_body.jpg){#fig-twobodieshatch1}
+
+![Photo of a hatchling with a double body from condition G5 replicate 3](../../photos/MIX_Photos_diformed_babies/G5.3_double_body.jpg){#fig-twobodieshatch2}
+
+![Photo of a hatchling an abnormal mass](../../photos/MIX_Photos_diformed_babies/Unknown_condition.jpg){#fig-cancerhatch}

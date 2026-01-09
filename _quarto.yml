@@ -2,8 +2,7 @@ project:
   type: book
 
 book:
-  title: "**Toxic cocktails in soils** - Unravelling the effect of a fungicide and insecticide mixture on earthworm growth and reproduction
-"
+  title: "**Toxic cocktails in soils** - Evidence for synergistic effects of a pesticide mixture on earthworm life-history traits"
   subtitle: "Git repository"
   author:
     - name: "Lisa Gollot"

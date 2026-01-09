@@ -273,7 +273,7 @@ plot_drc_2 <- ggplot()+
   labs(
     x="Dose (mg/kg)", 
     y=expression(paste("Relative number of cocoons produced per cosm")), 
-    title = "No common parameter"
+    title = "Common Ymax"
     )+
   theme(
     legend.position = "right", 
@@ -344,7 +344,7 @@ plot_drc_3 <- ggplot()+
   labs(
     x="Dose (mg/kg)", 
     y=expression(paste("Relative number of cocoons produced per cosm")), 
-    title = "No common parameter"
+    title = "Common slope"
     )+
   theme(
     legend.position = "right", 
@@ -415,7 +415,7 @@ plot_drc_4 <- ggplot()+
   labs(
     x="Dose (mg/kg)", 
     y=expression(paste("Relative number of cocoons produced per cosm")), 
-    title = "No common parameter"
+    title = "Common slope and Ymax"
     )+
   theme(
     legend.position = "right", 

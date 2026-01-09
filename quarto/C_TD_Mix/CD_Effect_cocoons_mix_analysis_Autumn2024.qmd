@@ -1,35 +1,16 @@
-```{r, include=F}
-library(tidyverse); library(here); library(ggthemes)
-library(viridis); library(tidybayes); library(wesanderson)
-library(ggdist); library(patchwork); library(extrafont)
-library(scales); library(ggdist); library(ggsci)
-library(parallel); library(deSolve); library(tmvtnorm)
-library(fdrtool); library(readxl); library(here); library(car)
-library(RColorBrewer); library(devtools) ; library(drc)
-library(knitr); library(Hmisc); library(nlstools); library(lsmeans)
-library(ggpubr);library(brglm2);library(marginaleffects)
-library(performance);library(rethinking); library(nord); library(ggiraph)
+```{r lib, include=F}
+library(here)
+source(file = here::here("functions/fun.R"))
 
-Nord_frost <- nord(palette = "frost")
-Nord_aurora <- nord(palette = "aurora")
-Nord_polar <- nord(palette = "polarnight")
-Nord_snow <- nord(palette = "snowstorm")
+f_load_libraries_colors()
 
-pal_col <- c(Nord_aurora[1], Nord_frost[4])
-col_EPX <- Nord_frost[2]
-col_IMD <- Nord_frost[4]
-shape_IMD <- 16
-shape_EPX <- 15
-col_molec <- c(col_EPX, col_IMD)
-sizetitle <- 12
+palette <- colorRampPalette(c("#5E81AC", "#88C0D0"))
+col_mix <- Nord_polar[4]
+pal_ratio <- c("#88C0D0", col_mix, col_mix, col_mix, "#5E81AC", col_mix)
 
-shape_molec <- c(shape_EPX, shape_IMD)
+pal_lot <- c(Nord_aurora[1], Nord_aurora[3], Nord_aurora[4], Nord_frost[4])
 
-set.seed(121212)
-col_red <- "#f42404"
-
-pal_lot <- c(Nord_frost[4], Nord_aurora[3], Nord_aurora[2], Nord_aurora[4]) # blue, yellow, orange
-
+path_fig <- here::here("fig/Mixture/Autumn")
 ```
 
 # Results of the mixture experiments : Results of the first round of the mixture experiment
@@ -40,18 +21,17 @@ Importation of the mixture experiement data.
 
 ```{r datamix}
 # Data mix
-
-df_repro_mix <- read_excel(here::here("data/Data_Mix.xlsx"), sheet="ReproAutumn2024") |> 
+df_expB_autumn <- read_excel(here::here("data/Data_Mix.xlsx"), sheet = "ReproAutumn2024") |>
   mutate(
-    w=w_tot/Nb_ind,
-    L=w^(1/3),
+    w = w_tot / Nb_ind,
+    L = w^(1 / 3),
     Condition = paste(Ratio, Line, sep = ""),
     Nb_rep = as.factor(Nb_rep),
     Dose_IMD = Dose_IMD / 2
-    )
+  )
 
-df_repro_mix_mean <- df_repro_mix |> 
-  aggregate(Nb_cocoons ~ Condition+Dose_EPX+Dose_IMD+Ratio, mean)
+df_expB_autumn_mean <- df_expB_autumn |>
+  aggregate(Nb_cocoons ~ Condition + Dose_EPX + Dose_IMD + Ratio, mean)
 ```
 
 ## Initial state
@@ -59,82 +39,73 @@ df_repro_mix_mean <- df_repro_mix |>
 We can first take a look at the initial weights of individuals (@fig-init).
 
 ```{r D0, warning=F, message=F}
-#| fig-cap: Initial weights of earthworms according to batches. 
+#| fig-cap: Initial weights of earthworms according to batches.
 #| label: fig-init
 #| fig-width: 8
 #| fig-height: 4
 
 # Weights at t=0
 p <- ggplot(
-  data=subset(df_repro_mix,t==0), 
+  data = subset(df_expB_autumn, t == 0),
   aes(
-    x=Condition, 
-    y=w
-    )
-  )+
-
+    x = Condition,
+    y = w
+  )
+) +
   geom_boxplot(
-    alpha=0.2,
+    alpha = 0.2,
     color = Nord_polar[1]
-    )+
+  ) +
   geom_dotplot(
     aes(
-    color=Lot, 
-    fill=Lot
+      color = Lot,
+      fill = Lot
     ),
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.5, 
-    alpha=0.7
-    )+
-  
-  scale_color_manual(values=pal_lot)+
-  scale_fill_manual(values=pal_lot)+
-
-  labs(x="Condition", y="Weight (mg)")+
-  
-
-  theme_classic(12)+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.5,
+    alpha = 0.7
+  ) +
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
+  labs(x = "Condition", y = "Weight (mg)") +
+  theme_classic(12) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(size=sizetitle-2,face="bold"),
-    legend.text = element_text(size=sizetitle-2,face="plain"),
-    
-    title=element_text(size=sizetitle, face="bold"), 
-    
+    legend.position = "top",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    legend.text = element_text(size = sizetitle - 2, face = "plain"),
+    title = element_text(size = sizetitle, face = "bold"),
     axis.title.x = element_blank(),
-    axis.title.y = element_text(size=sizetitle,face="plain"),
-    
-    #axis.text.x = element_blank(),
-    axis.line.x=element_blank(),
-    axis.ticks.x=element_blank(),
-    
-    
+    axis.title.y = element_text(size = sizetitle, face = "plain"),
+
+    # axis.text.x = element_blank(),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
     strip.background = element_rect(
-      color="black", 
-      fill="grey95", 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
     )
+  )
 p
 ```
 
-```{r, include=F}
+```{r saveinit, include=F}
 ggsave(
-  filename="Mix_initial_weights.png",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_initial_weights.png",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_initial_weights.svg",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_initial_weights.svg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_fig
+)
 ```
 
 ## Growth of individuals
@@ -142,60 +113,61 @@ ggsave(
 Mean growth curves of each cosm and per condition.
 
 ```{r, warning=F}
-#| fig-cap: Mean growth curves of each cosme and per condition. 
+#| fig-cap: Mean growth curves of each cosme and per condition.
 #| label: fig-growthcurves
 #| fig-width: 8
 #| fig-height: 12
 
 p <- ggplot(
-  data = df_repro_mix, 
+  data = df_expB_autumn,
   aes(
-    x = t, 
-    y = w, 
-    group = paste(Nb_rep,Lot), 
+    x = t,
+    y = w,
+    group = paste(Nb_rep, Lot),
     color = Lot
-    )
-  )+
-  geom_point()+
-  geom_line()+
-  facet_wrap(~Condition, ncol = 7)+
-  scale_color_manual(values = pal_lot)+
+  )
+) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~Condition, ncol = 7) +
+  scale_color_manual(values = pal_lot) +
   theme_bw()
 p
-
 ```
 
-```{r, include=F}
+```{r savegrowthcurve, include=F}
 ggsave(
-  filename="Mix_1_growth_curves.png", 
-  plot=p, 
-  width=8, height = 12, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_curves.png",
+  plot = p,
+  width = 8, height = 12,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_growth_curves.svg", 
-  plot=p, 
-  width=8, height = 12, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_curves.svg",
+  plot = p,
+  width = 8, height = 12,
+  path = path_fig
+)
 ```
 
 Calculation of growth rates :
 
-```{r}
-f_growth_rate <- function(data){
+```{r gratescalc}
+f_growth_rate <- function(data) {
   a_init <- 0.1
   a_i <- c()
-  
+
   # Calculation of the growth rate for each individual
-  for(i in subset(data, t==0)$ID_cosm){
-    data_i <- data.frame(L = subset(data, ID_cosm==i)$L,
-                         t = subset(data, ID_cosm==i)$t)
-    L0_i <- subset(data, ID_cosm==i & t==0)$L
-    if(length(na.omit(data_i$L))==2){ # If only 2 data points
-      a.Est <- (subset(data_i, !t==0)$L-subset(data_i, t==0)$L)/
-        subset(data_i, !t==0)$t
-    }else{
+  for (i in subset(data, t == 0)$ID_cosm) {
+    data_i <- data.frame(
+      L = subset(data, ID_cosm == i)$L,
+      t = subset(data, ID_cosm == i)$t
+    )
+    L0_i <- subset(data, ID_cosm == i & t == 0)$L
+    if (length(na.omit(data_i$L)) == 2) { # If only 2 data points
+      a.Est <- (subset(data_i, !t == 0)$L - subset(data_i, t == 0)$L) /
+        subset(data_i, !t == 0)$t
+    } else {
       a.Est <- NA
     }
     a_i <- rbind(a_i, a.Est)
@@ -203,105 +175,103 @@ f_growth_rate <- function(data){
   return(a_i)
 }
 
-a_i <- f_growth_rate(df_repro_mix)
+a_i <- f_growth_rate(df_expB_autumn)
 
-df_repro_mix_grate <- cbind(subset(df_repro_mix, t == 0), a_i)
-df_repro_mix_grate_mean <- df_repro_mix_grate |> 
-  aggregate(a_i ~ Condition + Dose_EPX + Dose_IMD+Ratio, FUN = "mean")
-
+df_expB_autumn_grate <- cbind(subset(df_expB_autumn, t == 0), a_i)
+df_expB_autumn_grate_mean <- df_expB_autumn_grate |>
+  aggregate(a_i ~ Condition + Dose_EPX + Dose_IMD + Ratio, FUN = "mean")
 ```
 
 ```{r, warning=F, message=F}
-#| fig-cap: Mean growth rates of each cosm and per condition. 
+#| fig-cap: Mean growth rates of each cosm and per condition.
 #| label: fig-growthrates
 #| fig-width: 8
 #| fig-height: 10
 
 p <- ggplot(
-  data = df_repro_mix_grate, 
+  data = df_expB_autumn_grate,
   aes(
-    x = Lot, 
-    y = a_i, 
-    #group = Nb_rep, 
+    x = Lot,
+    y = a_i,
+    # group = Nb_rep,
     color = Lot
   )
-)+
-  geom_boxplot()+
+) +
+  geom_boxplot() +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.7, 
-    alpha=0.7
-  )+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.7,
+    alpha = 0.7
+  ) +
   facet_wrap(
-    ~Condition, 
-    ncol = 7, 
-    #scales = "free"
-    )+
-  scale_color_manual(values = pal_lot)+
+    ~Condition,
+    ncol = 7,
+    # scales = "free"
+  ) +
+  scale_color_manual(values = pal_lot) +
   theme_bw()
 p
 ```
 
-```{r, include=F}
+```{r savegrates, include=F}
 ggsave(
-  filename="Mix_1_growth_rates.png", 
-  plot=p, 
-  width=8, height = 10, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_rates.png",
+  plot = p,
+  width = 8, height = 10,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_growth_rates.svg", 
-  plot=p, 
-  width=8, height = 10, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_rates.svg",
+  plot = p,
+  width = 8, height = 10,
+  path = path_fig
+)
 ```
 
 ## First look at cocoons production
 
 ```{r, warning=F, message=F}
-#| fig-cap: Cocoons produced by each cosme and per condition. 
+#| fig-cap: Cocoons produced by each cosme and per condition.
 #| label: fig-cocbox
 #| fig-width: 8
 #| fig-height: 4
 
 p <- ggplot(
-  data = df_repro_mix, 
+  data = df_expB_autumn,
   aes(
-    x = Condition, 
-    y = Nb_cocoons, 
-    )
-  )+
-  geom_boxplot()+
+    x = Condition,
+    y = Nb_cocoons,
+  )
+) +
+  geom_boxplot() +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.7, 
-    alpha=0.7,
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.7,
+    alpha = 0.7,
     aes(color = Lot, fill = Lot)
-  )+
-  #facet_wrap(~Condition, ncol = 7)+
-  scale_color_manual(values = pal_lot)+
-  scale_fill_manual(values = pal_lot)+
+  ) +
+  # facet_wrap(~Condition, ncol = 7)+
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
   theme_bw()
 p
-
 ```
 
-```{r, include=F}
+```{r savecocbox, include=F}
 ggsave(
-  filename="Mix_1_cocoons_boxplot.png", 
-  plot=p, 
-  width=12, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_boxplot.png",
+  plot = p,
+  width = 12, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_cocoons_boxplot.svg", 
-  plot=p, 
-  width=12, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_boxplot.svg",
+  plot = p,
+  width = 12, height = 8,
+  path = path_fig
+)
 ```
 
 The results for imidacloprid only do not seem to correspond to the expected effect. We will compare the ratio I and E to the previously obtained dose response curves.
@@ -312,94 +282,64 @@ Importation of the EC50 experiment data.
 
 ```{r dataEC50}
 # Data EC50
+# Value given to controls for plot
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+# Data from experiment A (Single substances experiement)
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
 
-df_repro_tot <- read_excel(here::here("data/Data_EC50.xlsx"), sheet="Repro") |> 
-  mutate(Dose = as.numeric(Dose)) |> 
-  mutate(Dose_f = as.factor(round(Dose, 4))) |> 
-  mutate(w=w_tot/Nb_ind) |> 
-  mutate(L=w^(1/3))
-
-# Data for EPX
-df_repro_EPX <- subset(df_repro_tot, Molec %in% c("Ctrl_2", "EPX")) |> 
-  mutate(Molecule = "EPX")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_EPX <- subset(df_repro_EPX, t==28 & (!Status=="D"))$ID_cosm
-df_repro_EPX_alive <- subset(df_repro_EPX, ID_cosm %in% ID_alive_EPX)
-
-# Data for IMD
-df_repro_IMD <- subset(df_repro_tot, Molec %in% c("Ctrl_1", "Ctrl_2", "IMD")) |> 
-  mutate(Molecule = "IMD")
-# We only keep earthworms still alive at then end of the experiment
-ID_alive_IMD <- subset(df_repro_IMD, t==28 & (!Status=="D"))$ID_cosm
-df_repro_IMD_alive <- subset(df_repro_IMD, ID_cosm %in% ID_alive_IMD)
-
-df_repro <- rbind(df_repro_EPX, df_repro_IMD)
-df_repro_alive <- rbind(df_repro_EPX_alive, df_repro_IMD_alive)
-df_repro_alive_mean <- df_repro_alive |> 
-  aggregate(Nb_cocoons~Dose+Molecule, mean)
-
+data_expA_growth   <- f_read_data_expA_growth()
+df_expA_growth     <- data_expA_growth$df_expA_growth
 ```
 
 ```{r drc, warning=F, message=F}
-
-Dose_x <- expand.grid(
-  exp(
-    seq(
-      log(0.000001),log(5000), 
-      by=(log(5000)-log(0.000001))/100
-    )
-  )
-)
-
 # Common Ymax and slope
-drc.4<- drm(
-  Nb_cocoons~Dose, Molecule, 
-  data = df_repro_alive,
-  type="Poisson",
-  fct=LL.4(
+drc.4 <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expA_repro,
+  type = "Poisson",
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
     fixed = c(NA, 0, NA, NA)
-  ), 
+  ),
   # Reproduction is expected to reach 0 for large concentrations
-  pmodels=data.frame(1, 1, Molecule)
+  pmodels = data.frame(1, 1, Molecule)
 )
 # summary(drc.4)
 
-CI.4 <- data.frame(
-  Dose = c(Dose_x$Var1, Dose_x$Var1),
-  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+data_CI_drc.4 <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.4,
+  signif_param = 3
 )
 
-pm.4 <- predict(drc.4, newdata=CI.4, interval="confidence")
-CI.4$p <- pm.4[,1]
-CI.4$pmin <- pm.4[,2]
-CI.4$pmax <- pm.4[,3]
+df_CI_drc.4 <- data_CI_drc.4$df_CI
+df_param.drc.4 <- data_CI_drc.4$df_param
 
-Hill.4 <- function(Dose, Molecule){
-  
-  i <- 0
-  if(Molecule == "IMD"){i <- 1}
-  
-  Y_min <- 0
-  slope <- coef(drc.4)[1]
-  Y_max <- coef(drc.4)[2]
-  EC50 <- coef(drc.4)[3+i]
-  
-  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(Dose)-log(EC50)))))
-}
-EPX_EC50 <- coef(drc.4)[4]
-IMD_EC50 <- coef(drc.4)[4]
+EPX_EC50_expA <- coef(drc.4)[4]
+IMD_EC50_expA <- coef(drc.4)[4]
 ```
 
-```{r}
+```{r dfarr}
 x <- seq(0.000001, 5000, 0.01)
 
-df_repro_mix_IMD <- subset(df_repro_mix, Ratio %in% c("I", "N"))
-df_repro_mix_EPX <- subset(df_repro_mix, Ratio  %in% c("E", "N"))
-df_repro_mix_IMD_mean <- df_repro_mix_IMD |> 
-  aggregate(Nb_cocoons ~ Condition+Dose_IMD, mean)
-df_repro_mix_EPX_mean <- df_repro_mix_EPX |> 
-  aggregate(Nb_cocoons ~ Condition+Dose_EPX, mean)
+df_expA_repro_IMD <- subset(df_expA_repro, Molecule == "IMD")
+df_expA_repro_EPX <- subset(df_expA_repro, Molecule == "EPX")
+
+df_expA_repro_IMD_mean <- subset(df_expA_repro_mean, Molecule == "IMD")
+df_expA_repro_EPX_mean <- subset(df_expA_repro_mean, Molecule == "IMD")
+
+df_expB_autumn_IMD <- subset(df_expB_autumn, Ratio %in% c("I", "N"))
+df_expB_autumn_EPX <- subset(df_expB_autumn, Ratio %in% c("E", "N"))
+df_expB_autumn_IMD_mean <- df_expB_autumn_IMD |>
+  aggregate(Nb_cocoons ~ Condition + Dose_IMD, mean)
+df_expB_autumn_EPX_mean <- df_expB_autumn_EPX |>
+  aggregate(Nb_cocoons ~ Condition + Dose_EPX, mean)
 ```
 
 ```{r, warning=F}
@@ -410,399 +350,401 @@ df_repro_mix_EPX_mean <- df_repro_mix_EPX |>
 
 line_width <- 1.2
 
-p_I <- ggplot()+
+p_I <- ggplot() +
   geom_ribbon(
-    data = subset(CI.4, Molecule == "IMD"), 
+    data = subset(df_CI_drc.4, Molecule == "IMD"),
     aes(
-      x = Dose, 
-      y = p, 
-      ymin = pmin, 
+      x = Dose,
+      y = p,
+      ymin = pmin,
       ymax = pmax
-      ), 
-    alpha=0.2,
-    fill = col_IMD,
-    #color = col_IMD
-    )+
+    ),
+    alpha = 0.2,
+    fill = col_IMD
+  ) +
   geom_line(
+    data = subset(df_CI_drc.4, Molecule == "IMD"),
     aes(
-      x=x, 
-      y=Hill.4(Dose=x, Molecule="IMD")
-    ), 
-    color=col_IMD, 
-    linewidth=line_width
-  )+
+      x = Dose,
+      y = p
+    ),
+    color = col_IMD,
+    linewidth = line_width
+  ) +
   geom_point(
-    data = subset(df_repro_mix_IMD, Lot == "T"), 
-    aes(x = Dose_IMD, y = Nb_cocoons),
-    color = col_red,
-    alpha = 0.6,
-    shape = 4
-  )+
-  geom_point(
-    data = df_repro_IMD_alive,
+    data = df_expA_repro_IMD,
     aes(x = Dose, y = Nb_cocoons),
     color = col_IMD,
     alpha = 0.5,
     shape = 4
-  )+
+  ) +
   geom_point(
-    data = df_repro_mix_IMD_mean, 
+    data = subset(df_expB_autumn_IMD, Lot == "T"),
+    aes(x = Dose_IMD, y = Nb_cocoons),
+    color = col_red,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_autumn_IMD_mean,
     aes(x = Dose_IMD, y = Nb_cocoons),
     color = col_red,
     size = 3
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "IMD"),
+    data = subset(df_expA_repro_IMD_mean, Molecule == "IMD"),
     aes(x = Dose, y = Nb_cocoons),
     color = col_IMD,
     size = 3
-  )+
+  ) +
   annotate(
     geom = "text",
     x = 1500,
     y = 30,
     label = "I",
     fontface = "bold"
-  )+
-  
-  scale_x_log10()+
+  ) +
+  scale_x_log10() +
   labs(
     x = "Concentration en IMD (mg/kg)",
     y = "Nombre de cocons produits"
-  )+
+  ) +
   theme_bw()
 
-p_E <- ggplot()+
+p_E <- ggplot() +
   geom_ribbon(
-    data = subset(CI.4, Molecule == "EPX"), 
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x = Dose, 
-      y = p, 
-      ymin = pmin, 
+      x = Dose,
+      y = p,
+      ymin = pmin,
       ymax = pmax
-    ), 
-    alpha=0.2,
-    fill = col_EPX,
-    #color = col_IMD
-  )+
+    ),
+    alpha = 0.2,
+    fill = col_EPX
+  ) +
   geom_line(
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x=x, 
-      y=Hill.4(Dose=x, Molecule="EPX")
-    ), 
-    color=col_EPX, 
-    linewidth=line_width
-  )+
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
   geom_point(
-    data = df_repro_mix_EPX, 
-    aes(x = Dose_EPX, y = Nb_cocoons),
-    color = col_red,
-    alpha = 0.6,
-    shape = 4
-  )+
-  geom_point(
-    data = df_repro_EPX_alive,
+    data = df_expA_repro_EPX,
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     alpha = 0.5,
     shape = 4
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "EPX"),
+    data = df_expB_autumn_EPX,
+    aes(x = Dose_EPX, y = Nb_cocoons),
+    color = col_red,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = subset(df_expA_repro_EPX_mean, Molecule == "EPX"),
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     size = 3
-  )+
+  ) +
   geom_point(
-    data = df_repro_mix_EPX_mean, 
+    data = df_expB_autumn_EPX_mean,
     aes(x = Dose_EPX, y = Nb_cocoons),
     color = col_red,
     size = 3
-  )+
+  ) +
   annotate(
     geom = "text",
     x = 1500,
     y = 30,
     label = "E",
     fontface = "bold"
-  )+
-  
-  scale_x_log10()+
+  ) +
+  scale_x_log10() +
   labs(
     x = "Concentration en EPX (mg/kg)",
     y = "Nombre de cocons produits"
-  )+
+  ) +
   theme_bw()
 
 p <- p_I / p_E
 p
 ```
 
-```{r, include=F}
+```{r savecompdrc, include=F}
 ggsave(
-  filename="Mix_1_cocoons_compEC50.png", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoon_compdrc.png",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_cocoons_compEC50.svg", 
-  plot=p, 
-  width=6, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_compdrc.svg",
+  plot = p,
+  width = 6, height = 6,
+  path = path_fig
+)
 ```
 
 ## Comparison of the other ratio with the EPX dose-response curve
 
 ```{r, warning=F}
-#| fig-cap: Comparaison of the results obtained in the mixture experiment (red) with the results of the EC50 experiment for EPX (blues).  The line represents the dose-response curve obtained with the EC50 experiment (with common $Y_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose. The results of the mixture experiment are plotted a if only EPX was added to the soil. 
+#| fig-cap: Comparaison of the results obtained in the mixture experiment (red) with the results of the EC50 experiment for EPX (blues).  The line represents the dose-response curve obtained with the EC50 experiment (with common $Y_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose. The results of the mixture experiment are plotted a if only EPX was added to the soil.
 #| label: fig-drcEPXratio
 #| fig-width: 10
 #| fig-height: 8
 
-p_F <- ggplot()+
+p_F <- ggplot() +
   geom_ribbon(
-    data = subset(CI.4, Molecule == "EPX"), 
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x = Dose, 
-      y = p, 
-      ymin = pmin, 
+      x = Dose,
+      y = p,
+      ymin = pmin,
       ymax = pmax
-    ), 
-    alpha=0.2,
+    ),
+    alpha = 0.2,
     fill = col_EPX,
-    #color = col_IMD
-  )+
+    # color = col_IMD
+  ) +
   geom_line(
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x=x, 
-      y=Hill.4(Dose=x, Molecule="EPX")
-    ), 
-    color=col_EPX, 
-    linewidth=line_width
-  )+
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
   geom_point(
-    data = subset(df_repro_mix, Ratio %in% c("N", "F")), 
+    data = subset(df_expB_autumn, Ratio %in% c("N", "F")),
     aes(
-      x = Dose_EPX, 
+      x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     alpha = 0.6,
     shape = 4,
     color = col_red
-  )+
+  ) +
   geom_point(
-    data = df_repro_EPX_alive,
+    data = df_expA_repro_EPX,
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     alpha = 0.5,
     shape = 4
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "EPX"),
+    data = subset(df_expA_repro_mean, Molecule == "EPX"),
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     size = 3
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_mix_mean, Ratio %in% c("N", "F")),
+    data = subset(df_expB_autumn_mean, Ratio %in% c("N", "F")),
     aes(
       x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     size = 3,
     color = col_red
-  )+
+  ) +
   annotate(
     geom = "text",
     x = 1500,
     y = 30,
     label = "F",
     fontface = "bold"
-  )+
-  scale_x_log10()+
+  ) +
+  scale_x_log10() +
   labs(
     x = "Concentration en EPX (mg/kg)",
     y = "Nombre de cocons produits"
-  )+
+  ) +
   theme_bw()
 
-p_G <- ggplot()+
+p_G <- ggplot() +
   geom_ribbon(
-    data = subset(CI.4, Molecule == "EPX"), 
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x = Dose, 
-      y = p, 
-      ymin = pmin, 
+      x = Dose,
+      y = p,
+      ymin = pmin,
       ymax = pmax
-    ), 
-    alpha=0.2,
+    ),
+    alpha = 0.2,
     fill = col_EPX,
-  )+
+  ) +
   geom_line(
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x=x, 
-      y=Hill.4(Dose=x, Molecule="EPX")
-    ), 
-    color=col_EPX, 
-    linewidth=line_width
-  )+
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
   geom_point(
-    data = subset(df_repro_mix, Ratio %in% c("N", "G")), 
+    data = subset(df_expB_autumn, Ratio %in% c("N", "G")),
     aes(
-      x = Dose_EPX, 
+      x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     alpha = 0.6,
     shape = 4,
     color = col_red
-  )+
+  ) +
   geom_point(
-    data = df_repro_EPX_alive,
+    data = df_expA_repro_EPX,
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     alpha = 0.5,
     shape = 4
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "EPX"),
+    data = subset(df_expA_repro_mean, Molecule == "EPX"),
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     size = 3
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_mix_mean, Ratio %in% c("N", "G")),
+    data = subset(df_expB_autumn_mean, Ratio %in% c("N", "G")),
     aes(
       x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     size = 3,
     color = col_red
-  )+
+  ) +
   annotate(
     geom = "text",
     x = 1500,
     y = 30,
     label = "G",
     fontface = "bold"
-  )+
-  #facet_wrap(~Ratio, ncol = 2)+
-  scale_color_manual(values = c(Nord_frost[2],Nord_frost[2]))+
-  scale_x_log10()+
+  ) +
+  # facet_wrap(~Ratio, ncol = 2)+
+  scale_color_manual(values = c(Nord_frost[2], Nord_frost[2])) +
+  scale_x_log10() +
   labs(
     x = "Concentration en EPX (mg/kg)",
     y = "Nombre de cocons produits"
-  )+
+  ) +
   theme_bw()
 
-p_H <- ggplot()+
+p_H <- ggplot() +
   geom_ribbon(
-    data = subset(CI.4, Molecule == "EPX"), 
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x = Dose, 
-      y = p, 
-      ymin = pmin, 
+      x = Dose,
+      y = p,
+      ymin = pmin,
       ymax = pmax
-    ), 
-    alpha=0.2,
+    ),
+    alpha = 0.2,
     fill = col_EPX,
-    #color = col_IMD
-  )+
+    # color = col_IMD
+  ) +
   geom_line(
+    data = subset(df_CI_drc.4, Molecule == "EPX"),
     aes(
-      x=x, 
-      y=Hill.4(Dose=x, Molecule="EPX")
-    ), 
-    color=col_EPX, 
-    linewidth=line_width
-  )+
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
   geom_point(
-    data = subset(df_repro_mix, Ratio %in% c("N", "H")), 
+    data = subset(df_expB_autumn, Ratio %in% c("N", "H")),
     aes(
-      x = Dose_EPX, 
+      x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     alpha = 0.6,
     shape = 4,
     color = col_red
-  )+
+  ) +
   geom_point(
-    data = df_repro_EPX_alive,
+    data = df_expA_repro_EPX,
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     alpha = 0.5,
     shape = 4
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_alive_mean, Molecule == "EPX"),
+    data = subset(df_expA_repro_mean, Molecule == "EPX"),
     aes(x = Dose, y = Nb_cocoons),
     color = col_EPX,
     size = 3
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_mix_mean, Ratio %in% c("N", "H")),
+    data = subset(df_expB_autumn_mean, Ratio %in% c("N", "H")),
     aes(
       x = Dose_EPX,
       y = Nb_cocoons
-      ),
+    ),
     size = 3,
     color = col_red
-  )+
+  ) +
   annotate(
     geom = "text",
     x = 1500,
     y = 30,
     label = "H",
     fontface = "bold"
-  )+
-  #facet_wrap(~Ratio, ncol = 2)+
-  scale_color_manual(values = c(Nord_frost[2],Nord_frost[2]))+
-  scale_x_log10()+
+  ) +
+  # facet_wrap(~Ratio, ncol = 2)+
+  scale_color_manual(values = c(Nord_frost[2], Nord_frost[2])) +
+  scale_x_log10() +
   labs(
     x = "Concentration en EPX (mg/kg)",
     y = "Nombre de cocons produits"
-  )+
+  ) +
   theme_bw()
 
-p <- p_E + p_F + p_G + p_H + plot_layout(ncol=2)
+p <- p_E + p_F + p_G + p_H + plot_layout(ncol = 2)
 p
-
 ```
 
-```{r, include=F}
+```{r savecompdrcepx, include=F}
 ggsave(
-  filename="Mix_1_cocoons_compEC50_EPX.png", 
-  plot=p, 
-  width=10, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_compdrc_EPX.png",
+  plot = p,
+  width = 10, height = 8,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_cocoons_compEC50_EPX.svg", 
-  plot=p, 
-  width=10, height = 8, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_cocoons_compdrc_EPX.svg",
+  plot = p,
+  width = 10, height = 8,
+  path = path_fig
+)
 ```
 
 Everything happened a if no IMD was added to the soil.
 
 ## Comparison of growth rates with data from dose-response curves
 
-```{r}
-f_growth_rate <- function(data){
+```{r gratescalc2}
+f_growth_rate <- function(data) {
   a_init <- 0.1
   a_i <- c()
-  
+
   # Calculation of the growth rate for each individual
-  for(i in subset(data, t==0)$ID_cosm){
-    data_i <- data.frame(L = subset(data, ID_cosm==i)$L,
-                         t = subset(data, ID_cosm==i)$t)
-    L0_i <- subset(data, ID_cosm==i & t==0)$L
-    if(length(na.omit(data_i$L))==2){ # If only 2 data points
-      a.Est <- (subset(data_i, !t==0)$L-subset(data_i, t==0)$L)/
-        subset(data_i, !t==0)$t
-    }else{
+  for (i in subset(data, t == 0)$ID_cosm) {
+    data_i <- data.frame(
+      L = subset(data, ID_cosm == i)$L,
+      t = subset(data, ID_cosm == i)$t
+    )
+    L0_i <- subset(data, ID_cosm == i & t == 0)$L
+    if (length(na.omit(data_i$L)) == 2) { # If only 2 data points
+      a.Est <- (subset(data_i, !t == 0)$L - subset(data_i, t == 0)$L) /
+        subset(data_i, !t == 0)$t
+    } else {
       a.Est <- NA
     }
     a_i <- rbind(a_i, a.Est)
@@ -810,396 +752,398 @@ f_growth_rate <- function(data){
   return(a_i)
 }
 
-a_i <- f_growth_rate(df_repro)
+a_i <- f_growth_rate(df_expA_repro)
 
-df_repro_grate <- cbind(subset(df_repro, t == 0), a_i)
-df_repro_grate_mean <- df_repro_grate |> 
+df_expA_repro_grate <- cbind(subset(df_expA_repro, t == 0), a_i)
+df_expA_repro_grate_mean <- df_expA_repro_grate |>
   aggregate(a_i ~ Molecule + Dose, FUN = "mean")
 ```
 
 ```{r, warning=F, message=F}
-#| fig-cap: Mean growth rates of each cosm and per condition. 
+#| fig-cap: Mean growth rates of each cosm and per condition.
 #| label: fig-growthratescomp
 #| fig-width: 6
 #| fig-height: 8
 
 
-p_IMD <- ggplot()+
+p_IMD <- ggplot() +
   # Dose-response curves expriements
   geom_point(
-    data = subset(df_repro_grate, Molecule == "IMD"), 
+    data = subset(df_expA_repro_grate, Molecule == "IMD"),
     aes(
-      x = Dose, 
+      x = Dose,
       y = a_i
     ),
-    alpha=0.5,
+    alpha = 0.5,
     color = col_IMD
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_grate_mean, Molecule == "IMD"), 
+    data = subset(df_expA_repro_grate_mean, Molecule == "IMD"),
     aes(
-      x = Dose, 
+      x = Dose,
       y = a_i
     ),
-    alpha=1,
+    alpha = 1,
     size = 3,
     color = col_IMD
-  )+
+  ) +
   # Mixture experiment
   geom_point(
-    data = subset(df_repro_mix_grate, Dose_EPX ==0), # IMD data (Ratio I)
+    data = subset(df_expB_autumn_grate, Dose_EPX == 0), # IMD data (Ratio I)
     aes(
-      x = Dose_IMD, 
+      x = Dose_IMD,
       y = a_i
     ),
-    alpha=0.5,
+    alpha = 0.5,
     color = col_red
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_mix_grate_mean, Dose_EPX ==0), 
+    data = subset(df_expB_autumn_grate_mean, Dose_EPX == 0),
     aes(
-      x = Dose_IMD, 
+      x = Dose_IMD,
       y = a_i
     ),
-    alpha=1,
+    alpha = 1,
     size = 3,
     color = col_red
-  )+
+  ) +
   labs(
     x = "Dose (mg/kg)",
     y = "Growth rate",
     title = "Effect on adult growth for IMD"
-  )+
-  scale_x_log10()+
+  ) +
+  scale_x_log10() +
   theme_bw(12)
 
-p_EPX <- ggplot()+
+p_EPX <- ggplot() +
   # Dose-response curves experiments
   geom_point(
-    data = subset(df_repro_grate, Molecule == "EPX"), 
+    data = subset(df_expA_repro_grate, Molecule == "EPX"),
     aes(
-      x = Dose, 
+      x = Dose,
       y = a_i
     ),
-    alpha=0.5,
+    alpha = 0.5,
     color = col_EPX
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_grate_mean, Molecule == "EPX"), 
+    data = subset(df_expA_repro_grate_mean, Molecule == "EPX"),
     aes(
-      x = Dose, 
+      x = Dose,
       y = a_i
     ),
-    alpha=1,
+    alpha = 1,
     size = 3,
     color = col_EPX
-  )+
+  ) +
   # Mixture experiement
   geom_point(
-    data = subset(df_repro_mix_grate, Dose_IMD ==0), # IMD data (Ratio I)
+    data = subset(df_expB_autumn_grate, Dose_IMD == 0), # IMD data (Ratio I)
     aes(
-      x = Dose_EPX, 
+      x = Dose_EPX,
       y = a_i
     ),
-    alpha=0.5,
+    alpha = 0.5,
     color = col_red
-  )+
+  ) +
   geom_point(
-    data = subset(df_repro_mix_grate_mean, Dose_IMD ==0), 
+    data = subset(df_expB_autumn_grate_mean, Dose_IMD == 0),
     aes(
-      x = Dose_EPX, 
+      x = Dose_EPX,
       y = a_i
     ),
-    alpha=1,
+    alpha = 1,
     size = 3,
     color = col_red
-  )+
-  scale_x_log10()+
+  ) +
+  scale_x_log10() +
   labs(
     x = "Dose (mg/kg)",
     y = "Growth rate",
     title = "Effect on adult growth for EPX"
-  )+
+  ) +
   theme_bw(12)
 
-p <- p_IMD/p_EPX
-p_IMD/p_EPX
+p <- p_IMD / p_EPX
+p_IMD / p_EPX
 ```
 
-```{r, include=F}
+```{r savegrowthcompdrc, include=F}
 ggsave(
-  filename="Mix_1_growth_compEC50.png", 
-  plot=p, 
-  width=8, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_compdrc.png",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_growth_compEC50.svg", 
-  plot=p, 
-  width=8, height = 6, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_growth_compdrc.svg",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
 ```
 
 ## Design comparisons
 
 ```{r}
-#| fig-cap: Comparison of the theorical design and the actual design. 
+#| fig-cap: Comparison of the theorical design and the actual design.
 #| label: fig-compdesign
 #| fig-width: 5
 #| fig-height: 5
 
 # Ratios considered
-ratios = c(0, 1/4, 1/2, 3/4, 1)
+ratios <- c(0, 1 / 4, 1 / 2, 3 / 4, 1)
 
-EPX_x = NULL
-IMD_x = NULL
+EPX_x <- NULL
+IMD_x <- NULL
 
-ratio_EC50 <- IMD_EC50/EPX_EC50
+ratio_EC50 <- IMD_EC50_expA / EPX_EC50_expA
 
-for(i in ratios){
-  EPX_x=rbind(EPX_x,EPX_EC50*i)
-  IMD_x=rbind(IMD_x,IMD_EC50*(1-i))
+for (i in ratios) {
+  EPX_x <- rbind(EPX_x, EPX_EC50_expA * i)
+  IMD_x <- rbind(IMD_x, IMD_EC50_expA * (1 - i))
 }
 
-factor_design <- 10^(1/4)
+factor_design <- 10^(1 / 4)
 
 EPX_x <- c(
   EPX_x,
-  EPX_x/(factor_design^9),
-  EPX_x/(factor_design^5), 
-  EPX_x/(factor_design^2), 
-  EPX_x/factor_design,
-  factor_design*EPX_x, 
-  factor_design^2*EPX_x
-  )
+  EPX_x / (factor_design^9),
+  EPX_x / (factor_design^5),
+  EPX_x / (factor_design^2),
+  EPX_x / factor_design,
+  factor_design * EPX_x,
+  factor_design^2 * EPX_x
+)
 IMD_x <- c(
   IMD_x,
-  IMD_x/(factor_design^9),
-  IMD_x/(factor_design^5), 
-  IMD_x/(factor_design^2), 
-  IMD_x/factor_design,
-  factor_design*IMD_x, 
-  factor_design^2*IMD_x
-  )
+  IMD_x / (factor_design^9),
+  IMD_x / (factor_design^5),
+  IMD_x / (factor_design^2),
+  IMD_x / factor_design,
+  factor_design * IMD_x,
+  factor_design^2 * IMD_x
+)
 
 
-df_design <- data.frame(EPX=EPX_x,
-                        IMD=IMD_x,
-                        Ratio=EPX_x/IMD_x*IMD_EC50/EPX_EC50)
+df_design <- data.frame(
+  EPX = EPX_x,
+  IMD = IMD_x,
+  Ratio = EPX_x / IMD_x * IMD_EC50_expA / EPX_EC50_expA
+)
 
 width_iso <- 1.1
 size_points <- 3
-alpha_true = 0.5
+alpha_true <- 0.5
 
-df_design_plot <- df_design |> 
+df_design_plot <- df_design |>
   mutate(
-    label=paste(
-      "[IMD] = ", 
-      signif(IMD, 3), 
-      "mg/kg\n [EPX] = ", 
-      signif(EPX,3), "mg/kg"
-      )
+    label = paste(
+      "[IMD] = ",
+      signif(IMD, 3),
+      "mg/kg\n [EPX] = ",
+      signif(EPX, 3), "mg/kg"
     )
+  )
 
-plot_design <- ggplot()+
-  xlim(min(EPX_x), max(EPX_x))+
-  ylim(min(IMD_x), max(IMD_x))+
+plot_design <- ggplot() +
+  xlim(min(EPX_x), max(EPX_x)) +
+  ylim(min(IMD_x), max(IMD_x)) +
   # Ligne des ratios
   geom_abline(
-    intercept=0, 
-    slope=ratio_EC50/3, 
-    color=pal_col[2],
-    alpha=alpha_true
-    )+
+    intercept = 0,
+    slope = ratio_EC50 / 3,
+    color = pal_col[2],
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=0, 
-    slope=ratio_EC50*3, 
-    color=pal_col[2],
-    alpha=alpha_true
-    )+
+    intercept = 0,
+    slope = ratio_EC50 * 3,
+    color = pal_col[2],
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=0, 
-    slope=ratio_EC50, 
-    color=pal_col[2],
-    alpha=alpha_true
-    )+
+    intercept = 0,
+    slope = ratio_EC50,
+    color = pal_col[2],
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=0, 
-    slope=0, 
-    color=pal_col[2],
-    alpha=alpha_true
-    )+
+    intercept = 0,
+    slope = 0,
+    color = pal_col[2],
+    alpha = alpha_true
+  ) +
   geom_vline(
-    xintercept = 0, 
-    color=pal_col[2],
-    alpha=alpha_true
-    )+
-  
+    xintercept = 0,
+    color = pal_col[2],
+    alpha = alpha_true
+  ) +
+
   # Effect isoboles
   geom_abline(
-    intercept=IMD_EC50*factor_design^2, 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA * factor_design^2,
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50*factor_design, 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA * factor_design,
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50, 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA,
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50/factor_design, 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA / factor_design,
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^2), 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA / (factor_design^2),
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^5), 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
+    intercept = IMD_EC50_expA / (factor_design^5),
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^9), 
-    slope=-ratio_EC50, 
-    color=pal_col[1], 
-    lwd=width_iso,
-    alpha=alpha_true
-    )+
-  
+    intercept = IMD_EC50_expA / (factor_design^9),
+    slope = -ratio_EC50,
+    color = pal_col[1],
+    lwd = width_iso,
+    alpha = alpha_true
+  ) +
+
   # Effect isoboles
   geom_abline(
-    intercept=IMD_EC50*factor_design^2/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA * factor_design^2 / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50*factor_design/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA * factor_design / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50/factor_design/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA / factor_design / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^2)/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA / (factor_design^2) / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^5)/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
+    intercept = IMD_EC50_expA / (factor_design^5) / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
   geom_abline(
-    intercept=IMD_EC50/(factor_design^9)/2, 
-    slope=-ratio_EC50/2, 
-    color=pal_col[1], 
-    lwd=width_iso
-    )+
-  
+    intercept = IMD_EC50_expA / (factor_design^9) / 2,
+    slope = -ratio_EC50 / 2,
+    color = pal_col[1],
+    lwd = width_iso
+  ) +
+
   # Ratios annotations
   annotate(
-    geom="text", 
-    x=30, 
-    y=max(IMD_x), 
-    label="0:1", 
-    color=pal_col[2], 
-    fontface="bold"
-    )+
+    geom = "text",
+    x = 30,
+    y = max(IMD_x),
+    label = "0:1",
+    color = pal_col[2],
+    fontface = "bold"
+  ) +
   annotate(
-    geom="text", 
-    x=200, 
-    y=max(IMD_x), 
-    label="3:1", 
-    color=pal_col[2], 
-    fontface="bold"
-    )+
+    geom = "text",
+    x = 200,
+    y = max(IMD_x),
+    label = "3:1",
+    color = pal_col[2],
+    fontface = "bold"
+  ) +
   annotate(
-    geom="text", 
-    x=max(EPX_x)-30, 
-    y=max(IMD_x), 
-    label="1:1", 
-    color=pal_col[2], 
-    fontface="bold"
-    )+
+    geom = "text",
+    x = max(EPX_x) - 30,
+    y = max(IMD_x),
+    label = "1:1",
+    color = pal_col[2],
+    fontface = "bold"
+  ) +
   annotate(
-    geom="text",
-    x=max(EPX_x),
-    y=0.8,
-    label="1:3", 
-    color=pal_col[2], 
-    fontface="bold"
-    )+
+    geom = "text",
+    x = max(EPX_x),
+    y = 0.8,
+    label = "1:3",
+    color = pal_col[2],
+    fontface = "bold"
+  ) +
   annotate(
-    geom="text", 
-    x=max(EPX_x), 
-    y=0.1, 
-    label="1:0", 
-    color=pal_col[2], 
-    fontface="bold"
-    )+
-  
+    geom = "text",
+    x = max(EPX_x),
+    y = 0.1,
+    label = "1:0",
+    color = pal_col[2],
+    fontface = "bold"
+  ) +
+
   # Design points
   geom_point_interactive(
-    data=df_design_plot, 
+    data = df_design_plot,
     aes(
-      x=EPX, 
-      y=IMD,
-      tooltip = label), 
-    size=size_points, 
-    color=Nord_polar[1],
-    alpha=alpha_true
-    )+
-    # Design points
+      x = EPX,
+      y = IMD,
+      tooltip = label
+    ),
+    size = size_points,
+    color = Nord_polar[1],
+    alpha = alpha_true
+  ) +
+  # Design points
   geom_point_interactive(
-    data=df_design_plot, 
+    data = df_design_plot,
     aes(
-      x=EPX, 
-      y=IMD/2,
-      tooltip = label), 
-    size=size_points, 
-    color=Nord_polar[1]
-    )+
-  
+      x = EPX,
+      y = IMD / 2,
+      tooltip = label
+    ),
+    size = size_points,
+    color = Nord_polar[1]
+  ) +
   labs(
-    x="Epoxiconazole (mg/kg)",
-    y="Imidacloprid (mg/kg)"
-    )+
-  
+    x = "Epoxiconazole (mg/kg)",
+    y = "Imidacloprid (mg/kg)"
+  ) +
   theme_minimal(12)
 
 
@@ -1221,10 +1165,10 @@ hover_css <- "
 "
 
 interactive_plot <- girafe(
-  ggobj=plot_design,
+  ggobj = plot_design,
   height_svg = 5,
   width_svg = 5
-  ) |> 
+) |>
   girafe_options(opts_sizing(rescale = FALSE))
 
 # Add interactivity
@@ -1236,22 +1180,21 @@ interactive_plot <- interactive_plot %>%
   )
 
 interactive_plot
-
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="Mix_1_design_comp.png", 
-  plot=plot_design, 
-  width=5, height = 5, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_design_comp.png",
+  plot = plot_design,
+  width = 5, height = 5,
+  path = path_fig
+)
 ggsave(
-  filename="Mix_1_design_comp.svg", 
-  plot=plot_design, 
-  width=5, height = 5, 
-  path=here::here("fig/Mixture")
-  )
+  filename = "ExpB_design_comp.svg",
+  plot = plot_design,
+  width = 5, height = 5,
+  path = path_fig
+)
 ```
 
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
