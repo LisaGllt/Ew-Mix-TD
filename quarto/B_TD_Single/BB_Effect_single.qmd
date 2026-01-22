@@ -24,128 +24,126 @@ With :
 -   $Slope$ : Slope when the dose equals the EC$_{50}$.
 
 ```{r, echo=F, message=F, warning=F}
-#| fig-cap: Schematic representation of a dose-response curve with the Hill model 
+#| fig-cap: Schematic representation of a dose-response curve with the Hill model
 #| label: fig-drcscheme
 #| fig-width: 4
 #| fig-height: 3
 
-f_Hill <- function(Dose){
-  
+f_Hill <- function(Dose) {
   Y_min <- 0
   slope <- 2
   Y_max <- 20
   EC50 <- 0.5
-  
-  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(Dose)-log(EC50)))))
+
+  return(Y_min + (Y_max - Y_min) / (1 + exp(slope * (log(Dose) - log(EC50)))))
 }
 
-x <- c(0,exp(seq(log(0.001),log(100), by=(log(100)-log(0.001))/100)))
+x <- c(0, exp(seq(log(0.001), log(100), by = (log(100) - log(0.001)) / 100)))
 
-plot_drc <- ggplot()+
+plot_drc <- ggplot() +
   geom_line(
     aes(
-      x=x,
-      y=f_Hill(x)
-      ), 
-    color = Nord_polar[1], 
-    linewidth=1.1
-    )+
-  
+      x = x,
+      y = f_Hill(x)
+    ),
+    color = Nord_polar[1],
+    linewidth = 1.1
+  ) +
   annotate(
-    geom="segment", 
-    x=0, 
-    xend=0.5, 
-    y=10, 
-    yend=10, 
-    color=Nord_frost[3], 
-    alpha=1, 
-    size=1
-    )+
+    geom = "segment",
+    x = 0,
+    xend = 0.5,
+    y = 10,
+    yend = 10,
+    color = Nord_frost[3],
+    alpha = 1,
+    size = 1
+  ) +
   annotate(
-    geom="segment", 
-    y=0, 
-    yend=10, 
-    x=0.5, 
-    xend=0.5, 
-    color=Nord_aurora[1], 
-    alpha=1, 
-    size=1
-    )+
+    geom = "segment",
+    y = 0,
+    yend = 10,
+    x = 0.5,
+    xend = 0.5,
+    color = Nord_aurora[1],
+    alpha = 1,
+    size = 1
+  ) +
   annotate(
-    geom="text", 
-    x=0.5, 
-    y=-0.8, 
-    fontface="bold",
-    label=expression(paste(EC[50])), 
-    color=Nord_aurora[1], 
-    size=5
-    )+
+    geom = "text",
+    x = 0.5,
+    y = -0.8,
+    fontface = "bold",
+    label = expression(paste(EC[50])),
+    color = Nord_aurora[1],
+    size = 5
+  ) +
   annotate(
-    geom="text", 
-    x=0.002, 
-    y=18, 
-    fontface="bold",
-    label=expression(paste(Y[max])), 
-    color=Nord_polar[3], 
-    size=5
-    )+
+    geom = "text",
+    x = 0.002,
+    y = 18,
+    fontface = "bold",
+    label = expression(paste(Y[max])),
+    color = Nord_polar[3],
+    size = 5
+  ) +
   annotate(
-    geom="text", 
-    x=0.002, y=0, fontface="bold",
-    label=expression(paste(Y[min])), 
-    color=Nord_polar[3], 
-    size=5
-    )+
+    geom = "text",
+    x = 0.002, y = 0, fontface = "bold",
+    label = expression(paste(Y[min])),
+    color = Nord_polar[3],
+    size = 5
+  ) +
   annotate(
-    geom="text", 
-    x=0.006, 
-    y=8.5, 
-    fontface="bold",
-    label=expression(paste(1/2(Y[max]-Y[min]))), 
-    color=Nord_frost[3], 
-    size=4
-    )+
+    geom = "text",
+    x = 0.006,
+    y = 8.5,
+    fontface = "bold",
+    label = expression(paste(1 / 2(Y[max] - Y[min]))),
+    color = Nord_frost[3],
+    size = 4
+  ) +
   annotate(
-    geom="text", 
-    x=1.1, 
-    y=10, 
-    label=expression(paste(alpha)), 
-    color=Nord_frost[2], 
-    size=10
-    )+
+    geom = "text",
+    x = 1.1,
+    y = 10,
+    label = expression(paste(alpha)),
+    color = Nord_frost[2],
+    size = 10
+  ) +
   annotate(
-    geom = "segment", 
-    x=0.4, 
-    xend=0.6, 
-    y=12, 
-    yend=8,
-    color=Nord_frost[2], 
-    arrow=arrow(
-      ends="both", 
-      length=unit(0.1, "inches"), 
-      angle=30
-      ), 
-    size=1.2
-    )+
+    geom = "segment",
+    x = 0.4,
+    xend = 0.6,
+    y = 12,
+    yend = 8,
+    color = Nord_frost[2],
+    arrow = arrow(
+      ends = "both",
+      length = unit(0.1, "inches"),
+      angle = 30
+    ),
+    size = 1.2
+  ) +
   geom_point(
     aes(
-      x=0.5, 
-      y=10
-      ), 
-    color=Nord_polar[3], 
-    size=4
-    )+
-  scale_x_log10()+
+      x = 0.5,
+      y = 10
+    ),
+    color = Nord_polar[3],
+    size = 4
+  ) +
+  scale_x_log10() +
   labs(
-    x="Dose", 
-    y="Response")+
-  theme_minimal(14)+
+    x = "Dose",
+    y = "Response"
+  ) +
+  theme_minimal(14) +
   theme(
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank()
-    )
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank()
+  )
 plot_drc
-
 ```
 
 ## Effect on reproduction
@@ -184,15 +182,13 @@ Variables names :
     -   "D" : Dead
 
 ```{r datar, warning=F, message=F}
-
-data_expA_repro    <- f_read_data_expA_repro()
-df_expA_repro_tot  <- data_expA_repro$df_expA_repro
-df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+data_expA_repro <- f_read_data_expA_repro()
+df_expA_repro_tot <- data_expA_repro$df_expA_repro
+df_expA_repro <- data_expA_repro$df_expA_repro_alive
 df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
 
 Val_Ctrl <- 1e-4
 Label_Ctrl <- "0 (Ctrl)"
-
 ```
 
 #### Initial conditions
@@ -200,103 +196,95 @@ Label_Ctrl <- "0 (Ctrl)"
 We can first take a look at the initial weights of individuals (@fig-initExpARepro).
 
 ```{r, warning=F, message=F}
-#| fig-cap: Initial weights of adult earthworms in experiment A. 
+#| fig-cap: Initial weights of adult earthworms in experiment A.
 #| label: fig-initExpARepro
 #| fig-width: 6
 #| fig-height: 6
 
 # Weights at t=0
 plot_D0 <- ggplot(
-  data=subset(df_expA_repro_tot,t==0), 
+  data = subset(df_expA_repro_tot, t == 0),
   aes(
-    x=Dose_f, 
-    y=w, 
-    color=Molecule, 
-    fill=Molecule,
+    x = Dose_f,
+    y = w,
+    color = Molecule,
+    fill = Molecule,
     shape = Molecule
-    )
-  )+
-
-  geom_boxplot(alpha=0.2)+
+  )
+) +
+  geom_boxplot(alpha = 0.2) +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.7, 
-    alpha=0.7
-    )+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.7,
+    alpha = 0.7
+  ) +
   facet_wrap(
-    ~Molecule, 
-    ncol=1, 
-    scales="free"
-    )+
-  
-  scale_color_manual(values=col_molec)+
-  scale_fill_manual(values=col_molec)+
-  scale_shape_manual(values=shape_molec)+
-
-  labs(x="Dose (mg/kg)", y="Weight (mg)")+
-  
-
-  theme_classic(14)+
+    ~Molecule,
+    ncol = 1,
+    scales = "free"
+  ) +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
+  scale_shape_manual(values = shape_molec) +
+  labs(x = "Dose (mg/kg)", y = "Weight (mg)") +
+  theme_classic(14) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ),
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
     legend.text = element_text(
-      size=sizetitle-2,
-      face="plain"
-      ),
-    
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
-    
+      size = sizetitle - 2,
+      face = "plain"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ),
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      ),
-
+      size = sizetitle,
+      face = "plain"
+    ),
     strip.background = element_rect(
-      color="black", 
-      fill=Nord_snow[3], 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = Nord_snow[3],
+      size = 0,
+      linetype = "solid"
     )
+  )
 plot_D0
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_repro_initial_weights.png", 
-  plot=plot_D0, 
-  width=6, 
-  height = 5, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_initial_weights.png",
+  plot = plot_D0,
+  width = 6,
+  height = 5,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_initial_weights.jpg", 
-  plot=plot_D0, 
-  width=6, 
-  height = 5, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_initial_weights.jpg",
+  plot = plot_D0,
+  width = 6,
+  height = 5,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_initial_weights.svg", 
-  plot=plot_D0, 
-  width=6, 
-  height = 5, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_initial_weights.svg",
+  plot = plot_D0,
+  width = 6,
+  height = 5,
+  path = path_repro
+)
 ```
 
 We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment.
@@ -362,7 +350,6 @@ pm.r <- predict(drc.mod.r, newdata = CI.r, interval = "confidence")
 CI.r$p <- pm.r[, 1]
 CI.r$pmin <- pm.r[, 2]
 CI.r$pmax <- pm.r[, 3]
-
 ```
 
 1.  Dose-response relationship and grouping variable
@@ -373,119 +360,120 @@ CI.r$pmax <- pm.r[, 3]
 6.  All parameters depend on the molecule but $Y_{max}$
 
 ```{r drcrCI, warning=F, message=F}
-
 est <- coef(drc.mod.r)
 ci <- confint(drc.mod.r)
 params_tab <- data.frame(
   estimate  = unname(est),
-  CI_lower  = ci[,1],
-  CI_upper  = ci[,2]
+  CI_lower  = ci[, 1],
+  CI_upper  = ci[, 2]
 )
 
-params_tab |> datatable(
-  options = list(
-    dom = 't',
-    autoWidth = TRUE,
-    columnDefs = list(
-      list(className = 'dt-left', targets = "_all")
+params_tab |>
+  datatable(
+    options = list(
+      dom = "t",
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(className = "dt-left", targets = "_all")
       )
-    ), 
-  class="hover"
-  ) |> 
+    ),
+    class = "hover"
+  ) |>
   formatSignif(columns = c("estimate", "CI_lower", "CI_upper"), c(3, 3, 3))
 ```
 
 ```{r, warning=F, message=F}
-#| fig-cap: Dose-response curves for cocoon production  
+#| fig-cap: Dose-response curves for cocoon production
 #| label: fig-reprodrc
 #| fig-width: 6
 #| fig-height: 5
 
-plot_drc_r <- ggplot()+
+plot_drc_r <- ggplot() +
   geom_ribbon_interactive(
-    data=CI.r, 
+    data = CI.r,
     aes(
-      x=Dose, 
-      y=p, 
-      ymin=pmin, ymax=pmax, 
-      group=Molecule, 
-      fill=Molecule,
-      tooltip = Molecule, 
+      x = Dose,
+      y = p,
+      ymin = pmin, ymax = pmax,
+      group = Molecule,
+      fill = Molecule,
+      tooltip = Molecule,
       data_id = Molecule,
-      ), 
-    alpha=0.2)+
+    ),
+    alpha = 0.2
+  ) +
   geom_line_interactive(
     data = CI.r,
     aes(
-      x=Dose,
-      y=p,
-      color=Molecule,
+      x = Dose,
+      y = p,
+      color = Molecule,
       tooltip = Molecule,
       data_id = Molecule,
-      color=Molecule,
+      color = Molecule,
       shape = Molecule
-      ),
+    ),
     linewidth = 1.2
-    )+
+  ) +
   geom_point_interactive(
-    data=df_expA_repro, 
+    data = df_expA_repro,
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      shape=Molecule,
-      tooltip = Molecule, 
-      data_id = Molecule, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      tooltip = Molecule,
+      data_id = Molecule,
+      color = Molecule,
       shape = Molecule
-      ), 
-    cex=2, 
-    alpha=0.4
-    )+
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
   geom_point_interactive(
-    data=df_expA_repro_mean, 
+    data = df_expA_repro_mean,
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      shape=Molecule,
-      tooltip = Molecule, 
-      data_id = Molecule, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      tooltip = Molecule,
+      data_id = Molecule,
+      color = Molecule,
       shape = Molecule
-      ), 
-    alpha=1,
+    ),
+    alpha = 1,
     size = 3
-    )+
-  scale_color_manual(name="",values=col_molec)+
-  scale_shape_manual(name = "", values=shape_molec)+
-  scale_fill_manual(name="",values=col_molec)+
-  theme_minimal()+
+  ) +
+  scale_color_manual(name = "", values = col_molec) +
+  scale_shape_manual(name = "", values = shape_molec) +
+  scale_fill_manual(name = "", values = col_molec) +
+  theme_minimal() +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
-    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
-  )+
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
   labs(
-    x="Dose (mg/kg)",
-    y="Number of cocoons produced per cosm (#)",
-    )+
+    x = "Dose (mg/kg)",
+    y = "Number of cocoons produced per cosm (#)",
+  ) +
   theme(
-    legend.position = "right", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ), 
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+    legend.position = "right",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ), 
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      )
+      size = sizetitle,
+      face = "plain"
     )
+  )
 
 tooltip_css <- "
   border-radius: 12px;
@@ -503,7 +491,7 @@ hover_css <- "
   filter: brightness(1.15);
 "
 
-interactive_plot <- girafe(ggobj=plot_drc_r)%>%
+interactive_plot <- girafe(ggobj = plot_drc_r) %>%
   girafe_options(opts_sizing(rescale = FALSE))
 
 # Add interactivity
@@ -516,49 +504,49 @@ interactive_plot <- interactive_plot %>%
 
 interactive_plot
 
-plot_drc_r_f <- plot_drc_r+
+plot_drc_r_f <- plot_drc_r +
   labs(title = "A. Effects on cocoon production")
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_repro_drc_single.png", 
-  plot=plot_drc, 
-  width=6, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single.png",
+  plot = plot_drc,
+  width = 6,
+  height = 4,
+  path = path_repro
+)
 ggsave(
-  filename="ExpA_repro_drc_single.jpg", 
-  plot=plot_drc, 
-  width=6, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single.jpg",
+  plot = plot_drc,
+  width = 6,
+  height = 4,
+  path = path_repro
+)
 ggsave(
-  filename="ExpA_repro_drc_single.svg", 
-  plot=plot_drc, 
-  width=6, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single.svg",
+  plot = plot_drc,
+  width = 6,
+  height = 4,
+  path = path_repro
+)
 ```
 
 ```{r}
 # Anova model
-df_expA_repro_anova <- df_expA_repro |> 
+df_expA_repro_anova <- df_expA_repro |>
   mutate(
     Condition_f = as.factor(paste0(Molecule, Dose_plot)),
     Molecule = as.factor(Molecule)
   )
 
 anova.drc.r <- glm(
-  Nb_cocoons ~ Condition_f, 
-  family = poisson(link = "log"), 
+  Nb_cocoons ~ Condition_f,
+  family = poisson(link = "log"),
   data = df_expA_repro_anova
-  )
-#check_model(glm_anova)
-#predict(glm_anova)
+)
+# check_model(glm_anova)
+# predict(glm_anova)
 
 # Log-Likelihood
 LL_drc <- as.numeric(logLik(drc.mod.r))
@@ -587,45 +575,38 @@ cat("Lack-of-fit test: D =", round(D, 3), ", df =", df_test, ", p =", round(p_va
 
 col_diag <- Nord_polar[4]
 
-plot_QQ <- ggplot(mapping=aes(sample=residuals(drc.mod.r)))+
-  
-  stat_qq(alpha=0.3)+
-  stat_qq_line(color=col_diag)+
-  
+plot_QQ <- ggplot(mapping = aes(sample = residuals(drc.mod.r))) +
+  stat_qq(alpha = 0.3) +
+  stat_qq_line(color = col_diag) +
   labs(
-    x="Normal quantiles", 
-    y="Residuals"
-    )+
+    x = "Normal quantiles",
+    y = "Residuals"
+  ) +
   theme_bw()
 
-plot_resfit <- ggplot()+
-  
+plot_resfit <- ggplot() +
   geom_point(
-    mapping=aes(
-      x=fitted(drc.mod.r), 
-      y=residuals(drc.mod.r)
-      ), 
-    color=col_diag, 
-    alpha=0.3
-    )+
-  
-  scale_x_log10()+
-  
+    mapping = aes(
+      x = fitted(drc.mod.r),
+      y = residuals(drc.mod.r)
+    ),
+    color = col_diag,
+    alpha = 0.3
+  ) +
+  scale_x_log10() +
   labs(
-    x="Fitted", 
-    y="Residuals"
-    )+
-  
+    x = "Fitted",
+    y = "Residuals"
+  ) +
   theme_bw()
 
-plot <- plot_resfit + plot_QQ + plot_layout(ncol=2)
+plot <- plot_resfit + plot_QQ + plot_layout(ncol = 2)
 plot
 ```
 
 NOEC determination :
 
 ```{r, warning=F, message=F}
-
 df_expA_repro$Dose_f <- as.factor(df_expA_repro$Dose)
 df_expA_repro$Dose_f <- relevel(df_expA_repro$Dose_f, ref = "0")
 
@@ -654,7 +635,7 @@ df_expA_hatchlings <- f_read_data_expA_hatchlings()
 #| fig-width: 8
 #| fig-height: 4
 
-p <- ggplot(data = df_expA_hatchlings)+
+p <- ggplot(data = df_expA_hatchlings) +
   geom_col(
     aes(
       x = as.factor(Dose),
@@ -663,14 +644,14 @@ p <- ggplot(data = df_expA_hatchlings)+
       fill = Molecule
     ),
     alpha = 0.5
-  )+
+  ) +
   labs(
     x = "Concentration (mg/kg)",
     y = "Mean cumulated number of juveniles produced (#)"
-  )+
-  facet_wrap(~Molec, scales = "free")+
-  scale_color_manual(values = col_molec)+
-  scale_fill_manual(values = col_molec)+
+  ) +
+  facet_wrap(~Molec, scales = "free") +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
   theme_minimal()
 p
 ```
@@ -678,217 +659,221 @@ p
 #### Effect on adult growth
 
 ```{r, warning=F, message=F}
-#| fig-cap: Earthworms growth according to their exposition. 
+#| fig-cap: Earthworms growth according to their exposition.
 #| label: fig-growthplotadults
 #| fig-width: 6
 #| fig-height: 10
 
-nb_dose_EPX <- n_distinct(subset(df_expA_repro, Molecule=="EPX")$Dose)
-nb_dose_IMD <- n_distinct(subset(df_expA_repro, Molecule=="IMD")$Dose)
+nb_dose_EPX <- n_distinct(subset(df_expA_repro, Molecule == "EPX")$Dose)
+nb_dose_IMD <- n_distinct(subset(df_expA_repro, Molecule == "IMD")$Dose)
 
-pal_dose_EPX <- nord(palette = "aurora", nb_dose_EPX+2, 
-                     alpha = 1, reverse = T)[-c(1,2)]
-pal_dose_IMD <- nord(palette = "aurora", nb_dose_IMD+2, 
-                     alpha = 1, reverse = T)[-c(1,2)]
+pal_dose_EPX <- nord(
+  palette = "aurora", nb_dose_EPX + 2,
+  alpha = 1, reverse = T
+)[-c(1, 2)]
+pal_dose_IMD <- nord(
+  palette = "aurora", nb_dose_IMD + 2,
+  alpha = 1, reverse = T
+)[-c(1, 2)]
 
 plot_growth_EPX <- ggplot(
-  data=subset(df_expA_repro, Molecule=="EPX"), 
+  data = subset(df_expA_repro, Molecule == "EPX"),
   aes(
-    x=t, 
-    y=w, 
-    group=ID_cosm, 
-    color=as.factor(Dose)
-    )
-  )+
-  geom_point(shape=shape_EPX)+
+    x = t,
+    y = w,
+    group = ID_cosm,
+    color = as.factor(Dose)
+  )
+) +
+  geom_point(shape = shape_EPX) +
   scale_color_manual(
-    name="Dose (mg/kg)",
-    values=pal_dose_EPX
-    )+
-  geom_line()+
-  facet_wrap(~Dose, ncol=3)+
+    name = "Dose (mg/kg)",
+    values = pal_dose_EPX
+  ) +
+  geom_line() +
+  facet_wrap(~Dose, ncol = 3) +
   labs(
-    x="Time (d)", 
-    y="Weight (mg)", 
-    title="Growth of earthworms exposed to epoxiconazole"
-    )+
-  theme_bw()+
+    x = "Time (d)",
+    y = "Weight (mg)",
+    title = "Growth of earthworms exposed to epoxiconazole"
+  ) +
+  theme_bw() +
   theme(
-    legend.position = "right", 
-    legend.title=element_text(size=sizetitle-2,face="bold"),
-    strip.background = element_rect(colour="black", fill="white", 
-                                    linetype="solid"),
-    title=element_text(size=sizetitle, face="bold"), 
-    axis.title.x = element_text(size=sizetitle,face="plain"), 
-    axis.title.y = element_text(size=sizetitle,face="plain")
-    )
+    legend.position = "right",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    strip.background = element_rect(
+      colour = "black", fill = "white",
+      linetype = "solid"
+    ),
+    title = element_text(size = sizetitle, face = "bold"),
+    axis.title.x = element_text(size = sizetitle, face = "plain"),
+    axis.title.y = element_text(size = sizetitle, face = "plain")
+  )
 
 plot_growth_IMD <- ggplot(
-  data=subset(df_expA_repro, Molecule=="IMD"),
+  data = subset(df_expA_repro, Molecule == "IMD"),
   aes(
-    x=t, 
-    y=w, 
-    group=ID_cosm, 
-    color=as.factor(Dose)
-    )
-  )+
-  geom_point(shape = shape_IMD)+
-  geom_line()+
-  facet_wrap(~Dose, ncol=3)+
+    x = t,
+    y = w,
+    group = ID_cosm,
+    color = as.factor(Dose)
+  )
+) +
+  geom_point(shape = shape_IMD) +
+  geom_line() +
+  facet_wrap(~Dose, ncol = 3) +
   scale_color_manual(
-    name="Dose (mg/kg)",
-    values=pal_dose_IMD
-    )+
+    name = "Dose (mg/kg)",
+    values = pal_dose_IMD
+  ) +
   labs(
-    x="Time (d)", 
-    y="Weight (mg)", 
-    title="Growth of earthworms exposed to imidacloprid"
-    )+
-  theme_bw()+
+    x = "Time (d)",
+    y = "Weight (mg)",
+    title = "Growth of earthworms exposed to imidacloprid"
+  ) +
+  theme_bw() +
   theme(
-    legend.position = "right", 
-    legend.title=element_text(size=sizetitle-2,face="bold"),
-    strip.background = element_rect(colour="black", fill="white", 
-                                    linetype="solid"),
-    title=element_text(size=sizetitle, face="bold"), 
-    axis.title.x = element_text(size=sizetitle,face="plain"), 
-    axis.title.y = element_text(size=sizetitle,face="plain")
-    )
+    legend.position = "right",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    strip.background = element_rect(
+      colour = "black", fill = "white",
+      linetype = "solid"
+    ),
+    title = element_text(size = sizetitle, face = "bold"),
+    axis.title.x = element_text(size = sizetitle, face = "plain"),
+    axis.title.y = element_text(size = sizetitle, face = "plain")
+  )
 
-plot <- plot_growth_EPX+plot_growth_IMD+plot_layout(ncol=1, heights=c(1, 4/3))
+plot <- plot_growth_EPX + plot_growth_IMD + plot_layout(ncol = 1, heights = c(1, 4 / 3))
 plot
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_repro_growth_curves.png", 
-  plot=plot, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_curves.png",
+  plot = plot,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_growth_curves.jpg", 
-  plot=plot, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_curves.jpg",
+  plot = plot,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_growth_curves.svg", 
-  plot=plot, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_curves.svg",
+  plot = plot,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 ```
 
 ```{r growthratesfuncr}
+df_expA_repro_grate <- df_expA_repro |>
+  dplyr::select(ID_cosm, t, L, Dose, Dose_plot, Molecule) |>
+  pivot_wider(names_from = t, values_from = L, names_prefix = "L_t") |>
+  mutate(a_i = (L_t28 - L_t0) / 28)
 
-df_expA_repro_grate <- df_expA_repro |> 
-  dplyr::select(ID_cosm, t, L, Dose, Dose_plot, Molecule) |> 
-  pivot_wider(names_from = t, values_from = L, names_prefix = "L_t") |> 
-  mutate(a_i = (L_t28 - L_t0)/28)
-
-df_expA_repro_grate_mean <- df_expA_repro_grate |> 
+df_expA_repro_grate_mean <- df_expA_repro_grate |>
   aggregate(a_i ~ Molecule + Dose + Dose_plot, FUN = "mean")
 ```
 
 ```{r, warning=F, message=F}
-#| fig-cap: Effect of the pesticides on growth rates. 
+#| fig-cap: Effect of the pesticides on growth rates.
 #| label: fig-growthrates
 #| fig-width: 8
 #| fig-height: 4
 
 
-p <- ggplot()+
+p <- ggplot() +
   geom_point(
-    data = df_expA_repro_grate, 
+    data = df_expA_repro_grate,
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = a_i,
       color = Molecule,
       shape = Molecule
     ),
-    alpha=0.5,
-  )+
+    alpha = 0.5,
+  ) +
   geom_point(
-    data = df_expA_repro_grate_mean, 
+    data = df_expA_repro_grate_mean,
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = a_i,
       color = Molecule,
       shape = Molecule
     ),
-    alpha=1,
+    alpha = 1,
     size = 3
-  )+
-  
+  ) +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
-  facet_wrap(~Molecule, scales = "free_x")+
-  scale_color_manual(values=col_molec)+
-  scale_fill_manual(values=col_molec)+
-  scale_shape_manual(values=shape_molec)+
+  ) +
+  facet_wrap(~Molecule, scales = "free_x") +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
+  scale_shape_manual(values = shape_molec) +
   labs(
     x = "Dose (mg/kg)",
-    y = "Growth rate"#,
-    #title = "Effect of the pesticides on adult growth rates"
-    )+
-  ylim(NA, 0.05)+
-  theme_minimal(base_size = 15) +  # Thème minimaliste
+    y = "Growth rate" # ,
+    # title = "Effect of the pesticides on adult growth rates"
+  ) +
+  ylim(NA, 0.05) +
+  theme_minimal(base_size = 15) + # Thème minimaliste
   theme(
     plot.title = element_text(
-      # hjust = 0.5, 
+      # hjust = 0.5,
       face = "bold"
-      ),
+    ),
     legend.position = "none",
     strip.background = element_rect(
-      color="black", 
-      fill=Nord_snow[3], 
-      size=0, 
-      linetype="solid"
-      ),
+      color = "black",
+      fill = Nord_snow[3],
+      size = 0,
+      linetype = "solid"
+    ),
     strip.text = element_text(face = "bold")
   )
 p
-
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_repro_growth_rates.png", 
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_rates.png",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_growth_rates.jpg", 
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_rates.jpg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_growth_rates.svg", 
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_growth_rates.svg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_repro
+)
 ```
 
 NOEC determination for adult growth :
 
 ```{r, warning=F, message=F}
-
 df_expA_repro_grate$Dose_f <- as.factor(df_expA_repro_grate$Dose)
 df_expA_repro_grate$Dose_f <- relevel(df_expA_repro_grate$Dose_f, ref = "0")
 
@@ -910,20 +895,20 @@ summary(dunnett_test)
 ```{r envconc}
 # Environmental concentrations (Froger et al. 2023)
 EPX_Cmin <- 1.1 / 1000
-EPX_Cmax <- 23.6/ 1000
-EPX_median <- 5.8/ 1000
-EPX_Q25 <- 2.8/ 1000
-EPX_Q75 <- 10.9/ 1000
+EPX_Cmax <- 23.6 / 1000
+EPX_median <- 5.8 / 1000
+EPX_Q25 <- 2.8 / 1000
+EPX_Q75 <- 10.9 / 1000
 
-EPX_Cmax_pelosi <- 283/ 1000
+EPX_Cmax_pelosi <- 283 / 1000
 
-IMD_Cmin <- 2/ 1000
-IMD_Cmax <- 13.8/ 1000
-IMD_median <- 2.9/ 1000
-IMD_Q25 <- 2.5/ 1000
-IMD_Q75 <- 5.8/ 1000
+IMD_Cmin <- 2 / 1000
+IMD_Cmax <- 13.8 / 1000
+IMD_median <- 2.9 / 1000
+IMD_Q25 <- 2.5 / 1000
+IMD_Q75 <- 5.8 / 1000
 
-IMD_Cmax_pelosi <- 283/ 1000
+IMD_Cmax_pelosi <- 283 / 1000
 ```
 
 ```{r, warning=F, message=F}
@@ -933,211 +918,210 @@ IMD_Cmax_pelosi <- 283/ 1000
 #| fig-height: 6
 
 
-p_IMD <- ggplot()+
+p_IMD <- ggplot() +
   annotate(
-    "rect", 
-    xmin = IMD_Cmin, xmax = IMD_Cmax, 
+    "rect",
+    xmin = IMD_Cmin, xmax = IMD_Cmax,
     ymin = -Inf, ymax = Inf,
-    alpha = 0.2, 
+    alpha = 0.2,
     fill = col_IMD,
     color = col_IMD
-    )+
+  ) +
   annotate(
-    "rect", 
-    xmin = IMD_Q25, xmax = IMD_Q75, 
+    "rect",
+    xmin = IMD_Q25, xmax = IMD_Q75,
     ymin = -Inf, ymax = Inf,
     color = col_IMD,
     fill = col_IMD,
-    alpha=0.1
-    )+
+    alpha = 0.1
+  ) +
   geom_vline(
     xintercept = IMD_median,
     color = col_IMD,
     linetype = "dotted",
     linewidth = 1.2
-  )+
+  ) +
   geom_vline(
     xintercept = IMD_Cmax_pelosi,
     color = col_red,
     linetype = "dashed",
     linewidth = 1.2
-  )+
+  ) +
   geom_ribbon(
-    data=subset(CI.r, Molecule == "IMD"), 
+    data = subset(CI.r, Molecule == "IMD"),
     aes(
-      x=Dose, 
-      y=p, 
-      ymin=pmin, ymax=pmax, 
-      group=Molecule, 
-      fill=Molecule
-      ), 
-    alpha=0.2)+
+      x = Dose,
+      y = p,
+      ymin = pmin, ymax = pmax,
+      group = Molecule,
+      fill = Molecule
+    ),
+    alpha = 0.2
+  ) +
   geom_line(
     data = subset(CI.r, Molecule == "IMD"),
     aes(
-      x=Dose,
-      y=p,
-      color=Molecule,
+      x = Dose,
+      y = p,
+      color = Molecule,
       shape = Molecule
-      ),
+    ),
     linewidth = 1.2
-    )+
+  ) +
   geom_point(
-    data=subset(df_expA_repro, Molecule == "IMD"), 
+    data = subset(df_expA_repro, Molecule == "IMD"),
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      color = Molecule,
       shape = Molecule
-      ), 
-    cex=2, 
-    alpha=0.4
-    )+
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
   geom_point(
-    data=subset(df_expA_repro_mean, Molecule == "IMD"), 
+    data = subset(df_expA_repro_mean, Molecule == "IMD"),
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      color = Molecule,
       shape = Molecule
-      ), 
-    alpha=1,
+    ),
+    alpha = 1,
     size = 3
-    )+
-
-  scale_color_manual(name="",values=rev(col_molec))+
-  scale_shape_manual(name = "", values=rev(shape_molec))+
-  scale_fill_manual(name="",values=rev(col_molec))+
-  theme_minimal()+
+  ) +
+  scale_color_manual(name = "", values = rev(col_molec)) +
+  scale_shape_manual(name = "", values = rev(shape_molec)) +
+  scale_fill_manual(name = "", values = rev(col_molec)) +
+  theme_minimal() +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
-    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
-  )+
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
   labs(
-    x="Dose (mg/kg)",
-    y="Number of cocoons produced per cosm (#)"
-    )+
+    x = "Dose (mg/kg)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
   theme(
     legend.position = "right"
-    )
+  )
 
-p_EPX <- ggplot()+
+p_EPX <- ggplot() +
   annotate(
-    "rect", 
-    xmin = EPX_Cmin, xmax = EPX_Cmax, 
+    "rect",
+    xmin = EPX_Cmin, xmax = EPX_Cmax,
     ymin = -Inf, ymax = Inf,
-    alpha = 0.2, 
+    alpha = 0.2,
     fill = col_EPX,
     color = col_EPX
-    )+
+  ) +
   annotate(
-    "rect", 
-    xmin = EPX_Q25, xmax = EPX_Q75, 
+    "rect",
+    xmin = EPX_Q25, xmax = EPX_Q75,
     ymin = -Inf, ymax = Inf,
     color = col_EPX,
     fill = col_EPX,
-    alpha=0.1
-    )+
+    alpha = 0.1
+  ) +
   geom_vline(
     xintercept = EPX_median,
     color = col_EPX,
     linetype = "dotted",
     linewidth = 1.2
-  )+
+  ) +
   geom_vline(
     xintercept = EPX_Cmax_pelosi,
     color = col_red,
     linetype = "dashed",
     linewidth = 1.2
-  )+
+  ) +
   geom_ribbon(
-    data=subset(CI.r, Molecule == "EPX"), 
+    data = subset(CI.r, Molecule == "EPX"),
     aes(
-      x=Dose, 
-      y=p, 
-      ymin=pmin, ymax=pmax, 
-      group=Molecule, 
-      fill=Molecule
-      ), 
-    alpha=0.2)+
+      x = Dose,
+      y = p,
+      ymin = pmin, ymax = pmax,
+      group = Molecule,
+      fill = Molecule
+    ),
+    alpha = 0.2
+  ) +
   geom_line(
     data = subset(CI.r, Molecule == "EPX"),
     aes(
-      x=Dose,
-      y=p,
-      color=Molecule,
+      x = Dose,
+      y = p,
+      color = Molecule,
       shape = Molecule
-      ),
+    ),
     linewidth = 1.2
-    )+
+  ) +
   geom_point(
-    data=subset(df_expA_repro, Molecule == "EPX"), 
+    data = subset(df_expA_repro, Molecule == "EPX"),
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      color = Molecule,
       shape = Molecule
-      ), 
-    cex=2, 
-    alpha=0.4
-    )+
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
   geom_point(
-    data=subset(df_expA_repro_mean, Molecule == "EPX"), 
+    data = subset(df_expA_repro_mean, Molecule == "EPX"),
     aes(
-      x=Dose_plot, 
-      y=Nb_cocoons, 
-      color=Molecule,
+      x = Dose_plot,
+      y = Nb_cocoons,
+      color = Molecule,
       shape = Molecule
-      ), 
-    alpha=1,
+    ),
+    alpha = 1,
     size = 3
-    )+
-
-  scale_color_manual(name="",values=col_molec)+
-  scale_shape_manual(name = "", values=shape_molec)+
-  scale_fill_manual(name="",values=col_molec)+
-  theme_minimal()+
+  ) +
+  scale_color_manual(name = "", values = col_molec) +
+  scale_shape_manual(name = "", values = shape_molec) +
+  scale_fill_manual(name = "", values = col_molec) +
+  theme_minimal() +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
-    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
-  )+
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
   labs(
-    x="Dose (mg/kg)",
-    y="Number of cocoons produced per cosm (#)"
-    )+
+    x = "Dose (mg/kg)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
   theme(
     legend.position = "right"
-    )
+  )
 
-p <- p_EPX/p_IMD
+p <- p_EPX / p_IMD
 p
-
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_repro_drc_single_env_froger.png", 
-  plot=p, 
-  width=6, 
-  height = 7, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single_env_froger.png",
+  plot = p,
+  width = 6,
+  height = 7,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_drc_single_env_froger.jpg", 
-  plot=p, 
-  width=6, 
-  height = 7, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single_env_froger.jpg",
+  plot = p,
+  width = 6,
+  height = 7,
+  path = path_repro
+)
 
 ggsave(
-  filename="ExpA_repro_drc_single_env_froger.svg", 
-  plot=p, 
-  width=6, 
-  height = 7, 
-  path=path_repro
-  )
+  filename = "ExpA_repro_drc_single_env_froger.svg",
+  plot = p,
+  width = 6,
+  height = 7,
+  path = path_repro
+)
 ```
 
 ## Effect on juvenile growth
@@ -1163,11 +1147,9 @@ Variables names :
     -   "D" : Dead
 
 ```{r datag, warning=F, message=F}
-
-data_expA_growth    <- f_read_data_expA_growth()
-df_expA_growth_tot  <- data_expA_growth$df_expA_growth
-df_expA_growth      <- data_expA_growth$df_expA_growth_alive
-
+data_expA_growth <- f_read_data_expA_growth()
+df_expA_growth_tot <- data_expA_growth$df_expA_growth
+df_expA_growth <- data_expA_growth$df_expA_growth_alive
 ```
 
 ##### Initial state
@@ -1175,86 +1157,86 @@ df_expA_growth      <- data_expA_growth$df_expA_growth_alive
 We can first take a look at the initial weights of individuals (@fig-initGrowth).
 
 ```{r, warning=F, message=F}
-#| fig-cap: Initial weights of juvenile earthworms in experiment A. 
+#| fig-cap: Initial weights of juvenile earthworms in experiment A.
 #| label: fig-initGrowth
 #| fig-width: 6
 #| fig-height: 6
 
 plot_D0 <- ggplot(
-  data=subset(df_expA_growth_tot,t==0),
+  data = subset(df_expA_growth_tot, t == 0),
   aes(
-    x=Dose_f, 
-    y=w, 
-    color=Molecule, 
-    fill=Molecule
-    )
-  )+
-  geom_boxplot(alpha=0.2)+
+    x = Dose_f,
+    y = w,
+    color = Molecule,
+    fill = Molecule
+  )
+) +
+  geom_boxplot(alpha = 0.2) +
   geom_dotplot(
-    binaxis='y', 
-    stackdir='center', 
-    dotsize=0.7, 
-    alpha=0.7
-    )+
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.7,
+    alpha = 0.7
+  ) +
   labs(
-    x="Dose (mg/kg)", 
-    y="Weight (mg)"
-    )+
+    x = "Dose (mg/kg)",
+    y = "Weight (mg)"
+  ) +
   facet_wrap(
-    ~Molecule, 
-    ncol=1, 
-    scales="free"
-    )+
-  scale_color_manual(values=col_molec)+
-  scale_fill_manual(values=col_molec)+
-  theme_classic(14)+
+    ~Molecule,
+    ncol = 1,
+    scales = "free"
+  ) +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
+  theme_classic(14) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ),
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
     legend.text = element_text(
-      size=sizetitle-2,
-      face="plain"
-      ),
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+      size = sizetitle - 2,
+      face = "plain"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ),
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      ),
+      size = sizetitle,
+      face = "plain"
+    ),
     strip.background = element_rect(
-      color="black", 
-      fill="grey95", 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
     )
+  )
 plot_D0
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_growth_initial_weights.png", 
-  plot=plot_D0, 
-  width=6, 
-  height = 5, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_initial_weights.png",
+  plot = plot_D0,
+  width = 6,
+  height = 5,
+  path = path_growth
+)
 ggsave(
-  filename="ExpA_growth_initial_weights.jpg", 
-  plot=plot_D0, 
-  width=6, 
-  height = 5, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_initial_weights.jpg",
+  plot = plot_D0,
+  width = 6,
+  height = 5,
+  path = path_growth
+)
 ```
 
 We can easily see that earthworms exposed to IMD from the second experiment have a slightly lower initial weight than individuals from the first experiment.
@@ -1262,14 +1244,12 @@ We can easily see that earthworms exposed to IMD from the second experiment have
 We look at if there is an effect of the dose on the inital weights with an ANOVA and a Dunett test.
 
 ```{r lmD0EPXgr, warning=F, message=F}
-
 # ANOVA
 mod_aov <- aov(w ~ Dose_f, data = subset(df_expA_growth_tot, Molecule == "EPX" & t == 0))
 summary(mod_aov)
 
 dunnett_test <- glht(mod_aov, linfct = mcp(Dose_f = "Dunnett"))
 summary(dunnett_test)
-
 ```
 
 For EPX, there is no significant effect of the dose on the initial weight of earthworms (Student test : pval(IMD) = 0.125).
@@ -1293,147 +1273,146 @@ However, earthworms were non the less randomly attributed to conditions and the 
 ##### Earthworms growth
 
 ```{r, warning=F, message=F}
-#| fig-cap: Earthworms growth according to their exposition. 
+#| fig-cap: Earthworms growth according to their exposition.
 #| label: fig-growthplotjuv
 #| fig-width: 6
 #| fig-height: 10
 
-nb_dose_EPX <- n_distinct(subset(df_expA_growth_tot, Molecule=="EPX")$Dose)
-nb_dose_IMD <- n_distinct(subset(df_expA_growth_tot, Molecule=="IMD")$Dose)
+nb_dose_EPX <- n_distinct(subset(df_expA_growth_tot, Molecule == "EPX")$Dose)
+nb_dose_IMD <- n_distinct(subset(df_expA_growth_tot, Molecule == "IMD")$Dose)
 
 pal_dose_EPX <- nord(
-  palette = "aurora", 
-  nb_dose_EPX+2,
-  alpha = 1, 
+  palette = "aurora",
+  nb_dose_EPX + 2,
+  alpha = 1,
   reverse = T
-  )[-c(1,2)]
+)[-c(1, 2)]
 pal_dose_IMD <- nord(
-  palette = "aurora", 
-  nb_dose_IMD+2, 
-  alpha = 1, 
+  palette = "aurora",
+  nb_dose_IMD + 2,
+  alpha = 1,
   reverse = T
-  )[-c(1,2)]
+)[-c(1, 2)]
 
 plot_growth_EPX <- ggplot(
-  data=subset(df_expA_growth_tot, Molecule=="EPX"),
+  data = subset(df_expA_growth_tot, Molecule == "EPX"),
   aes(
-    x=t, 
-    y=w, 
-    group=ID, 
-    color=as.factor(Dose)
-    ),
+    x = t,
+    y = w,
+    group = ID,
+    color = as.factor(Dose)
+  ),
   shape = shape_EPX
-  )+
-  geom_point()+
+) +
+  geom_point() +
   scale_color_manual(
-    name="Dose (mg/kg)",
-    values=pal_dose_EPX
-    )+
-  geom_line()+
+    name = "Dose (mg/kg)",
+    values = pal_dose_EPX
+  ) +
+  geom_line() +
   facet_wrap(
-    ~Dose, 
-    ncol=3
-    )+
+    ~Dose,
+    ncol = 3
+  ) +
   labs(
-    x="Time (d)", 
-    y="Weight (mg)", 
-    title="Epoxiconazole"
-    )+
-  theme_bw()+
+    x = "Time (d)",
+    y = "Weight (mg)",
+    title = "Epoxiconazole"
+  ) +
+  theme_bw() +
   theme(
-    legend.position = "right", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ),
+    legend.position = "right",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
     strip.background = element_rect(
-      colour="black", 
-      fill="white", 
-      linetype="solid"
-      ),
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+      colour = "black",
+      fill = "white",
+      linetype = "solid"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ), 
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      )
+      size = sizetitle,
+      face = "plain"
     )
+  )
 
 plot_growth_IMD <- ggplot(
-  data=subset(df_expA_growth_tot, Molecule=="IMD"), 
+  data = subset(df_expA_growth_tot, Molecule == "IMD"),
   aes(
-    x=t, 
-    y=w, 
-    group=ID, 
-    color=as.factor(Dose)
-    ),
+    x = t,
+    y = w,
+    group = ID,
+    color = as.factor(Dose)
+  ),
   shape = shape_IMD
-  )+
-  geom_point()+
-  
-  geom_line()+
+) +
+  geom_point() +
+  geom_line() +
   facet_wrap(
-    ~Dose, 
-    ncol=3
-    )+
-  scale_color_manual(name="Dose (mg/kg)", values=pal_dose_IMD)+
+    ~Dose,
+    ncol = 3
+  ) +
+  scale_color_manual(name = "Dose (mg/kg)", values = pal_dose_IMD) +
   labs(
-    x="Time (d)", 
-    y="Weight (mg)", 
-    title="Imidacloprid"
-    )+
-  theme_bw()+
+    x = "Time (d)",
+    y = "Weight (mg)",
+    title = "Imidacloprid"
+  ) +
+  theme_bw() +
   theme(
-    legend.position = "right", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ),
+    legend.position = "right",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
     strip.background = element_rect(
-      colour="black", 
-      fill="white", 
-      linetype="solid"
-      ),
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+      colour = "black",
+      fill = "white",
+      linetype = "solid"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ), 
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      )
+      size = sizetitle,
+      face = "plain"
     )
+  )
 
-plot <- plot_growth_EPX+plot_growth_IMD+plot_layout(ncol=1, heights=c(1, 4/3))
+plot <- plot_growth_EPX + plot_growth_IMD + plot_layout(ncol = 1, heights = c(1, 4 / 3))
 plot
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_growth_curves_juveniles_IMD.png", 
-  plot=plot_growth_IMD, 
-  width=6, 
-  height = 6.6, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_curves_juveniles_IMD.png",
+  plot = plot_growth_IMD,
+  width = 6,
+  height = 6.6,
+  path = path_growth
+)
 
 ggsave(
-  filename="ExpA_growth_curves_juveniles_EPX.png", 
-  plot=plot_growth_EPX, 
-  width=6, 
-  height = 5, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_curves_juveniles_EPX.png",
+  plot = plot_growth_EPX,
+  width = 6,
+  height = 5,
+  path = path_growth
+)
 ```
 
 ### Effect on juvenile growth
@@ -1454,28 +1433,28 @@ With :
 For each earthworm, the growth rate is estimated using `nls` from the "stats" package.
 
 ```{r growthratesfuncg}
-f_growth_rate <- function(data){
+f_growth_rate <- function(data) {
   a_init <- 0.1
   a_i <- c()
-  
+
   # Calculation of the growth rate for each individual
-  for(i in subset(data, t==0)$ID){
+  for (i in subset(data, t == 0)$ID) {
     data_i <- data.frame(
-      L = subset(data, ID==i)$L,
-      t = subset(data, ID==i)$t
+      L = subset(data, ID == i)$L,
+      t = subset(data, ID == i)$t
+    )
+    L0_i <- subset(data, ID == i & t == 0)$L
+
+    if (length(na.omit(data_i$L)) == 2) { # If only 2 data points
+      a.Est <- (subset(data_i, !t == 0)$L - subset(data_i, t == 0)$L) /
+        subset(data_i, !t == 0)$t
+    } else { # If 3 data points (or more)
+      EPX.nlsHill <- nls(
+        L ~ L0_i + t * a,
+        start = list(a = a_init),
+        trace = T,
+        data = data_i
       )
-    L0_i <- subset(data, ID==i & t==0)$L
-    
-    if(length(na.omit(data_i$L))==2){ # If only 2 data points
-      a.Est <- (subset(data_i, !t==0)$L-subset(data_i, t==0)$L)/
-        subset(data_i, !t==0)$t
-    }else{ # If 3 data points (or more)
-      EPX.nlsHill=nls(
-        L ~ L0_i+t*a,
-        start = list(a=a_init), 
-        trace=T, 
-        data=data_i
-        ) 
       a.Est <- EPX.nlsHill$m$getPars()[1]
     }
     a_i <- rbind(a_i, a.Est)
@@ -1489,154 +1468,154 @@ f_growth_rate <- function(data){
 # Growth rate calculation for individuals alive at the end of the experiment
 a_i <- f_growth_rate(df_expA_growth) |> as.data.frame()
 
-df_rates_alive <- cbind(subset(df_expA_growth, t==0), a_i) |> 
+df_rates_alive <- cbind(subset(df_expA_growth, t == 0), a_i) |>
   as.data.frame()
 
-df_rates_controls <- subset(df_rates_alive, Molec %in% c("Ctrl_1", "Ctrl_2")) |> 
+df_rates_controls <- subset(df_rates_alive, Molec %in% c("Ctrl_1", "Ctrl_2")) |>
   aggregate(a ~ Molec, FUN = mean)
 
-df_rates_alive <- df_rates_alive |> 
+df_rates_alive <- df_rates_alive |>
   mutate(
     r_a = case_when(
-      Lot == "A" ~ a/subset(df_rates_controls,Molec == "Ctrl_1")$a,
-      Lot == "B" ~ a/subset(df_rates_controls,Molec == "Ctrl_2")$a
-      )*100
+      Lot == "A" ~ a / subset(df_rates_controls, Molec == "Ctrl_1")$a,
+      Lot == "B" ~ a / subset(df_rates_controls, Molec == "Ctrl_2")$a
+    ) * 100
   )
 
 df_rates_alive_mean <- df_rates_alive |>
-  group_by(Dose, Molecule, Dose_plot) |> 
+  group_by(Dose, Molecule, Dose_plot) |>
   summarise(
     r_a = mean(r_a, na.rm = TRUE),
     a = mean(a, na.rm = TRUE),
     .groups = "drop"
   )
-
 ```
 
 #### Dose-response curve for juvenile growth
 
 ```{r drcg, warning=F, message=F}
-drc.mod.g<- drm(
-  a~Dose, Molecule,
+drc.mod.g <- drm(
+  a ~ Dose, Molecule,
   data = df_rates_alive,
-  fct=LL.4(
+  fct = LL.4(
     names = c("slope", "Ymin", "Ymax", "EC50"),
-    fixed=c(NA, NA, NA, NA)
-    ),
-  pmodels=data.frame(Molecule, 1, 1, Molecule),
-  lowerl = c(-Inf,-Inf, -Inf, 1e-4)
-  )
+    fixed = c(NA, NA, NA, NA)
+  ),
+  pmodels = data.frame(Molecule, 1, 1, Molecule),
+  lowerl = c(-Inf, -Inf, -Inf, 1e-4)
+)
 summary(drc.mod.g)
 
 Dose_x <- expand.grid(
   exp(
     seq(
-      log(0.000001),log(5000), 
-      by=(log(5000)-log(0.000001))/100
-      )
+      log(0.000001), log(5000),
+      by = (log(5000) - log(0.000001)) / 100
     )
   )
+)
 
 CI.g <- data.frame(
-  Dose=c(Dose_x$Var1, Dose_x$Var1),
+  Dose = c(Dose_x$Var1, Dose_x$Var1),
   Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
-  )
+)
 
-pm.g <- predict(drc.mod.g, newdata=CI.g, interval="confidence")
-CI.g$p <- pm.g[,1]
-CI.g$pmin <- pm.g[,2]
-CI.g$pmax <- pm.g[,3]
-
+pm.g <- predict(drc.mod.g, newdata = CI.g, interval = "confidence")
+CI.g$p <- pm.g[, 1]
+CI.g$pmin <- pm.g[, 2]
+CI.g$pmax <- pm.g[, 3]
 ```
 
 ```{r, warning=F, message=F}
-plot_drc_g <- ggplot()+
+plot_drc_g <- ggplot() +
   # geom_ribbon_interactive(
-  #   data=CI.g, 
+  #   data=CI.g,
   #   aes(
-  #     x=Dose, 
-  #     y=p, 
-  #     ymin=pmin, ymax=pmax, 
-  #     group=Molecule, 
+  #     x=Dose,
+  #     y=p,
+  #     ymin=pmin, ymax=pmax,
+  #     group=Molecule,
   #     fill=Molecule,
-  #     tooltip = Molecule, 
+  #     tooltip = Molecule,
   #     data_id = Molecule,
-  #     ), 
+  #     ),
   #   alpha=0.2)+
   # geom_line_interactive(
-  #   data = CI.g, 
+  #   data = CI.g,
   #   aes(
-  #     x=Dose, 
-  #     y=p, 
+  #     x=Dose,
+  #     y=p,
   #     color=Molecule,
-  #     tooltip = Molecule, 
-  #     data_id = Molecule, 
+  #     tooltip = Molecule,
+  #     data_id = Molecule,
   #     color=Molecule,
   #     shape = Molecule
   #     ),
   #   linewidth = 1.2
   #   )+
   geom_point_interactive(
-    data=df_rates_alive, 
+    data = df_rates_alive,
     aes(
-      x=Dose_plot, 
-      y=a, 
-      shape=Molecule,
-      tooltip = Molecule, 
-      data_id = Molecule, 
-      color=Molecule,
+      x = Dose_plot,
+      y = a,
+      shape = Molecule,
+      tooltip = Molecule,
+      data_id = Molecule,
+      color = Molecule,
       shape = Molecule
-      ), 
-    cex=2, 
-    alpha=0.4
-    )+
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
   geom_point_interactive(
-    data=df_rates_alive_mean, 
+    data = df_rates_alive_mean,
     aes(
-      x=Dose_plot, 
-      y=a, 
-      shape=Molecule,
-      tooltip = Molecule, 
-      data_id = Molecule, 
-      color=Molecule,
+      x = Dose_plot,
+      y = a,
+      shape = Molecule,
+      tooltip = Molecule,
+      data_id = Molecule,
+      color = Molecule,
       shape = Molecule
-      ), 
-    alpha=1,
+    ),
+    alpha = 1,
     size = 3
-    )+
-  scale_color_manual(name="",values=col_molec)+
-  scale_shape_manual(name = "", values=shape_molec)+
-  scale_fill_manual(name="",values=col_molec)+
-  theme_minimal()+
+  ) +
+  scale_color_manual(name = "", values = col_molec) +
+  scale_shape_manual(name = "", values = shape_molec) +
+  scale_fill_manual(name = "", values = col_molec) +
+  theme_minimal() +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),  
-    labels = c(Label_Ctrl, "0.001","0.01", "0.1", "1", "10", "100", "1000")
-  )+
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
   labs(
-    x="Dose (mg/kg)",
-    y=expression(paste("Growth rate (", mg^{1/3}, "/day)")),
-    #y = "Relative growth rate (%)",
-    #title = "B. Effects on juvenile growth"
-    )+
+    x = "Dose (mg/kg)",
+    y = expression(paste("Growth rate (", mg^{
+      1 / 3
+    }, "/day)")),
+    # y = "Relative growth rate (%)",
+    # title = "B. Effects on juvenile growth"
+  ) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ), 
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     axis.title.x = element_text(
-      size=sizetitle,
-      face="plain"
-      ), 
+      size = sizetitle,
+      face = "plain"
+    ),
     axis.title.y = element_text(
-      size=sizetitle,
-      face="plain"
-      )
+      size = sizetitle,
+      face = "plain"
     )
+  )
 
 tooltip_css <- "
   border-radius: 12px;
@@ -1654,7 +1633,7 @@ hover_css <- "
   filter: brightness(1.15);
 "
 
-interactive_plot <- girafe(ggobj=plot_drc_g)%>%
+interactive_plot <- girafe(ggobj = plot_drc_g) %>%
   girafe_options(opts_sizing(rescale = FALSE))
 
 # Add interactivity
@@ -1670,123 +1649,123 @@ plot_drc_g_f <- plot_drc_g +
 ```
 
 ```{r, warning=F, message=F}
-#| fig-cap: Dose-response curves for growth. 
+#| fig-cap: Dose-response curves for growth.
 #| label: fig-growthdrc
 #| fig-width: 8
 #| fig-height: 4
 
-p <- ggplot()+
+p <- ggplot() +
   # geom_ribbon_interactive(
-  #   data=CI.g, 
+  #   data=CI.g,
   #   aes(
-  #     x=Dose, 
-  #     y=p, 
-  #     ymin=pmin, ymax=pmax, 
-  #     group=Molecule, 
+  #     x=Dose,
+  #     y=p,
+  #     ymin=pmin, ymax=pmax,
+  #     group=Molecule,
   #     fill=Molecule,
-  #     tooltip = Molecule, 
+  #     tooltip = Molecule,
   #     data_id = Molecule,
-  #     ), 
+  #     ),
   #   alpha=0.2)+
   # geom_line_interactive(
-  #   data = CI.g, 
+  #   data = CI.g,
   #   aes(
-  #     x=Dose, 
-  #     y=p, 
+  #     x=Dose,
+  #     y=p,
   #     color=Molecule,
-  #     tooltip = Molecule, 
-  #     data_id = Molecule, 
+  #     tooltip = Molecule,
+  #     data_id = Molecule,
   #     color=Molecule,
   #     shape = Molecule
   #     ),
   #   linewidth = 1.2
   #   )+
   geom_point(
-    data = df_rates_alive, 
+    data = df_rates_alive,
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = a,
       color = Molecule,
       shape = Molecule
     ),
-    alpha=0.5,
-  )+
+    alpha = 0.5,
+  ) +
   geom_point(
-    data = df_rates_alive_mean, 
+    data = df_rates_alive_mean,
     aes(
-      x = Dose_plot, 
+      x = Dose_plot,
       y = a,
       color = Molecule,
       shape = Molecule
     ),
-    alpha=1,
+    alpha = 1,
     size = 3
-  )+
-  
+  ) +
   scale_x_log10(
-    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  # inclure la valeur fictive
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
     labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
-  )+
-  facet_wrap(~Molecule, scales = "free_x")+
-  scale_color_manual(values=col_molec)+
-  scale_fill_manual(values=col_molec)+
-  scale_shape_manual(values=shape_molec)+
+  ) +
+  facet_wrap(~Molecule, scales = "free_x") +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
+  scale_shape_manual(values = shape_molec) +
   labs(
     x = "Dose (mg/kg)",
-    y=expression(paste("Growth rate (", mg^{1/3}, "/day)"))#,
-    #title = "Effect of the pesticides on juvenile growth rates"
-    )+
-  ylim(NA, 0.15)+
-  theme_minimal(base_size = 15) +  # Thème minimaliste
+    y = expression(paste("Growth rate (", mg^{
+      1 / 3
+    }, "/day)")) # ,
+    # title = "Effect of the pesticides on juvenile growth rates"
+  ) +
+  ylim(NA, 0.15) +
+  theme_minimal(base_size = 15) + # Thème minimaliste
   theme(
     plot.title = element_text(
-      # hjust = 0.5, 
+      # hjust = 0.5,
       face = "bold"
-      ),
+    ),
     legend.position = "none",
     strip.background = element_rect(
-      color="black", 
-      fill=Nord_snow[3], 
-      size=0, 
-      linetype="solid"
-      ),
+      color = "black",
+      fill = Nord_snow[3],
+      size = 0,
+      linetype = "solid"
+    ),
     strip.text = element_text(face = "bold")
   )
 p
-
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_growth_drc_single.png",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_drc_single.png",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_growth
+)
 ggsave(
-  filename="ExpA_growth_drc_single.svg",
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_drc_single.svg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = path_growth
+)
 ```
 
 ```{r}
 # Anova model
-df_rates_alive <- df_rates_alive |> 
+df_rates_alive <- df_rates_alive |>
   mutate(
     Condition_f = as.factor(paste0(Molecule, Dose_plot)),
     Molecule = as.factor(Molecule)
   )
 
 anova.drc.g <- glm(
-  a ~ Condition_f, 
+  a ~ Condition_f,
   data = df_rates_alive
-  )
-#check_model(glm_anova)
-#predict(glm_anova)
+)
+# check_model(glm_anova)
+# predict(glm_anova)
 
 # Log-likelihood
 LL_drc <- as.numeric(logLik(drc.mod.g))
@@ -1819,42 +1798,41 @@ This drc model logically does not pass the lake-of-fit test.
 col_diag <- Nord_polar[4]
 
 plot_QQ <- ggplot(
-  mapping=aes(
-    sample=residuals(drc.mod.g)
-    )
-  )+
-  stat_qq(alpha=0.3)+
-  stat_qq_line(color=col_diag)+
+  mapping = aes(
+    sample = residuals(drc.mod.g)
+  )
+) +
+  stat_qq(alpha = 0.3) +
+  stat_qq_line(color = col_diag) +
   labs(
-    x="Normal quantiles", 
-    y="Residuals"
-    )+
+    x = "Normal quantiles",
+    y = "Residuals"
+  ) +
   theme_minimal()
 
-plot_resfit <- ggplot()+
+plot_resfit <- ggplot() +
   geom_point(
-    mapping=aes(
-      x=fitted(drc.mod.g), 
-      y=residuals(drc.mod.g)
-      ), 
-    color=col_diag, 
-    alpha=0.3
-    )+
+    mapping = aes(
+      x = fitted(drc.mod.g),
+      y = residuals(drc.mod.g)
+    ),
+    color = col_diag,
+    alpha = 0.3
+  ) +
   labs(
-    x="Fitted", 
-    y="Residuals"
-    )+
-  scale_x_log10()+
+    x = "Fitted",
+    y = "Residuals"
+  ) +
+  scale_x_log10() +
   theme_minimal()
 
-plot <- plot_resfit + plot_QQ + plot_layout(ncol=2)
+plot <- plot_resfit + plot_QQ + plot_layout(ncol = 2)
 plot
 ```
 
 NOEC determination for juvenile growth :
 
 ```{r, warning=F, message=F}
-
 # ANOVA
 cat("IMD - Determination of NOEC and LOEC\n")
 mod_aov <- aov(a ~ Dose_f, data = subset(df_rates_alive, Molecule == "IMD"))
@@ -1876,91 +1854,89 @@ We can also say that there is an effect of the dose on juveniles growth.
 ### Observed mortality
 
 ```{r, warning=F, message=F}
-#| fig-cap: Mortality observed in each condition. 
+#| fig-cap: Mortality observed in each condition.
 #| label: fig-growthdrcmortality
 #| fig-width: 6
 #| fig-height: 5
 
-df_dead_g <- df_expA_growth_tot |> 
-  filter(t==28) |> 
-  group_by(Dose_f, Molecule) |> 
+df_dead_g <- df_expA_growth_tot |>
+  filter(t == 28) |>
+  group_by(Dose_f, Molecule) |>
   summarise(
-    n_D = sum(Status == "D", na.rm = TRUE),  # compte lignes avec Status "D"
-    n_total = n(),                           # total lignes par condition
+    n_D = sum(Status == "D", na.rm = TRUE), # compte lignes avec Status "D"
+    n_total = n(), # total lignes par condition
     .groups = "drop"
   )
 
 p <- ggplot(
-  data=df_dead_g,
+  data = df_dead_g,
   aes(
-    x=Dose_f, 
-    y=n_D, 
-    color=Molecule, 
-    fill=Molecule
-    )
-  )+
+    x = Dose_f,
+    y = n_D,
+    color = Molecule,
+    fill = Molecule
+  )
+) +
   geom_col(
-    alpha=0.5
-    )+
+    alpha = 0.5
+  ) +
   geom_text(
-    aes(label = round(n_D)), 
-    vjust = -0.5, 
-    size=4
-    )+
+    aes(label = round(n_D)),
+    vjust = -0.5,
+    size = 4
+  ) +
   labs(
-    x="Dose (mg/kg)", 
-    y="Number of dead individuals (#)"
-    )+
+    x = "Dose (mg/kg)",
+    y = "Number of dead individuals (#)"
+  ) +
   facet_wrap(
-    ~Molecule, 
-    ncol=1, 
-    scales="free"
-    )+
-  scale_color_manual(values=col_molec)+
-  scale_fill_manual(values=col_molec)+
-  lims(y=c(0,4.5))+
-  theme_classic(12)+
+    ~Molecule,
+    ncol = 1,
+    scales = "free"
+  ) +
+  scale_color_manual(values = col_molec) +
+  scale_fill_manual(values = col_molec) +
+  lims(y = c(0, 4.5)) +
+  theme_classic(12) +
   theme(
-    legend.position = "none", 
-    legend.title=element_text(
-      size=sizetitle-2,
-      face="bold"
-      ),
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
     legend.text = element_text(
-      size=sizetitle-2,
-      face="plain"
-      ),
-    title=element_text(
-      size=sizetitle, 
-      face="bold"
-      ), 
+      size = sizetitle - 2,
+      face = "plain"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
     strip.background = element_rect(
-      color="black", 
-      fill="grey95", 
-      size=0, 
-      linetype="solid"
-      )
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
     )
+  )
 p
-  
-
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="ExpA_growth_single_dead.png",
-  plot=p, 
-  width=5, 
-  height = 5, 
-  path=path_growth
-  )
+  filename = "ExpA_growth_single_dead.png",
+  plot = p,
+  width = 5,
+  height = 5,
+  path = path_growth
+)
 ggsave(
-  filename="Growth_single_dead.svg",
-  plot=p, 
-  width=5, 
-  height = 5, 
-  path=path_growth
-  )
+  filename = "Growth_single_dead.svg",
+  plot = p,
+  width = 5,
+  height = 5,
+  path = path_growth
+)
 ```
 
 ## Conclusion
@@ -1971,26 +1947,26 @@ ggsave(
 #| fig-width: 8
 #| fig-height: 4
 
-p <- plot_drc_r_f + plot_drc_g_f+
-  plot_layout(ncol=2, guides="collect")
+p <- plot_drc_r_f + plot_drc_g_f +
+  plot_layout(ncol = 2, guides = "collect")
 p
 ```
 
 ```{r, include=F}
 ggsave(
-  filename="Article_drc.png", 
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/")
-  )
+  filename = "Article_drc.png",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = here::here("fig/")
+)
 ggsave(
-  filename="Article_drc.svg", 
-  plot=p, 
-  width=8, 
-  height = 4, 
-  path=here::here("fig/")
-  )
+  filename = "Article_drc.svg",
+  plot = p,
+  width = 8,
+  height = 4,
+  path = here::here("fig/")
+)
 ```
 
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
