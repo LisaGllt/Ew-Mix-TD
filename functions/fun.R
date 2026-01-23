@@ -11,6 +11,7 @@ f_load_libraries <- function() {
   library(reshape2)      # Data reshaping
   library(DT)            # Interactive tables
   library(knitr)         # Dynamic reports (RMarkdown / Quarto)
+  library(AER)
   
   # 🎨 Visualization & graphics
   library(ggplot2)       # Data visualization

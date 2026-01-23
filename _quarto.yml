@@ -6,12 +6,32 @@ book:
   subtitle: "Git repository"
   author:
     - name: "Lisa Gollot"
-      orcid: ""
+      orcid: "https://orcid.org/0009-0004-5074-4275"
       affiliations:
         - name: "Université Paris-Saclay, INRAE, AgroParisTech, UMR 1402 ECOSYS"
           department: "Sol&Tox"
-        - name: "Ineris"
-          department: "TEAM"
+        - name: "Experimental Toxicology and Modeling Unit, INERIS, Verneuil en Halatte 65550, France"
+    - name: "Cleo Bodin"
+      orcid: "https://orcid.org/0000-0003-3470-157X"
+      affiliations:
+        - name: "Experimental Toxicology and Modeling Unit, INERIS, Verneuil en Halatte 65550, France"
+    - name: "Laura Frattaroli"
+      orcid: ""
+      affiliations:
+        - name: "Université Paris-Saclay, INRAE, AgroParisTech, UMR EcoSys, 91120 Palaiseau, France"
+    - name: "Rémy Beaudouin"
+      orcid: "https://orcid.org/0000-0002-2855-1571"
+      affiliations:
+        - name: "Experimental Toxicology and Modeling Unit, INERIS, Verneuil en Halatte 65550, France ; Institut national de l'environnement industriel et des risques, Université de Reims Champagne-Ardenne, Université Le Havre Normandie, Normandie Univ, UMR-I 02 SEBIO, 60550 Verneuil-en-Halatte, France"
+    - name: "Raphaël Royauté"
+      orcid: "https://orcid.org/0000-0002-5837-633X"
+      affiliations:
+        - name: "Université Paris-Saclay, INRAE, AgroParisTech, UMR EcoSys, 91120 Palaiseau, France"
+    - name: "Juliette Faburé"
+      orcid: "https://orcid.org/0000-0002-8055-3224"
+      affiliations:
+        - name: "Université Paris-Saclay, INRAE, AgroParisTech, UMR EcoSys, 91120 Palaiseau, France"
+        
   date: "6/25/2024"
   chapters:
     - index.qmd
