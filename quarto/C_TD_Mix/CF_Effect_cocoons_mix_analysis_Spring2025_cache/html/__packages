@@ -9,6 +9,7 @@ dplyr
 stringr
 forcats
 lubridate
+data.table
 readxl
 reshape2
 DT
@@ -21,6 +22,8 @@ viridis
 wesanderson
 RColorBrewer
 nord
+colorspace
+scales
 plotly
 ggiraph
 ggrepel
@@ -28,15 +31,14 @@ patchwork
 gridExtra
 ggbreak
 ggtext
+ggh4x
+metR
+rnaturalearth
+sf
 kableExtra
 flextable
 gt
 processx
-metR
-rnaturalearth
-sf
-scales
-colorspace
 Rcpp
 brms
 StanHeaders
@@ -85,8 +87,6 @@ modelsummary
 plan
 latex2exp
 extrafont
-data.table
 zoo
 lmtest
 AER
-ggh4x

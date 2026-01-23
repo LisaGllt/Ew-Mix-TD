@@ -30,25 +30,34 @@ With :
 #| fig-height: 3
 
 f_Hill <- function(Dose) {
-  Y_min <- 0
-  slope <- 2
-  Y_max <- 20
+  Y_min <- 0.0
+  slope <- 2.0
+  Y_max <- 20.0
   EC50 <- 0.5
-
   return(Y_min + (Y_max - Y_min) / (1 + exp(slope * (log(Dose) - log(EC50)))))
 }
 
-x <- c(0, exp(seq(log(0.001), log(100), by = (log(100) - log(0.001)) / 100)))
+dose_vec <- exp(seq(log(0.001), log(100.0), length.out = 101))
 
-plot_drc <- ggplot() +
+df_drc <- data.frame(
+  Dose = dose_vec,
+  Response = f_Hill(dose_vec)
+)
+
+plot_drc <- 
+
+plot_drc <- ggplot(
+  data = df_drc, 
+  aes(
+    x = Dose, 
+    y = Response
+    )
+  ) +
   geom_line(
-    aes(
-      x = x,
-      y = f_Hill(x)
-    ),
     color = Nord_polar[1],
     linewidth = 1.1
-  ) +
+  )+
+
   annotate(
     geom = "segment",
     x = 0,
@@ -1148,8 +1157,8 @@ Variables names :
 
 ```{r datag, warning=F, message=F}
 data_expA_growth <- f_read_data_expA_growth()
-df_expA_growth_tot <- data_expA_growth$df_expA_growth
-df_expA_growth <- data_expA_growth$df_expA_growth_alive
+df_expA_growth_tot <- data_expA_growth$df_expA_growth_tot
+df_expA_growth <- data_expA_growth$df_expA_growth
 ```
 
 ##### Initial state
@@ -1464,7 +1473,7 @@ f_growth_rate <- function(data) {
 }
 ```
 
-```{r growhratescalc, warning=F, message=F, output=F}
+```{r growthratescalc, warning=F, message=F, output=F}
 # Growth rate calculation for individuals alive at the end of the experiment
 a_i <- f_growth_rate(df_expA_growth) |> as.data.frame()
 

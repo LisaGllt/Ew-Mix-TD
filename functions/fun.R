@@ -47,9 +47,22 @@ f_load_libraries <- function() {
   library(brms)          # Bayesian modeling with Stan
   library(rstan)         # R interface to Stan
   library(cmdstanr)      # CmdStan interface
+  
+  # Installation cmdstanr : 
+  # install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+  # library(cmdstanr)
+  # check_cmdstan_toolchain()
+  # install_cmdstan(cores = 2) 
+  # cmdstan_version()
+  
   library(tidybayes)     # Manipulation of Bayesian outputs
   library(ggmcmc)        # MCMC diagnostics
   library(rethinking)    # Advanced Bayesian modeling
+  
+  # # Installation 
+  # install.packages("remotes")
+  # remotes::install_github("rmcelreath/rethinking")
+  
   library(priorsense)    # Prior sensitivity analysis
   library(coda)          # MCMC analysis tools
   library(bayesnec)      # Bayesian NEC models

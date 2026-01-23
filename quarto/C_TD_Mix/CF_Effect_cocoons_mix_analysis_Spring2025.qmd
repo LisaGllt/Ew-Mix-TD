@@ -45,7 +45,7 @@ df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
 
 We can first take a look at the initial weights of individuals (@fig-init).
 
-```{r D0, warning=F, message=F}
+```{r, warning=F, message=F}
 #| fig-cap: Initial weights of earthworms according to batches.
 #| label: fig-init
 #| fig-width: 10
@@ -164,7 +164,7 @@ theoretical <- data.frame(
 )
 ```
 
-```{r overdispersionplot}
+```{r}
 #| fig-cap: Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with $Y_{min} set to zero, and $common $Y_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
 #| label: fig-Overdispersionplot
 #| fig-width: 6
@@ -1392,111 +1392,111 @@ However, an important statistical limitation must be acknowledged: all lack-of-f
 ```{r calcSurface, message=F, warning=F, execute = F}
 ########### CA ################################
 
-df_data_solved_surf_CA <- CA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "none",
-  multicore = TRUE
-)
+# df_data_solved_surf_CA <- CA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "none",
+#   multicore = TRUE
+# )
 
 # save(df_data_solved_surf_CA, file = here::here("mod/MIX/Surface_CA.RData"))
 
 ########### CASA ################################
 
-df_data_solved_surf_CASA <- CA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "SA",
-  a = a_CASA,
-  multicore = TRUE
-)
+# df_data_solved_surf_CASA <- CA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "SA",
+#   a = a_CASA,
+#   multicore = TRUE
+# )
 
 # save(df_data_solved_surf_CASA, file = here::here("mod/MIX/Surface_CASA.RData"))
 
 ########### CADL ################################
 
-df_data_solved_surf_CADL <- CA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "DL",
-  a = a_CADL,
-  b = b_CADL,
-  multicore = TRUE
-)
+# df_data_solved_surf_CADL <- CA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "DL",
+#   a = a_CADL,
+#   b = b_CADL,
+#   multicore = TRUE
+# )
 
 # save(df_data_solved_surf_CADL, file = here::here("mod/MIX/Surface_CADL.RData"))
 
 ########### CADR ################################
 
-df_data_solved_surf_CADR <- CA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "DR",
-  a = a_CADR,
-  b = b_CADR,
-  multicore = TRUE
-)
+# df_data_solved_surf_CADR <- CA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "DR",
+#   a = a_CADR,
+#   b = b_CADR,
+#   multicore = TRUE
+# )
 
 # save(df_data_solved_surf_CADR, file = here::here("mod/MIX/Surface_CADR.RData"))
 
 ########### IA ################################
 
-df_data_solved_surf_IA <- IA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "none"
-)
+# df_data_solved_surf_IA <- IA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "none"
+# )
 
 # save(df_data_solved_surf_IA, file = here::here("mod/MIX/Surface_IA.RData"))
 
 ########### IASA ################################
 
-df_data_solved_surf_IASA <- IA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "SA",
-  a = a_IASA
-)
+# df_data_solved_surf_IASA <- IA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "SA",
+#   a = a_IASA
+# )
 
 # save(df_data_solved_surf_IASA, file = here::here("mod/MIX/Surface_IASA.RData"))
 
 ########### IADL ################################
 
-df_data_solved_surf_IADL <- IA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "DL",
-  a = a_IADL,
-  b = b_IADL
-)
+# df_data_solved_surf_IADL <- IA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "DL",
+#   a = a_IADL,
+#   b = b_IADL
+# )
 
 # save(df_data_solved_surf_IADL, file = here::here("mod/MIX/Surface_IADL.RData"))
 
 ########### IADR ################################
 
-df_data_solved_surf_IADR <- IA_complete2(
-  C_mat = grid,
-  Max = Max,
-  Slopes = Slopes,
-  Ec50s = Ec50s,
-  interact = "DR",
-  a = a_IADR,
-  b = b_IADR
-)
+# df_data_solved_surf_IADR <- IA_complete2(
+#   C_mat = grid,
+#   Max = Max,
+#   Slopes = Slopes,
+#   Ec50s = Ec50s,
+#   interact = "DR",
+#   a = a_IADR,
+#   b = b_IADR
+# )
 
 # save(df_data_solved_surf_IADR, file = here::here("mod/MIX/Surface_IADR.RData"))
 ```
@@ -4260,7 +4260,7 @@ ggsave(
 )
 ```
 
-```{r perpredobs, warning = F, message = F}
+```{r, warning = F, message = F}
 #| tbl-cap: Percentage of predictions falling inside fold 2 and fold 5 for each model.
 #| label: tbl-MIXpredobsfold
 
