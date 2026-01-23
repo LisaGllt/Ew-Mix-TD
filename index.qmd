@@ -1,35 +1,31 @@
 # Information about this project
 
-## Preliminary information about this study
-
-This study is part of the french [ANR project EEWORM](https://eeworm-website-eeworm-28029feb17f172b5d59fe25680d42ab1a87633fff.pages-forge.inrae.fr).
-
-Authors of this study (Credit synthaxe) :
-
--   [Lisa Gollot](https://orcid.org/0009-0004-5074-4275)$^{ab}$ : Conceptualization, Data curation, Formal Analysis, Investigation, Methodology, Software, Validation, Visualization, Writing – Original Draft Preparation.
--   [Cleo Bodin](https://orcid.org/0000-0003-3470-157X)$^{b}$ : Formal Analysis, Methodology, Resources, Software.
--   Laura Frattaroli (INRAE research technician) : Data curation, Investigation, Methodology, Writing – Review & Editing.
--   [Rémy Beaudouin](https://orcid.org/0000-0002-2855-1571)$^{bc}$ : Formal Analysis, Funding Acquisition, Methodology, Resources, Supervision, Writing – Review & Editing.
--   [Raphaël Royauté](https://rroyaute.github.io)$^{a}$ : Conceptualization, Funding Acquisition, Methodology, Project Administration, Resources, Supervision, Writing – Review & Editing.
--   [Juliette Faburé](https://orcid.org/0000-0002-8055-3224)$^{a}$ : Funding Acquisition, Methodology, Resources, Supervision, Writing – Review & Editing.
-
-$^a$ : Université Paris-Saclay, INRAE, AgroParisTech, UMR EcoSys, 91120 Palaiseau, France
-
-$^b$ : Experimental Toxicology and Modeling Unit, INERIS, 65550 Verneuil en Halatte, France
-
-$^c$ : Institut national de l'environnement industriel et des risques, Université de Reims Champagne-Ardenne, Université Le Havre Normandie, Normandie Univ, UMR-I 02 SEBIO, 60550 Verneuil-en-Halatte, France
-
-Interns who also contributed to this study :
-
--   Maia Colombel (L3 internship) : Earthworms breeding & Imidacloprid dose-response curves (May - June 2024)
--   Julien Rouyer (Gap year intership of engineering school) : Earthworms breeding & Mixture tests (October - December 2024)
--   Cheikh Ahmed Tidane Sarr (M2 intership) : Mixture tests (March - August 2025)
-
-### Abstract
+## Abstract
 
 ![Graphical abstract](photos/Graphical_abstract.png)
 
 Soils are essential biodiversity reservoirs and providers of key ecosystem services, yet they are increasingly threatened by agricultural intensification and widespread pesticide use. Residues often persist as complex mixtures, while environmental risk assessment typically focuses on single substances, potentially overlooking mixture effects. Earthworms, as major soil engineers, are central to soil functioning and particularly vulnerable to pesticide contamination. We assessed the effects of a binary mixture of epoxiconazole (a triazole fungicide) and imidacloprid (a neonicotinoid insecticide) on life-history traits of Aporrectodea caliginosa, two pesticides frequently detected and persistent in agricultural soils. Individual dose–response experiments were first conducted on juvenile growth and cocoon production to estimate relative potency. Mixture effects were then examined using a fixed-ratio ray design with five concentration ratios and seven additive isoboles (36 conditions). Adult growth and cocoon production were monitored for 28 days, followed by hatching assessment over 56 days. Both compounds showed significant toxicity. Imidacloprid exhibited high potency (growth: NOEC = 0.28 mg/kg; reproduction: NOEC = 0.89 mg/kg; EC50 = 0.55 mg/kg), while epoxiconazole induced moderate effects (growth: NOEC = 9.3 mg/kg; reproduction: NOEC = 92.8 mg/kg; EC50 = 126.8 mg/kg). Reproductive endpoints were more sensitive than adult growth, and juvenile growth emerged as the most sensitive endpoint, underscoring the vulnerability of early life stages. Mixture analysis using Jonker’s models showed that only the simple interaction model significantly deviated from the Independent Action (IA) reference, indicating synergistic interactions consistent with reports of cytochrome P450 metabolic interference in other taxa. Environmentally, field-reported imidacloprid concentrations often approach experimentally derived effect thresholds, highlighting a potential risk for earthworm populations even under current regulatory conditions. Overall, the combined effects of epoxiconazole and imidacloprid may exceed predictions based on simple additivity. These findings emphasize the need to account for mixture effects and potential synergism in environmental risk assessment frameworks, particularly for pesticide combinations likely to co-occur in soils.
+
+## Preliminary information about this study
+
+This study is part of the french [ANR project EEWORM](https://eeworm-website-eeworm-28029feb17f172b5d59fe25680d42ab1a87633fff.pages-forge.inrae.fr).
+
+### Contributors
+
+**Authors of this study** (Credit synthaxe) :
+
+-   [Lisa Gollot](https://orcid.org/0009-0004-5074-4275) : Conceptualization, Data curation, Formal Analysis, Investigation, Methodology, Software, Validation, Visualization, Writing – Original Draft Preparation.
+-   [Cleo Bodin](https://orcid.org/0000-0003-3470-157X) : Formal Analysis, Methodology, Resources, Software.
+-   Laura Frattaroli (INRAE research technician) : Data curation, Investigation, Methodology, Writing – Review & Editing.
+-   [Rémy Beaudouin](https://orcid.org/0000-0002-2855-1571) : Formal Analysis, Funding Acquisition, Methodology, Resources, Supervision, Writing – Review & Editing.
+-   [Raphaël Royauté](https://rroyaute.github.io)\$ : Conceptualization, Funding Acquisition, Methodology, Project Administration, Resources, Supervision, Writing – Review & Editing.
+-   [Juliette Faburé](https://orcid.org/0000-0002-8055-3224) : Funding Acquisition, Methodology, Resources, Supervision, Writing – Review & Editing.
+
+**Interns who also contributed to this study** :
+
+-   Maia Colombel (L3 internship) : Earthworms breeding & Imidacloprid dose-response curves (May - June 2024)
+-   Julien Rouyer (Gap year intership of engineering school) : Earthworms breeding & Mixture tests (October - December 2024)
+-   Cheikh Ahmed Tidane Sarr (M2 intership) : Mixture tests (March - August 2025)
 
 ### Fundings
 
