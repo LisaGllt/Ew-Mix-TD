@@ -36,7 +36,7 @@ color_blue <- c(
 
 # Power analysis {#sec-power}
 
-We want to investiguate what is the minimal interaction that can be estimated with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).
+We want to investiguate what is the minimal interaction that can be detected with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).
 
 We get the information about the experimental design.
 
@@ -811,7 +811,7 @@ df_boot_res_IA_print_summary |> datatable(
 )
 ```
 
-With our design, we can quantify absolute interaction value above 5 reasonnably well.
+Power analysis revealed clear thresholds in the ability of the simple interaction (SA) model to detect and quantify interactions. With CA as the reference model, interaction strengths of a ≈ 1 provided adequate power (\~97%) and acceptable estimation accuracy (\< 20% error), whereas performance degraded markedly at a = 0.5. Using IA as the reference yielded the same qualitative threshold: a ≈ 1 was the minimum interaction strength at which detection remained reasonably reliable, although power was lower (\~80%) than under CA. For both reference models, weaker interactions (a ≤ 0.5) led to insufficient power and poor estimation accuracy, making them difficult to detect or classify robustly.
 
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
 

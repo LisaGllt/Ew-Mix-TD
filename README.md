@@ -2,7 +2,7 @@
 
 ### Repository organisation
 
-The git repository linked to this website is available [here](https://github.com/LisaGllt/Ew-Mix-TD) and is saved via [SoftwareHeritage](https://archive.softwareheritage.org) on this [page](https://archive.softwareheritage.org/browse/origin/https://github.com/LisaGllt/Ew-Mix-TD).
+The git repository linked to this website is available [here](https://lisagllt.github.io/Ew-Mix-TD/) and is saved via [SoftwareHeritage](https://archive.softwareheritage.org) on this [page](https://archive.softwareheritage.org/browse/origin/https://github.com/LisaGllt/Ew-Mix-TD).
 
 Folders containing files concerning directly the study :
 

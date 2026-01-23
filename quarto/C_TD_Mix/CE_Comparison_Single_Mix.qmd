@@ -13,7 +13,7 @@ path_fig <- here::here("fig/Mixture/Comp_expA_expB")
 
 # Comparison of the single substances experiment with the mixture experiment ? {#sec-MIXSpringComp}
 
-Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX & IMD obtained with the experiment A and the experiment B (Autumn 2024 vs. Spring 2025).
+Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX & IMD obtained with the experiment UNI and the experiment MIX (Autumn 2024 vs. Spring 2025).
 
 ## Data importation
 
@@ -52,11 +52,11 @@ IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
 
 ## Initial state of the mixture experiment (experiment B)
 
-We can first take a look at the initial weights of individuals from the mixture experiment (@fig-init).
+We can first take a look at the initial weights of individuals from the mixture experiment (@fig-initMIXSpringcomp).
 
 ```{r D0, warning=F, message=F}
 #| fig-cap: Initial weights of earthworms according to batches. 
-#| label: fig-init
+#| label: fig-initMIXSpringcomp
 #| fig-width: 10
 #| fig-height: 4
 pal_lot <- c(Nord_frost[3], Nord_polar[4])
@@ -135,25 +135,25 @@ ggsave(
 ## Comparison of the controls
 
 ```{r, message=F, warning=F}
-#| fig-cap: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment A (blues). 
+#| fig-cap: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment UNI (blues). 
 #| label: fig-drcIMDEPXcompctrl
 #| fig-width: 4
 #| fig-height: 5
 
 df_expB_repro_ctrl <- subset(df_expB_repro, Ratio == "N") |>
   dplyr::select(Nb_cocoons) |>
-  mutate(Experiment = "Experiment B")
+  mutate(Experiment = "Experiment MIX")
 
 df_expA_repro_ctrl <- subset(df_expA_repro, Dose == 0) |>
   dplyr::select(Nb_cocoons, Lot) |>
   mutate(Experiment = case_when(
-    Lot == "A" ~ "Experiment A\nSpring 2024",
-    Lot == "B" ~ "Experiment A\nSummer 2024"
+    Lot == "A" ~ "Experiment UNI\nSpring 2024",
+    Lot == "B" ~ "Experiment UNI\nSummer 2024"
   )) |>
   dplyr::select(Nb_cocoons, Experiment)
 
 df_controls <- rbind(df_expA_repro_ctrl, df_expB_repro_ctrl)
-df_controls$Experiment <- factor(df_controls$Experiment, levels = c("Experiment A\nSpring 2024", "Experiment A\nSummer 2024", "Experiment B"))
+df_controls$Experiment <- factor(df_controls$Experiment, levels = c("Experiment UNI\nSpring 2024", "Experiment UNI\nSummer 2024", "Experiment MIX"))
 
 p <- ggplot(
   data = df_controls,
@@ -211,9 +211,9 @@ The controls of the two different experiments are not significatively different.
 
 ## Dose-response curves
 
-### Experiment A - Dose-response curves
+We then get the dose-response curves of the single substances from experiment UNI and experiment MIX.
 
-We then get the dose-response curves of the single substances from experiment A and experiment B.
+### Experiment UNI - Dose-response curves
 
 ```{r drcexpA, warning=F, message=F}
 
@@ -247,7 +247,7 @@ summary(drc.ExpA)
 
 ```
 
-### Experiment B - Dose-response curves
+### Experiment MIX - Dose-response curves
 
 ```{r drcexpB, warning=F, message=F}
 
@@ -285,10 +285,11 @@ summary(drc.ExpB)
 ## Comparison of the two experiments for single substances
 
 ```{r, warning=F, message=F}
-#| fig-cap: Comparaison of the results obtained in the experiment B (dark blues) with the results of Experiment A (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
+#| fig-cap: Comparaison of the results obtained in the experiment MIX (dark blues) with the results of Experiment UNI (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
 #| label: fig-drcIMDEPXcomp
 #| fig-width: 8
 #| fig-height: 4
+
 df_expA_repro_IMD <- df_expA_repro |>
   filter(Molecule == "IMD")
 df_expA_repro_EPX <- df_expA_repro |>
@@ -560,14 +561,14 @@ ec50_EPX_ExpB <- as.numeric(ED(drc.ExpB, 50, interval = "delta")[1,])
 
 df_EC50_comp <- data.frame(
   Molecule = c("EPX", "EPX", "IMD", "IMD"),
-  Experiment = c("ExpA", "ExpB", "ExpA", "ExpB"),
+  Experiment = c("UNI Exp", "MIX Exp", "UNI Exp", "MIX Exp"),
   p = c(pEC50EPXExpA, pEC50EPXExpB, pEC50IMDExpA, pEC50IMDExpB),
   pmin = c(pminEC50EPXExpA, pminEC50EPXExpB, pminEC50IMDExpA, pminEC50IMDExpB),
   pmax = c(pmaxEC50EPXExpA, pmaxEC50EPXExpB, pmaxEC50IMDExpA, pmaxEC50IMDExpB)
 ) |>
   mutate(color = as.factor(paste0(Molecule, Experiment)))
 
-df_EC50_comp$Experiment <- factor(df_EC50_comp$Experiment, levels = c("ExpA", "ExpB"))
+df_EC50_comp$Experiment <- factor(df_EC50_comp$Experiment, levels = c("UNI Exp", "MIX Exp"))
 
 p <- ggplot(
   data = df_EC50_comp,
@@ -611,21 +612,20 @@ ggsave(
 #| label: tbl-MIXcompdrc
 
 df_drc_comp <- data.frame(
-  # Parameter = c("Ymax", "Slope", "EC50(EPX)", "EC50(IMD)"),
-  ExpA = c(
+  UNI_exp = c(
     coef(drc.ExpA)[1], coef(drc.ExpA)[2],
     coef(drc.ExpA)[3], coef(drc.ExpA)[4],
     coef(drc.ExpA)[5], coef(drc.ExpA)[6]
   ),
-  ExpB = c(
+  MIX_exp = c(
     coef(drc.ExpB)[1], coef(drc.ExpB)[2],
     coef(drc.ExpB)[3], coef(drc.ExpB)[4],
     coef(drc.ExpB)[5], coef(drc.ExpB)[6]
   )
 ) |>
   mutate(
-    Ratio = ExpA / ExpB,
-    Per_difference = (ExpB - ExpA) / ExpA * 100
+    Ratio = UNI_exp / MIX_exp,
+    Per_difference = (MIX_exp - UNI_exp) / UNI_exp * 100
   ) |>
   mutate(across(where(is.numeric), signif, 2))
 
@@ -637,22 +637,22 @@ df_drc_comp |> datatable(options = list(dom = "t"), class = "hover")
 df_expA_repro_simple_IMD <- df_expA_repro |>
   filter(Molecule == "IMD") |>
   dplyr::select(Molecule, Dose, Nb_cocoons) |>
-  mutate(Experiment = "A")
+  mutate(Experiment = "UNI")
 
 df_expA_repro_simple_EPX <- df_expA_repro |>
   filter(Molecule == "EPX") |>
   dplyr::select(Molecule, Dose, Nb_cocoons) |>
-  mutate(Experiment = "A")
+  mutate(Experiment = "UNI")
 
 df_expB_repro_simple_IMD <- df_expB_repro_single |>
   filter(Molecule == "IMD") |>
   dplyr::select(Molecule, Dose, Nb_cocoons) |>
-  mutate(Experiment = "B")
+  mutate(Experiment = "MIX")
 
 df_expB_repro_simple_EPX <- df_expB_repro_single |>
   filter(Molecule == "EPX") |>
   dplyr::select(Molecule, Dose, Nb_cocoons) |>
-  mutate(Experiment = "B")
+  mutate(Experiment = "MIX")
 
 df_comp_IMD <- rbind(df_expA_repro_simple_IMD, df_expB_repro_simple_IMD)
 df_comp_EPX <- rbind(df_expA_repro_simple_EPX, df_expB_repro_simple_EPX)

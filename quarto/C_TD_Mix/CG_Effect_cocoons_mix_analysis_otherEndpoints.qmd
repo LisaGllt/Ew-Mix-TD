@@ -49,11 +49,11 @@ df_expB_hatch_mean        <- data_expB$df_expB_hatch_mean
 
 ## Initial state
 
-We can first take a look at the initial weights of individuals (@fig-init).
+We can first take a look at the initial weights of individuals (@fig-initExpBhatch).
 
 ```{r D0, warning=F, message=F}
 #| fig-cap: Initial weights of earthworms according to batches. 
-#| label: fig-init
+#| label: fig-initExpBhatch
 #| fig-width: 8
 #| fig-height: 4
 
@@ -153,6 +153,8 @@ ggsave(
   path = path_fig
 )
 ```
+
+Batch T is an additional batch of imidacloprid testing performed in early 2025 to confirm the problem came from the soil contamination and not earthworms.
 
 Calculation of growth rates :
 

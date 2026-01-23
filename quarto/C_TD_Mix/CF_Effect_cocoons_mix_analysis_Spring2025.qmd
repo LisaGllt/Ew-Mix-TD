@@ -43,11 +43,11 @@ df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
 
 ## Initial state
 
-We can first take a look at the initial weights of individuals (@fig-init).
+We can first take a look at the initial weights of individuals (@fig-initExpB).
 
 ```{r, warning=F, message=F}
 #| fig-cap: Initial weights of earthworms according to batches.
-#| label: fig-init
+#| label: fig-initExpB
 #| fig-width: 10
 #| fig-height: 4
 
@@ -229,7 +229,7 @@ For count data, the default distribution is Poisson. Our data are overdispersed 
 
 ## Step 1 - Dose-response curves from experiment B
 
-We need to note that the number of produced cocoons `Nb_cocoons` is a count variable that follows a Poisson distribution. Models will have to be made accordingly.
+Dose-response curves were fitted to single exposure data from the MIX experiment in order to check the underlying assumptions of an identical slope and identical minimum responses ($Y_{min}$) and responses in control conditions ($Y_{max}$) for both substances. This assumption was tested with a likelihood-ratio test. Dose-response modeling of mixture data was only performed when these assumptions were satisfied and model fit was evaluated using lack-of-fit tests.
 
 ### Dose-response curves for single-substances (Ratio E & I)
 
@@ -772,7 +772,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ## Step 2 - Fit of the model to our data
 
-The different Jonker models can now be fit to our data.
+Next, the procedure proposed by Jonker et al. (2005) to analyse mixture data consist first in fitting the CA and the IA model under the assumption of common slope, $Y_{min}$ and $Y_{max}$ across dose-response curves. As the endpoint is cocoon production, a Poisson error model is used which implies reformulation of the loss function used during parameter optimisation. The CA and the IA model is then extended stepwise with interaction terms (a and optionally b), leading to the SA, DL, or DR formulations.
 
 ```{r modelsentry, warning=F, message=F}
 # Preparation of model entry
@@ -1151,6 +1151,10 @@ df_Jonker |>
 ```
 
 ## Step 3 - Test of models
+
+Due to the structure of the error model, model comparison using F-tests is not possible. Instead, likelihood-ratio tests were employed to compare models. The adequacy of the CA and IA model is evaluated by comparing them to an Generalized Linear model with Poisson error - this ANOVA modelled the response as a function of the tested conditions using a Likelihood ratio test (lack-of-fit test).
+
+The performance of these models was then compared against the CA or IA baseline using Likelihood ratio tests, in order to determine whether including interaction terms significantly improved model fit. Uncertainty around the interaction parameters ($a$, $b$) was quantified by bootstrap resampling ($n$ = 5000 with the same number of draws per condition), which provided confidence intervals and allowed us to classify interactions as synergistic, antagonistic, or additive.
 
 ### Lacke-of-fit tests
 
@@ -4662,3 +4666,13 @@ orca(p_IASA,
   mathjax = "local"
 )
 ```
+
+A significant synergistic interaction in the epoxiconazole–imidacloprid mixture was detected relatively to the IA reference model (IA-SA model, $a$ = -1.5), whereas the CA-SA model did not identify a departure from additivity, which is consistent with the more conservative nature of the CA reference. Power analysis confirmed that interactions of this magnitude (-1.5 or lower) were reliably detectable with the IA-SA model. This synergy suggested by the IA-SA model aligns with theoretical expectations based on toxicokinetic mechanisms described in the literature. Importantly, retesting the single substances in the MIX experiment proved essential to avoid bias in the estimation of mixture effects. Although the dose-response curves from the UNI experiment were not statistically different, their estimated EC$_{50}$ values differed substantially. Without retesting, this discrepancy could have generated an artificially strong synergistic signal (false positive), driven solely by the higher sensitivity of earthworms to imidacloprid in the second experiment rather than by a true mixture interaction.
+
+However, a statistical limitation must be acknowledged: all lack-of-fit tests for the CA and IA reference models, as well as for their associated interaction models, showed significant lack-of-fit. Strictly speaking, this indicates that none of the fitted dose–response surfaces fully captured the variability in the data. While part of this lack-of-fit may be influenced by heterogeneous variance in the response, it cannot be fully attributed to the choice of error distribution, as alternative formulations (e.g., negative-binomial or quasi-Poisson) did not resolve the lack-of-fit. Significant deviations may therefore also reflect limitations in the mean structure of the fitted surfaces or biological processes not explicitly represented in the Jonker framework, such as nonlinear or context-dependent interactions. Consequently, interaction estimates derived from these models should be interpreted with caution. Additional replication or refined experimental designs would be required to more robustly characterize the magnitude and consistency of the observed synergistic pattern.
+
+Nevertheless, the observed synergistic interaction is in accordance with the hypothesized toxicokinetic mechanism with distinct modes of action but with a metabolic inhibition of imidacloprid biotransformation by epoxiconazole through cytochrome P450 interference [@bass_2015; @cedergreen_2006; @puinean_2010]. Such metabolic interactions have been demonstrated in aquatic invertebrates such as Daphnia magna, where triazole co-exposure enhanced esfenvalerate toxicity up to fourfold [@cedergreen_2006] and increased α-cypermethrin toxicity threefold [@gottardi_2017]. Similar synergistic interactions between atrazine and chlorpyrifos have also been reported in invertebrates, consistent with metabolic inhibition mechanisms. Additionally, the moderate hydrophilicity of imidacloprid (log K$_{ow}$ ≈ 0.57) suggests that direct excretion pathways may predominate over metabolic transformation in earthworms, reducing the potential for metabolic interference which could explain the absence of strong interaction. Importantly, this metabolic mechanism remains unconfirmed in earthworms. Earthworms possess unique physiological adaptations for soil environments, including specialized detoxification mechanisms that may not rely heavily on cytochrome P450-mediated metabolism of imidacloprid. Earthworms possess detoxification strategies that rely on glutathione-S-transferases, carboxylesterases, antioxidant enzymes, and gut microbiota metabolism [@katagi_2015; @wang_2019]. Evidence for imidacloprid metabolism via cytochrome P450 enzymes comes primarily from insect species [@chen_2018; @chen_2019], where cytochrome P450 overexpression has been linked to imidacloprid resistance [@elzaki_2017; @kaplanoglu_2017; @liang_2015]. However, the extent to which these metabolic pathways operate in earthworms remains largely unexplored, and extrapolation across taxonomically distant invertebrate groups may not be justified. Therefore, while the statistical signal points toward a small synergistic interaction, biological confirmation of the underlying mechanism is currently lacking.
+
+These findings illustrate the difficulty of extrapolating both mechanisms and magnitudes of interaction across taxa, and emphasize the need for species-specific validation. Future work, including toxicokinetic measurements, or the integration of biochemical biomarkers such as catalase and glutathione-S-transferases as phase II detoxification enzymes [@givaudan_2014; @pelosi_2016], would be necessary to confirm whether the interaction detected here reflects a true synergistic process or arises from statistical noise due to overdispersion. Such complementary data would greatly strengthen mechanistic interpretation of mixture effects in earthworms.
+
+Additionaly, our results suggest that the combined effect of the two compounds could exceed what would be expected from the IA model. In this context, concentration addition (CA) remains a useful and precautionary reference, but it may still underestimate mixture toxicity when synergism occurs. The possibility of such synergistic deviation highlights that mixture exposures could pose greater risks than predicted from single-compound assessments alone. Consequently, our findings reinforce the importance of explicitly accounting for mixture effects and potential synergistic interactions in environmental risk assessment frameworks, especially for pesticide combinations that are likely to co-occur in soils.

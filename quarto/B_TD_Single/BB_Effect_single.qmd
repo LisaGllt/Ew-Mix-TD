@@ -1975,6 +1975,27 @@ ggsave(
 )
 ```
 
+The individual toxicity profiles of epoxiconazole and imidacloprid in earthworms confirm both compounds as environmentally relevant stressors, albeit with markedly different potencies.
+
+Imidacloprid demonstrated high toxicity to earthworms with pronounced effects on both growth (NOECjuvenile = 0.28 mg/kg; NOECadult = 0.5 mg/kg) and reproduction (EC50 = 0.55 mg/kg; NOEC = 0.28 mg/kg). These findings align closely with published literature, where imidacloprid EC50 values for reproduction in Eisenia species have been reported at 0.87 mg/kg (Wang et al., 2019), and chronic assays showed EC50 values ranging from 0.21 to 1.89 mg/kg depending on soil type (Bandeira et al., 2020).
+
+In contrast, epoxiconazole exhibited substantially lower toxicity, with moderate effects on growth (NOECjuvenile = 9.3 mg/kg; NOECadult = 92.8 mg/kg) and reproduction (EC50 = 126.8 mg/kg; NOEC \>= 200 mg/kg). The literature on epoxiconazole toxicity to earthworms remains more limited compared to imidacloprid, reflecting the generally lower concern for triazole fungicides in soil invertebrate risk assessment. The reduced potency measured in our study is consistent with reported data for Aporrectodea icterica exposed to a formulated version of epoxiconazole (OPUS®) in Pelosi et al. (2016), however the LC50 values of 45.5 mg/kg indicates a higher sensitivity of this species. Across both compounds, a consistent pattern emerged: reproductive effects occurred at lower concentrations than adult growth effects, indicating that reproduction is a more sensitive endpoint for detecting pesticide impacts in adult earthworms. This sensitivity hierarchy aligns with established ecotoxicological principles and regulatory testing frameworks. However, juvenile growth was more sensitive than adult growth and at least as sensitive as reproduction, highlighting the particular vulnerability of early life stages.
+
+The toxicity ratio between these compounds (EC50(IMD)/EC50(EPX) ≈ 230-fold difference) demonstrates the substantially higher potency of the neonicotinoid insecticide compared to the triazole fungicide, a pattern consistent with their respective modes of action and target specificity. This differential potency has important implications for mixture risk assessment, as the more toxic component (imidacloprid) would be expected to drive mixture effects under concentration addition assumptions.
+
+Comparison of environmental concentrations with observed effect thresholds reveals important risk assessment insights. For imidacloprid, the reproduction EC50 of 0.55 mg/kg represents concentrations 36.4 to 189.6-fold higher than typical median environmental levels (0.0029-0.0151 mg/kg), but only 3.4-fold higher than maximum detected concentrations (0.16 mg/kg) (@tbl-concenv). The growth NOEC of 0.28 mg/kg similarly falls within 1.8-fold of maximum environmental concentrations. This suggests that while effects are unlikely under typical exposure scenarios, peak contamination events could approach concentrations of ecological concern. For epoxiconazole, the reproductive EC50 of 126.8 mg/kg provides larger safety margins, being 448-fold higher than maximum detected environmental concentrations (0.283 mg/kg) and over 3,000-fold higher than median concentrations (@tbl-concenv). The growth NOEC of 9.3 mg/kg maintains a 33-fold safety margin even against maximum environmental levels.
+
+| Compound | Source | Median | Q75% | Maximum | Former application dose (EU) |
+|----|----|----|----|----|----|
+| IMD | Froger et al. (2023) | 2.9 | 5.8 | 13.8 |  |
+| IMD | Pelosi et al. (2021) | 15.1 | – | 160 | 168 |
+| EPX | Froger et al. (2023) | 5.8 | 10.9 | 23.6 |  |
+| EPX | Pelosi et al. (2021) | 34.6 | – | 283 | 153 |
+
+: Summary of results for the detected imidacloprid and epoxiconazole residues in the Froger et al. (2023) and Pelosi et al. (2021) studies. {#tbl-concenv}
+
+These findings indicate that imidacloprid poses greater environmental risk than epoxiconazole under current contamination scenarios, particularly in intensive agricultural systems where maximum concentrations approach effect thresholds. The narrow safety margin for imidacloprid (1.8-3.4 fold) falls below typical regulatory safety factors of 10-100, suggesting potential for ecological impacts during peak exposure periods or in highly contaminated sites. Although both imidacloprid and epoxiconazole are now restricted, these substances are persistent in soils, with imidacloprid concentrations in some locations exceeding safety margins. Moreover, even though epoxiconazole alone exhibits limited toxicity, additive effects with imidacloprid residues could increase the overall risk to soil organisms.
+
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
 
 <b> Session Information </b>

@@ -13,7 +13,9 @@ pal_lot <- c(Nord_aurora[1], Nord_aurora[3], Nord_aurora[4], Nord_frost[4])
 path_fig <- here::here("fig/Mixture/Autumn")
 ```
 
-# Results of the mixture experiments : Results of the first round of the mixture experiment
+# Results of the mixture experiments : Results of the first round of the mixture experiment {#sec-MIXAutumn2024}
+
+A first try of the MIX experiment was performed in three batches in the Autumn of 2024. However, the contamination in imidacloprid failed and everything happened as if only epoxiconazole was added to the soil. More details are provided in this section.
 
 ## Data importation
 
@@ -36,11 +38,11 @@ df_expB_autumn_mean <- df_expB_autumn |>
 
 ## Initial state
 
-We can first take a look at the initial weights of individuals (@fig-init).
+We can first take a look at the initial weights of individuals (@fig-initExpBAutumn).
 
-```{r D0, warning=F, message=F}
+```{r, warning=F, message=F}
 #| fig-cap: Initial weights of earthworms according to batches.
-#| label: fig-init
+#| label: fig-initExpBAutumn
 #| fig-width: 8
 #| fig-height: 4
 

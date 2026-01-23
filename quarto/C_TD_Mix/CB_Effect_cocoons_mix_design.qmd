@@ -26,7 +26,11 @@ With $Y$ the observed effect for an exposition to the mixture with a concentrati
 
 Including the five mixture ratios and the controls, a total of 36 experimental conditions were assessed, with each condition replicated four times to ensure statistical robustness and account for biological variability in earthworm responses.
 
-For logistical reasons, the MIX experiment was conducted in two batches in the Spring of 2025, with each batch representing two replicates of all treatment conditions using earthworms randomly selected from the same culture pool. The reproduction tests followed the same protocol as the UNI experiment but with individual weight measurements facilitated by tagging earthworms with Visible Implant Elastomers (VIE, Northwest Marine Technology Inc.) two weeks prior to the experiment using the method described by Butt & Lowe, (2007). Cocoon hatching was monitored daily during working days for 8 weeks for the first three replicates to assess reproductive success beyond cocoon production.
+A first try of this experiment was performed in three batches in the Autumn of 2024. However, the contamination in imidacloprid failed and everything happened as if only epoxiconazole was added to the soil. More details are provided @sec-MIXAutumn2024.
+
+For logistical reasons, the MIX experiment was conducted in two batches in the Spring of 2025, with each batch representing two replicates of all treatment conditions using earthworms randomly selected from the same culture pool. The two batches were staggered by only one week. The reproduction tests followed the same protocol as the UNI experiment but with individual weight measurements facilitated by tagging earthworms with Visible Implant Elastomers (VIE, Northwest Marine Technology Inc.) two weeks prior to the experiment using the method described by [@butt_2007]. Cocoon hatching was monitored daily during working days for 8 weeks for the first three replicates to assess reproductive success beyond cocoon production.
+
+To minimize the confounding influence of both mixture interactions and inter-experiment variability, the MIX experiment included single-substance concentration rays, following established recommendations [@dawson_2017; @kappenberg_2025]. These rays were generated under the same experimental conditions as the mixture treatments, ensuring that single-compound dose–response data were fully comparable with mixture data.
 
 The steps leading to the experimental design are described in the following sections.
 
