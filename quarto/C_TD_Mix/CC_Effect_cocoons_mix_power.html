@@ -105,16 +105,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<link href="../../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="../../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../../site_libs/datatables-binding-0.34.0/datatables.js"></script>
 <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="../../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-<script src="../../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -283,6 +283,12 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../quarto/D_Conclusions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Conclusions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../quarto/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -324,7 +330,7 @@ window.Quarto = {
 </header>
 
 
-<p>We want to investiguate what is the minimal interaction that can be estimated with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).</p>
+<p>We want to investiguate what is the minimal interaction that can be detected with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).</p>
 <p>We get the information about the experimental design.</p>
 <div class="cell" data-code-show="show">
 <details class="code-fold">
@@ -840,7 +846,7 @@ Figure&nbsp;7.2: Density of percentage of estimation errors
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-cbb3de0b18a6210c47a8" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-cbb3de0b18a6210c47a8">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],[-10,-7,-5,-2,-1,-0.5,-0.1,-0.01,-0.001,0.001,0.01,0.1,0.5,1,2,5,7,10],[3.1,3.42,4.21,10,20.3,40.6,204,2050,20600,20600,2060,206,41.6,21.2,11.1,5.79,6.25,12.2],[2.57,2.89,3.59,8.42,17.3,34.7,171,1730,17400,17500,1740,173,35,18.1,9.359999999999999,4.83,5.17,8.449999999999999],[5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000],[5000,5000,5000,5000,4857,2398,301,243,233,232,232,338,2454,4846,5000,5000,5000,5000],[5000,5000,5000,5000,4857,2398,259,134,122,116,126,291,2454,4846,5000,5000,5000,5000],[0,0,0,0,0,0,42,109,111,116,106,47,0,0,0,0,0,0],[100,100,100,100,97.09999999999999,48,5.18,2.68,2.44,2.32,2.52,5.82,49.1,96.90000000000001,100,100,100,100],[0,0,0,0,0,0,0.84,2.18,2.22,2.32,2.12,0.9399999999999999,0,0,0,0,0,0],[100,100,100,100,100,100,86,55.1,52.4,50,54.3,86.09999999999999,100,100,100,100,100,100],[0,0,0,0,0,0,14,44.9,47.6,50,45.7,13.9,0,0,0,0,0,0],[1.34,2,5.7,42.2,69.40000000000001,84.59999999999999,96.90000000000001,99.59999999999999,100,100,99.7,97.2,85.5,70.7,47.1,16.9,19.2,42.8],[0,0,0,4.8,32.1,62.6,91.7,99.2,99.90000000000001,100,99.3,92.40000000000001,63,34.4,7.5,0.04,0.3,9],[0,0,0,0,5.08,32.8,83.8,98.3,99.8,100,98.3,84.7,34,5.76,0.08,0,0.02,2.82],[0,0,0,0,0.02,4.6,69.8,96.8,99.8,99.90000000000001,96.7,69.90000000000001,5.24,0,0,0,0,0],[0,0,0,0,0,0,5.56,84.40000000000001,98.59999999999999,98.59999999999999,84.8,5.3,0,0,0,0,0,0]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Simulated_interaction<\/th>\n      <th>Mean_error<\/th>\n      <th>Median_error<\/th>\n      <th>n_total<\/th>\n      <th>n_signif<\/th>\n      <th>n_Direction_OK<\/th>\n      <th>n_Direction_Opposite<\/th>\n      <th>Per_signif_true_interaction_all<\/th>\n      <th>Per_signif_opposite_interaction_all<\/th>\n      <th>Per_signif_true_interaction<\/th>\n      <th>Per_signif_opposite_interaction<\/th>\n      <th>Per_error_above_10<\/th>\n      <th>Per_error_above_25<\/th>\n      <th>Per_error_above_50<\/th>\n      <th>Per_error_above_100<\/th>\n      <th>Per_error_above_500<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"columnDefs":[{"className":"dt-left","targets":"_all"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Simulated_interaction","targets":1},{"name":"Mean_error","targets":2},{"name":"Median_error","targets":3},{"name":"n_total","targets":4},{"name":"n_signif","targets":5},{"name":"n_Direction_OK","targets":6},{"name":"n_Direction_Opposite","targets":7},{"name":"Per_signif_true_interaction_all","targets":8},{"name":"Per_signif_opposite_interaction_all","targets":9},{"name":"Per_signif_true_interaction","targets":10},{"name":"Per_signif_opposite_interaction","targets":11},{"name":"Per_error_above_10","targets":12},{"name":"Per_error_above_25","targets":13},{"name":"Per_error_above_50","targets":14},{"name":"Per_error_above_100","targets":15},{"name":"Per_error_above_500","targets":16}],"order":[],"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-cbb3de0b18a6210c47a8">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],[-10,-7,-5,-2,-1,-0.5,-0.1,-0.01,-0.001,0.001,0.01,0.1,0.5,1,2,5,7,10],[3.1,3.42,4.21,10,20.3,40.6,204,2050,20600,20600,2060,206,41.6,21.2,11.1,5.79,6.25,12.2],[2.57,2.89,3.59,8.42,17.3,34.7,171,1730,17400,17500,1740,173,35,18.1,9.359999999999999,4.83,5.17,8.449999999999999],[5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000],[5000,5000,5000,5000,4857,2398,301,243,233,232,232,338,2454,4846,5000,5000,5000,5000],[5000,5000,5000,5000,4857,2398,259,134,122,116,126,291,2454,4846,5000,5000,5000,5000],[0,0,0,0,0,0,42,109,111,116,106,47,0,0,0,0,0,0],[100,100,100,100,97.09999999999999,48,5.18,2.68,2.44,2.32,2.52,5.82,49.1,96.90000000000001,100,100,100,100],[0,0,0,0,0,0,0.84,2.18,2.22,2.32,2.12,0.9399999999999999,0,0,0,0,0,0],[100,100,100,100,100,100,86,55.1,52.4,50,54.3,86.09999999999999,100,100,100,100,100,100],[0,0,0,0,0,0,14,44.9,47.6,50,45.7,13.9,0,0,0,0,0,0],[1.34,2,5.7,42.2,69.40000000000001,84.59999999999999,96.90000000000001,99.59999999999999,100,100,99.7,97.2,85.5,70.7,47.1,16.9,19.2,42.8],[0,0,0,4.8,32.1,62.6,91.7,99.2,99.90000000000001,100,99.3,92.40000000000001,63,34.4,7.5,0.04,0.3,9],[0,0,0,0,5.08,32.8,83.8,98.3,99.8,100,98.3,84.7,34,5.76,0.08,0,0.02,2.82],[0,0,0,0,0.02,4.6,69.8,96.8,99.8,99.90000000000001,96.7,69.90000000000001,5.24,0,0,0,0,0],[0,0,0,0,0,0,5.56,84.40000000000001,98.59999999999999,98.59999999999999,84.8,5.3,0,0,0,0,0,0]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Simulated_interaction<\/th>\n      <th>Mean_error<\/th>\n      <th>Median_error<\/th>\n      <th>n_total<\/th>\n      <th>n_signif<\/th>\n      <th>n_Direction_OK<\/th>\n      <th>n_Direction_Opposite<\/th>\n      <th>Per_signif_true_interaction_all<\/th>\n      <th>Per_signif_opposite_interaction_all<\/th>\n      <th>Per_signif_true_interaction<\/th>\n      <th>Per_signif_opposite_interaction<\/th>\n      <th>Per_error_above_10<\/th>\n      <th>Per_error_above_25<\/th>\n      <th>Per_error_above_50<\/th>\n      <th>Per_error_above_100<\/th>\n      <th>Per_error_above_500<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"columnDefs":[{"className":"dt-left","targets":"_all"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Simulated_interaction","targets":1},{"name":"Mean_error","targets":2},{"name":"Median_error","targets":3},{"name":"n_total","targets":4},{"name":"n_signif","targets":5},{"name":"n_Direction_OK","targets":6},{"name":"n_Direction_Opposite","targets":7},{"name":"Per_signif_true_interaction_all","targets":8},{"name":"Per_signif_opposite_interaction_all","targets":9},{"name":"Per_signif_true_interaction","targets":10},{"name":"Per_signif_opposite_interaction","targets":11},{"name":"Per_error_above_10","targets":12},{"name":"Per_error_above_25","targets":13},{"name":"Per_error_above_50","targets":14},{"name":"Per_error_above_100","targets":15},{"name":"Per_error_above_500","targets":16}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>With our design, we can quantify absolute interaction value above 1 reasonnably well.</p>
@@ -1084,10 +1090,10 @@ Figure&nbsp;7.4
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-eda0c6b99f7c51fdae34" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-eda0c6b99f7c51fdae34">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],[-10,-7,-5,-2,-1,-0.5,-0.1,-0.01,-0.001,0.001,0.01,0.1,0.5,1,2,5,7,10],[2.66,3.6,5.03,13,26.8,54.7,277,2760,27600,27800,2770,283,56.8,29.1,15,7.07,6.35,7.52],[2.26,2.97,4.25,10.8,22.6,46.6,232,2310,23200,23600,2370,243,47.2,24.5,12.6,5.92,5.33,6.24],[5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000],[5000,5000,5000,5000,4078,1433,277,218,223,225,227,307,1493,4021,4998,5000,5000,5000],[5000,5000,5000,5000,4078,1433,222,123,116,110,118,233,1487,4021,4998,5000,5000,5000],[0,0,0,0,0,0,55,95,107,115,109,74,6,0,0,0,0,0],[100,100,100,100,81.59999999999999,28.7,4.44,2.46,2.32,2.2,2.36,4.66,29.7,80.40000000000001,100,100,100,100],[0,0,0,0,0,0,1.1,1.9,2.14,2.3,2.18,1.48,0.12,0,0,0,0,0],[100,100,100,100,100,100,80.09999999999999,56.4,52,48.9,52,75.90000000000001,99.59999999999999,100,100,100,100,100],[0,0,0,0,0,0,19.9,43.6,48,51.1,48,24.1,0.402,0,0,0,0,0],[0.36,2.62,10.9,53.4,76.59999999999999,88.8,98,99.8,100,100,99.8,97.7,88.7,78.7,58.1,25.7,20.4,27.5],[0,0,0,12.8,45.5,71.90000000000001,94.5,99.2,100,100,99.40000000000001,94.5,72.5,49,18.9,0.38,0.18,1.64],[0,0,0,0.22,13.6,46.7,88.59999999999999,98.5,99.90000000000001,100,98.7,88.7,47.5,17.1,0.7,0,0,0.02],[0,0,0,0,0.28,14.1,77.59999999999999,97.5,99.8,99.8,97.5,77.7,16.3,0.54,0,0,0,0],[0,0,0,0,0,0,15,88.40000000000001,99,99.09999999999999,88.2,15.3,0,0,0,0,0,0]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Simulated_interaction<\/th>\n      <th>Mean_error<\/th>\n      <th>Median_error<\/th>\n      <th>n_total<\/th>\n      <th>n_signif<\/th>\n      <th>n_Direction_OK<\/th>\n      <th>n_Direction_Opposite<\/th>\n      <th>Per_signif_true_interaction_all<\/th>\n      <th>Per_signif_opposite_interaction_all<\/th>\n      <th>Per_signif_true_interaction<\/th>\n      <th>Per_signif_opposite_interaction<\/th>\n      <th>Per_error_above_10<\/th>\n      <th>Per_error_above_25<\/th>\n      <th>Per_error_above_50<\/th>\n      <th>Per_error_above_100<\/th>\n      <th>Per_error_above_500<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"columnDefs":[{"className":"dt-left","targets":"_all"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Simulated_interaction","targets":1},{"name":"Mean_error","targets":2},{"name":"Median_error","targets":3},{"name":"n_total","targets":4},{"name":"n_signif","targets":5},{"name":"n_Direction_OK","targets":6},{"name":"n_Direction_Opposite","targets":7},{"name":"Per_signif_true_interaction_all","targets":8},{"name":"Per_signif_opposite_interaction_all","targets":9},{"name":"Per_signif_true_interaction","targets":10},{"name":"Per_signif_opposite_interaction","targets":11},{"name":"Per_error_above_10","targets":12},{"name":"Per_error_above_25","targets":13},{"name":"Per_error_above_50","targets":14},{"name":"Per_error_above_100","targets":15},{"name":"Per_error_above_500","targets":16}],"order":[],"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-eda0c6b99f7c51fdae34">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"],[-10,-7,-5,-2,-1,-0.5,-0.1,-0.01,-0.001,0.001,0.01,0.1,0.5,1,2,5,7,10],[2.66,3.6,5.03,13,26.8,54.7,277,2760,27600,27800,2770,283,56.8,29.1,15,7.07,6.35,7.52],[2.26,2.97,4.25,10.8,22.6,46.6,232,2310,23200,23600,2370,243,47.2,24.5,12.6,5.92,5.33,6.24],[5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000,5000],[5000,5000,5000,5000,4078,1433,277,218,223,225,227,307,1493,4021,4998,5000,5000,5000],[5000,5000,5000,5000,4078,1433,222,123,116,110,118,233,1487,4021,4998,5000,5000,5000],[0,0,0,0,0,0,55,95,107,115,109,74,6,0,0,0,0,0],[100,100,100,100,81.59999999999999,28.7,4.44,2.46,2.32,2.2,2.36,4.66,29.7,80.40000000000001,100,100,100,100],[0,0,0,0,0,0,1.1,1.9,2.14,2.3,2.18,1.48,0.12,0,0,0,0,0],[100,100,100,100,100,100,80.09999999999999,56.4,52,48.9,52,75.90000000000001,99.59999999999999,100,100,100,100,100],[0,0,0,0,0,0,19.9,43.6,48,51.1,48,24.1,0.402,0,0,0,0,0],[0.36,2.62,10.9,53.4,76.59999999999999,88.8,98,99.8,100,100,99.8,97.7,88.7,78.7,58.1,25.7,20.4,27.5],[0,0,0,12.8,45.5,71.90000000000001,94.5,99.2,100,100,99.40000000000001,94.5,72.5,49,18.9,0.38,0.18,1.64],[0,0,0,0.22,13.6,46.7,88.59999999999999,98.5,99.90000000000001,100,98.7,88.7,47.5,17.1,0.7,0,0,0.02],[0,0,0,0,0.28,14.1,77.59999999999999,97.5,99.8,99.8,97.5,77.7,16.3,0.54,0,0,0,0],[0,0,0,0,0,0,15,88.40000000000001,99,99.09999999999999,88.2,15.3,0,0,0,0,0,0]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Simulated_interaction<\/th>\n      <th>Mean_error<\/th>\n      <th>Median_error<\/th>\n      <th>n_total<\/th>\n      <th>n_signif<\/th>\n      <th>n_Direction_OK<\/th>\n      <th>n_Direction_Opposite<\/th>\n      <th>Per_signif_true_interaction_all<\/th>\n      <th>Per_signif_opposite_interaction_all<\/th>\n      <th>Per_signif_true_interaction<\/th>\n      <th>Per_signif_opposite_interaction<\/th>\n      <th>Per_error_above_10<\/th>\n      <th>Per_error_above_25<\/th>\n      <th>Per_error_above_50<\/th>\n      <th>Per_error_above_100<\/th>\n      <th>Per_error_above_500<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","autoWidth":true,"columnDefs":[{"className":"dt-left","targets":"_all"},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Simulated_interaction","targets":1},{"name":"Mean_error","targets":2},{"name":"Median_error","targets":3},{"name":"n_total","targets":4},{"name":"n_signif","targets":5},{"name":"n_Direction_OK","targets":6},{"name":"n_Direction_Opposite","targets":7},{"name":"Per_signif_true_interaction_all","targets":8},{"name":"Per_signif_opposite_interaction_all","targets":9},{"name":"Per_signif_true_interaction","targets":10},{"name":"Per_signif_opposite_interaction","targets":11},{"name":"Per_error_above_10","targets":12},{"name":"Per_error_above_25","targets":13},{"name":"Per_error_above_50","targets":14},{"name":"Per_error_above_100","targets":15},{"name":"Per_error_above_500","targets":16}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-<p>With our design, we can quantify absolute interaction value above 5 reasonnably well.</p>
+<p>Power analysis revealed clear thresholds in the ability of the simple interaction (SA) model to detect and quantify interactions. With CA as the reference model, interaction strengths of a ≈ 1 provided adequate power (~97%) and acceptable estimation accuracy (&lt; 20% error), whereas performance degraded markedly at a = 0.5. Using IA as the reference yielded the same qualitative threshold: a ≈ 1 was the minimum interaction strength at which detection remained reasonably reliable, although power was lower (~80%) than under CA. For both reference models, weaker interactions (a ≤ 0.5) led to insufficient power and poor estimation accuracy, making them difficult to detect or classify robustly.</p>
 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
 <p><b> Session Information </b></p>
 </button>
@@ -1099,97 +1105,98 @@ Figure&nbsp;7.4
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>R version 4.2.2 (2022-10-31)
-Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS 15.6.1
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.6.1
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
-LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Paris
+tzcode source: internal
 
 attached base packages:
  [1] stats4    parallel  grid      stats     graphics  grDevices utils    
  [8] datasets  methods   base     
 
 other attached packages:
- [1] data.table_1.15.4      extrafont_0.19         latex2exp_0.9.6       
- [4] plan_0.4-5             modelsummary_2.2.0     see_0.8.4.3           
- [7] report_0.5.8           parameters_0.22.2      performance_0.12.0    
-[10] modelbased_0.8.8       insight_0.20.4         effectsize_0.8.8      
-[13] datawizard_0.11.0      correlation_0.8.5      bayestestR_0.13.2     
-[16] easystats_0.7.2        drc_3.0-1              fdrtool_1.2.17        
-[19] tmvtnorm_1.6           gmm_1.8                sandwich_3.1-0        
-[22] Matrix_1.6-5           deSolve_1.40           multcomp_1.4-25       
-[25] TH.data_1.1-2          MASS_7.3-58.1          survival_3.7-0        
-[28] mvtnorm_1.2-5          brglm2_0.9.2           marginaleffects_0.21.0
-[31] ggpubr_0.6.0           lsmeans_2.30-0         emmeans_1.10.3        
-[34] nlstools_2.1-0         car_3.1-2              carData_3.0-5         
-[37] truncnorm_1.0-9        bayesnec_2.1.2.0       coda_0.19-4.1         
-[40] priorsense_1.0.4       rethinking_2.40        posterior_1.6.0       
-[43] ggmcmc_1.5.1.1         tidybayes_3.0.6        cmdstanr_0.8.0        
-[46] rstan_2.32.6           StanHeaders_2.32.9     brms_2.22.0           
-[49] Rcpp_1.0.14            ggh4x_0.3.0            colorspace_2.1-0      
-[52] scales_1.3.0           sf_1.0-16              rnaturalearth_1.0.1   
-[55] metR_0.18.0            processx_3.8.4         gt_0.10.1             
-[58] flextable_0.9.6        kableExtra_1.4.0       ggtext_0.1.2          
-[61] ggbreak_0.1.2          gridExtra_2.3          patchwork_1.2.0       
-[64] ggrepel_0.9.5          ggiraph_0.8.10         plotly_4.10.4         
-[67] nord_1.0.0             RColorBrewer_1.1-3     wesanderson_0.3.7     
-[70] viridis_0.6.5          viridisLite_0.4.2      ggsci_3.2.0           
-[73] ggdist_3.3.2           ggthemes_5.1.0         knitr_1.47            
-[76] DT_0.33                reshape2_1.4.4         readxl_1.4.3          
-[79] lubridate_1.9.3        forcats_1.0.0          stringr_1.5.1         
-[82] dplyr_1.1.4            purrr_1.0.2            readr_2.1.5           
-[85] tidyr_1.3.1            tibble_3.2.1           ggplot2_3.5.1         
-[88] tidyverse_2.0.0        here_1.0.1            
+ [1] extrafont_0.20         latex2exp_0.9.8        plan_0.4-5            
+ [4] modelsummary_2.5.0     see_0.12.0             report_0.6.3          
+ [7] parameters_0.28.3      performance_0.15.2     modelbased_0.13.1     
+[10] insight_1.4.4          effectsize_1.0.1       datawizard_1.3.0      
+[13] correlation_0.8.8      bayestestR_0.17.0      easystats_0.7.5       
+[16] drc_3.0-1              fdrtool_1.2.18         tmvtnorm_1.7          
+[19] gmm_1.9-1              Matrix_1.7-4           deSolve_1.40          
+[22] multcomp_1.4-29        TH.data_1.1-5          MASS_7.3-65           
+[25] mvtnorm_1.3-3          brglm2_1.0.1           marginaleffects_0.31.0
+[28] ggpubr_0.6.2           lsmeans_2.30-2         emmeans_2.0.1         
+[31] nlstools_2.1-0         truncnorm_1.0-9        bayesnec_2.1.3.1      
+[34] coda_0.19-4.1          priorsense_1.2.0       rethinking_2.42       
+[37] posterior_1.6.1        ggmcmc_1.5.1.2         tidybayes_3.0.7       
+[40] cmdstanr_0.8.0         rstan_2.32.7           StanHeaders_2.32.10   
+[43] brms_2.23.0            Rcpp_1.1.1             processx_3.8.6        
+[46] gt_1.3.0               flextable_0.9.10       kableExtra_1.4.0      
+[49] sf_1.0-24              rnaturalearth_1.2.0    metR_0.18.3           
+[52] ggh4x_0.3.1            ggtext_0.1.2           ggbreak_0.1.6         
+[55] gridExtra_2.3          patchwork_1.3.2        ggrepel_0.9.6         
+[58] ggiraph_0.9.3          plotly_4.11.0          scales_1.4.0          
+[61] colorspace_2.1-2       nord_1.0.0             RColorBrewer_1.1-3    
+[64] wesanderson_0.3.7      viridis_0.6.5          viridisLite_0.4.2     
+[67] ggsci_4.2.0            ggdist_3.3.3           ggthemes_5.2.0        
+[70] AER_1.2-15             survival_3.8-3         sandwich_3.1-1        
+[73] lmtest_0.9-40          zoo_1.8-15             car_3.1-3             
+[76] carData_3.0-5          knitr_1.51             DT_0.34.0             
+[79] reshape2_1.4.5         readxl_1.4.5           data.table_1.18.0     
+[82] lubridate_1.9.4        forcats_1.0.1          stringr_1.6.0         
+[85] dplyr_1.1.4            purrr_1.2.1            readr_2.1.6           
+[88] tidyr_1.3.2            tibble_3.3.1           ggplot2_4.0.1         
+[91] tidyverse_2.0.0        here_1.0.2            
 
 loaded via a namespace (and not attached):
-  [1] estimability_1.5.1      GGally_2.2.1            ragg_1.3.2             
-  [4] enrichwith_0.3.1        inline_0.3.19           generics_0.1.3         
-  [7] terra_1.8-50            proxy_0.4-27            tzdb_0.4.0             
- [10] xml2_1.3.6              httpuv_1.6.15           xfun_0.45              
- [13] jquerylib_0.1.4         hms_1.1.3               bayesplot_1.11.1       
- [16] evaluate_0.24.0         promises_1.3.0          fansi_1.0.6            
- [19] DBI_1.2.3               htmlwidgets_1.6.4       tensorA_0.36.2.1       
- [22] crosstalk_1.2.1         backports_1.5.0         fontLiberation_0.1.0   
- [25] V8_4.4.2                RcppParallel_5.1.7      fontBitstreamVera_0.1.1
- [28] vctrs_0.6.5             abind_1.4-5             cachem_1.1.0           
- [31] withr_3.0.0             chk_0.9.1               checkmate_2.3.1        
- [34] svglite_2.1.3           lazyeval_0.2.2          crayon_1.5.3           
- [37] crul_1.4.2              labeling_0.4.3          pkgconfig_2.0.3        
- [40] units_0.8-5             nlme_3.1-160            nnet_7.3-19            
- [43] rlang_1.1.4             lifecycle_1.0.4         fontquiver_0.2.1       
- [46] httpcode_0.3.0          extrafontdb_1.0         cellranger_1.1.0       
- [49] distributional_0.4.0    rprojroot_2.0.4         matrixStats_1.3.0      
- [52] aplot_0.2.3             loo_2.8.0               zoo_1.8-12             
- [55] KernSmooth_2.23-24      shape_1.4.6.1           classInt_0.4-10        
- [58] rstatix_0.7.2           gridGraphics_0.5-1      ggsignif_0.6.4         
- [61] memoise_2.0.1           magrittr_2.0.3          plyr_1.8.9             
- [64] compiler_4.2.2          rstantools_2.4.0        plotrix_3.8-4          
- [67] cli_3.6.3               ps_1.7.6                Brobdingnag_1.2-9      
- [70] tidyselect_1.2.1        stringi_1.8.4           textshaping_0.4.0      
- [73] yaml_2.3.8              askpass_1.2.0           svUnit_1.0.6           
- [76] bridgesampling_1.1-2    sass_0.4.9              ggstats_0.6.0          
- [79] tools_4.2.2             timechange_0.3.0        rstudioapi_0.16.0      
- [82] uuid_1.2-0              tables_0.9.28           farver_2.1.2           
- [85] digest_0.6.36           shiny_1.8.1.1           gfonts_0.2.0           
- [88] operator.tools_1.6.3    gridtext_0.1.5          broom_1.0.6            
- [91] later_1.3.2             httr_1.4.7              gdtools_0.3.7          
- [94] QuickJSR_1.2.2          fs_1.6.4                splines_4.2.2          
- [97] yulab.utils_0.1.7       ggplotify_0.1.2         systemfonts_1.1.0      
-[100] xtable_1.8-4            jsonlite_1.8.8          ggfun_0.1.6            
-[103] formula.tools_1.7.1     R6_2.5.1                pillar_1.9.0           
-[106] htmltools_0.5.8.1       mime_0.12               glue_1.7.0             
-[109] fastmap_1.2.0           class_7.3-22            codetools_0.2-20       
-[112] pkgbuild_1.4.4          utf8_1.2.4              bslib_0.7.0            
-[115] lattice_0.22-6          numDeriv_2016.8-1.1     arrayhelpers_1.1-0     
-[118] curl_5.2.1              gtools_3.9.5            officer_0.6.6          
-[121] Rttf2pt1_1.3.12         zip_2.3.1               openssl_2.2.0          
-[124] rmarkdown_2.27          munsell_0.5.1           e1071_1.7-16           
-[127] gtable_0.3.5           </code></pre>
+  [1] fs_1.6.6                matrixStats_1.5.0       httr_1.4.7             
+  [4] numDeriv_2016.8-1.1     tools_4.5.2             backports_1.5.0        
+  [7] R6_2.6.1                lazyeval_0.2.2          withr_3.0.2            
+ [10] enrichwith_0.4.0        Brobdingnag_1.2-9       GGally_2.4.0           
+ [13] cli_3.6.5               textshaping_1.0.4       officer_0.7.3          
+ [16] sass_0.4.10             labeling_0.4.3          S7_0.2.1               
+ [19] tables_0.9.33           proxy_0.4-29            askpass_1.2.1          
+ [22] QuickJSR_1.8.1          systemfonts_1.3.1       yulab.utils_0.2.3      
+ [25] svglite_2.2.2           plotrix_3.8-13          rstudioapi_0.18.0      
+ [28] generics_0.1.4          gridGraphics_0.5-1      shape_1.4.6.1          
+ [31] crosstalk_1.2.2         gtools_3.9.5            distributional_0.6.0   
+ [34] zip_2.3.3               inline_0.3.21           loo_2.9.0              
+ [37] abind_1.4-8             lifecycle_1.0.5         yaml_2.3.12            
+ [40] lattice_0.22-7          pillar_1.11.1           estimability_1.5.1     
+ [43] codetools_0.2-20        glue_1.8.0              V8_8.0.1               
+ [46] ggfun_0.2.0             fontLiberation_0.1.0    vctrs_0.7.0            
+ [49] cellranger_1.1.0        gtable_0.3.6            cachem_1.1.0           
+ [52] xfun_0.56               units_1.0-0             statmod_1.5.1          
+ [55] nlme_3.1-168            fontquiver_0.2.1        rprojroot_2.1.1        
+ [58] tensorA_0.36.2.1        bslib_0.9.0             KernSmooth_2.23-26     
+ [61] otel_0.2.0              DBI_1.2.3               nnet_7.3-20            
+ [64] tidyselect_1.2.1        extrafontdb_1.1         compiler_4.5.2         
+ [67] curl_7.0.0              arrayhelpers_1.1-0      xml2_1.5.2             
+ [70] fontBitstreamVera_0.1.1 checkmate_2.3.3         classInt_0.4-11        
+ [73] rappdirs_0.3.4          digest_0.6.39           rmarkdown_2.30         
+ [76] htmltools_0.5.9         pkgconfig_2.0.3         fastmap_1.2.0          
+ [79] rlang_1.1.7             htmlwidgets_1.6.4       jquerylib_0.1.4        
+ [82] farver_2.1.2            svUnit_1.0.8            jsonlite_2.0.0         
+ [85] magrittr_2.0.4          Formula_1.2-5           ggplotify_0.1.3        
+ [88] bayesplot_1.15.0        gdtools_0.4.4           stringi_1.8.7          
+ [91] chk_0.10.0              nleqslv_3.3.5           plyr_1.8.9             
+ [94] pkgbuild_1.4.8          ggstats_0.12.0          formula.tools_1.7.1    
+ [97] splines_4.5.2           gridtext_0.1.5          hms_1.1.4              
+[100] ps_1.9.1                uuid_1.2-1              ggsignif_0.6.4         
+[103] rstantools_2.6.0        evaluate_1.0.5          RcppParallel_5.1.11-1  
+[106] operator.tools_1.6.3    tzdb_0.5.0              Rttf2pt1_1.3.14        
+[109] openssl_2.3.4           broom_1.0.11            e1071_1.7-17           
+[112] rstatix_0.7.3           class_7.3-23            ragg_1.5.0             
+[115] aplot_0.2.9             memoise_2.0.1           timechange_0.3.0       
+[118] bridgesampling_1.2-1   </code></pre>
 </div>
 </div>
 </div>
@@ -1743,7 +1750,7 @@ loaded via a namespace (and not attached):
 <span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="fu"># Power analysis {#sec-power}</span></span>
 <span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>We want to investiguate what is the minimal interaction that can be estimated with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).</span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>We want to investiguate what is the minimal interaction that can be detected with a maximum error of 10% with such experimental design with 4 replicates and with simulated data following a Poisson distribution (reproduction data are count data).</span>
 <span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>We get the information about the experimental design.</span>
 <span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a></span>
@@ -2518,7 +2525,7 @@ loaded via a namespace (and not attached):
 <span id="cb16-811"><a href="#cb16-811" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb16-812"><a href="#cb16-812" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb16-813"><a href="#cb16-813" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-814"><a href="#cb16-814" aria-hidden="true" tabindex="-1"></a>With our design, we can quantify absolute interaction value above 5 reasonnably well.</span>
+<span id="cb16-814"><a href="#cb16-814" aria-hidden="true" tabindex="-1"></a>Power analysis revealed clear thresholds in the ability of the simple interaction (SA) model to detect and quantify interactions. With CA as the reference model, interaction strengths of a ≈ 1 provided adequate power (\~97%) and acceptable estimation accuracy (<span class="sc">\&lt;</span> 20% error), whereas performance degraded markedly at a = 0.5. Using IA as the reference yielded the same qualitative threshold: a ≈ 1 was the minimum interaction strength at which detection remained reasonably reliable, although power was lower (\~80%) than under CA. For both reference models, weaker interactions (a ≤ 0.5) led to insufficient power and poor estimation accuracy, making them difficult to detect or classify robustly.</span>
 <span id="cb16-815"><a href="#cb16-815" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-816"><a href="#cb16-816" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> class</span><span class="op">=</span><span class="st">"accordion-button"</span><span class="ot"> type</span><span class="op">=</span><span class="st">"button"</span><span class="ot"> data-bs-toggle</span><span class="op">=</span><span class="st">"collapse"</span><span class="ot"> data-bs-target</span><span class="op">=</span><span class="st">"#collapseOne"</span><span class="dt">&gt;</span></span>
 <span id="cb16-817"><a href="#cb16-817" aria-hidden="true" tabindex="-1"></a></span>

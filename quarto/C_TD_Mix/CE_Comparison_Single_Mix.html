@@ -105,16 +105,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<link href="../../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="../../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../../site_libs/datatables-binding-0.34.0/datatables.js"></script>
 <script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="../../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-<script src="../../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -283,6 +283,12 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../quarto/D_Conclusions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Conclusions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../quarto/references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -302,8 +308,8 @@ window.Quarto = {
   <li><a href="#comparison-of-the-controls" id="toc-comparison-of-the-controls" class="nav-link" data-scroll-target="#comparison-of-the-controls"><span class="header-section-number">9.3</span> Comparison of the controls</a></li>
   <li><a href="#dose-response-curves" id="toc-dose-response-curves" class="nav-link" data-scroll-target="#dose-response-curves"><span class="header-section-number">9.4</span> Dose-response curves</a>
   <ul class="collapse">
-  <li><a href="#experiment-a---dose-response-curves" id="toc-experiment-a---dose-response-curves" class="nav-link" data-scroll-target="#experiment-a---dose-response-curves"><span class="header-section-number">9.4.1</span> Experiment A - Dose-response curves</a></li>
-  <li><a href="#experiment-b---dose-response-curves" id="toc-experiment-b---dose-response-curves" class="nav-link" data-scroll-target="#experiment-b---dose-response-curves"><span class="header-section-number">9.4.2</span> Experiment B - Dose-response curves</a></li>
+  <li><a href="#experiment-uni---dose-response-curves" id="toc-experiment-uni---dose-response-curves" class="nav-link" data-scroll-target="#experiment-uni---dose-response-curves"><span class="header-section-number">9.4.1</span> Experiment UNI - Dose-response curves</a></li>
+  <li><a href="#experiment-mix---dose-response-curves" id="toc-experiment-mix---dose-response-curves" class="nav-link" data-scroll-target="#experiment-mix---dose-response-curves"><span class="header-section-number">9.4.2</span> Experiment MIX - Dose-response curves</a></li>
   </ul></li>
   <li><a href="#comparison-of-the-two-experiments-for-single-substances" id="toc-comparison-of-the-two-experiments-for-single-substances" class="nav-link" data-scroll-target="#comparison-of-the-two-experiments-for-single-substances"><span class="header-section-number">9.5</span> Comparison of the two experiments for single substances</a></li>
   </ul>
@@ -331,7 +337,7 @@ window.Quarto = {
 </header>
 
 
-<p>Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX &amp; IMD obtained with the experiment A and the experiment B (Autumn 2024 vs.&nbsp;Spring 2025).</p>
+<p>Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX &amp; IMD obtained with the experiment UNI and the experiment MIX (Autumn 2024 vs.&nbsp;Spring 2025).</p>
 <section id="data-importation" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="data-importation"><span class="header-section-number">9.1</span> Data importation</h2>
 <div class="cell">
@@ -370,7 +376,7 @@ window.Quarto = {
 </section>
 <section id="initial-state-of-the-mixture-experiment-experiment-b" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="initial-state-of-the-mixture-experiment-experiment-b"><span class="header-section-number">9.2</span> Initial state of the mixture experiment (experiment B)</h2>
-<p>We can first take a look at the initial weights of individuals from the mixture experiment (<a href="CG_Effect_cocoons_mix_analysis_otherEndpoints.html#fig-init" class="quarto-xref">Figure&nbsp;<span>11.1</span></a>).</p>
+<p>We can first take a look at the initial weights of individuals from the mixture experiment (<a href="#fig-initMIXSpringcomp" class="quarto-xref">Figure&nbsp;<span>9.1</span></a>).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -423,12 +429,12 @@ window.Quarto = {
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="fig-init" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-initMIXSpringcomp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-init-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="CE_Comparison_Single_Mix_files/figure-html/fig-init-1.png" class="img-fluid figure-img" width="960">
+<div aria-describedby="fig-initMIXSpringcomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="CE_Comparison_Single_Mix_files/figure-html/fig-initMIXSpringcomp-1.png" class="img-fluid figure-img" width="960">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-init-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-initMIXSpringcomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;9.1: Initial weights of earthworms according to batches.
 </figcaption>
 </figure>
@@ -443,18 +449,18 @@ Figure&nbsp;9.1: Initial weights of earthworms according to batches.
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_expB_repro_ctrl <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_expB_repro, Ratio <span class="sc">==</span> <span class="st">"N"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"Experiment B"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"Experiment MIX"</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df_expA_repro_ctrl <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_expA_repro, Dose <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons, Lot) <span class="sc">|&gt;</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="fu">case_when</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"A"</span> <span class="sc">~</span> <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Spring 2024"</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"B"</span> <span class="sc">~</span> <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Summer 2024"</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"A"</span> <span class="sc">~</span> <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Spring 2024"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"B"</span> <span class="sc">~</span> <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Summer 2024"</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons, Experiment)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>df_controls <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_ctrl, df_expB_repro_ctrl)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>df_controls<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_controls<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Spring 2024"</span>, <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Summer 2024"</span>, <span class="st">"Experiment B"</span>))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>df_controls<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_controls<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Spring 2024"</span>, <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Summer 2024"</span>, <span class="st">"Experiment MIX"</span>))</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_controls,</span>
@@ -489,7 +495,7 @@ Figure&nbsp;9.1: Initial weights of earthworms according to batches.
 <img src="CE_Comparison_Single_Mix_files/figure-html/fig-drcIMDEPXcompctrl-1.png" class="img-fluid figure-img" width="384">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-drcIMDEPXcompctrl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.2: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment A (blues).
+Figure&nbsp;9.2: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment UNI (blues).
 </figcaption>
 </figure>
 </div>
@@ -506,9 +512,12 @@ Figure&nbsp;9.2: Comparaison of the controls obtained in the mixture experiment 
 
 data:  df_controls$Nb_cocoons and df_controls$Experiment 
 
-                          Experiment A\nSpring 2024 Experiment A\nSummer 2024
-Experiment A\nSummer 2024 1.00                      -                        
-Experiment B              1.00                      0.39                     
+                            Experiment UNI\nSpring 2024
+Experiment UNI\nSummer 2024 1.00                       
+Experiment MIX              1.00                       
+                            Experiment UNI\nSummer 2024
+Experiment UNI\nSummer 2024 -                          
+Experiment MIX              0.39                       
 
 P value adjustment method: bonferroni </code></pre>
 </div>
@@ -519,22 +528,22 @@ P value adjustment method: bonferroni </code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$lsmeans
-  Experiment               lsmean   SE df lower.CL upper.CL
- Experiment A\nSpring 2024  13.80 2.56 16     8.37     19.2
- Experiment A\nSummer 2024  16.20 1.81 16    12.36     20.0
- Experiment B                9.25 2.86 16     3.18     15.3
+  Experiment                 lsmean   SE df lower.CL upper.CL
+ Experiment UNI\nSpring 2024  13.80 2.56 16     8.37     19.2
+ Experiment UNI\nSummer 2024  16.20 1.81 16    12.36     20.0
+ Experiment MIX                9.25 2.86 16     3.18     15.3
 
 Confidence level used: 0.95 
 
 $contrasts
-   contrast                                            estimate   SE df t.ratio
- Experiment A\nSpring 2024 - Experiment A\nSummer 2024    -2.40 3.14 16  -0.765
- Experiment A\nSpring 2024 - Experiment B                  4.55 3.84 16   1.184
- Experiment A\nSummer 2024 - Experiment B                  6.95 3.39 16   2.051
- p.value
-  1.0000
-  0.7612
-  0.1712
+   contrast                                                estimate   SE df
+ Experiment UNI\nSpring 2024 - Experiment UNI\nSummer 2024    -2.40 3.14 16
+ Experiment UNI\nSpring 2024 - Experiment MIX                  4.55 3.84 16
+ Experiment UNI\nSummer 2024 - Experiment MIX                  6.95 3.39 16
+ t.ratio p.value
+  -0.765  1.0000
+   1.184  0.7612
+   2.051  0.1712
 
 P value adjustment: bonferroni method for 3 tests </code></pre>
 </div>
@@ -543,9 +552,9 @@ P value adjustment: bonferroni method for 3 tests </code></pre>
 </section>
 <section id="dose-response-curves" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="dose-response-curves"><span class="header-section-number">9.4</span> Dose-response curves</h2>
-<section id="experiment-a---dose-response-curves" class="level3" data-number="9.4.1">
-<h3 data-number="9.4.1" class="anchored" data-anchor-id="experiment-a---dose-response-curves"><span class="header-section-number">9.4.1</span> Experiment A - Dose-response curves</h3>
-<p>We then get the dose-response curves of the single substances from experiment A and experiment B.</p>
+<p>We then get the dose-response curves of the single substances from experiment UNI and experiment MIX.</p>
+<section id="experiment-uni---dose-response-curves" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="experiment-uni---dose-response-curves"><span class="header-section-number">9.4.1</span> Experiment UNI - Dose-response curves</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -584,19 +593,19 @@ Model fitted: Log-logistic (ED50 as parameter) (3 parms)
 Parameter estimates:
 
             Estimate Std. Error t-value   p-value    
-slope:EPX   1.073101   0.274800  3.9050 9.421e-05 ***
+slope:EPX   1.073101   0.274799  3.9050 9.421e-05 ***
 slope:IMD   2.802320   0.488099  5.7413 9.395e-09 ***
-Ymax:EPX   18.737451   1.008954 18.5712 &lt; 2.2e-16 ***
+Ymax:EPX   18.737451   1.008927 18.5717 &lt; 2.2e-16 ***
 Ymax:IMD   14.280827   0.654230 21.8285 &lt; 2.2e-16 ***
-EC50:EPX  126.813875  27.161530  4.6689 3.028e-06 ***
+EC50:EPX  126.813875  27.159742  4.6692 3.024e-06 ***
 EC50:IMD    0.550633   0.049449 11.1353 &lt; 2.2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 </section>
-<section id="experiment-b---dose-response-curves" class="level3" data-number="9.4.2">
-<h3 data-number="9.4.2" class="anchored" data-anchor-id="experiment-b---dose-response-curves"><span class="header-section-number">9.4.2</span> Experiment B - Dose-response curves</h3>
+<section id="experiment-mix---dose-response-curves" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="experiment-mix---dose-response-curves"><span class="header-section-number">9.4.2</span> Experiment MIX - Dose-response curves</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -636,11 +645,11 @@ Model fitted: Log-logistic (ED50 as parameter) (3 parms)
 Parameter estimates:
 
             Estimate Std. Error t-value   p-value    
-slope:EPX   1.821620   0.476055  3.8265   0.00013 ***
+slope:EPX   1.821620   0.476053  3.8265   0.00013 ***
 slope:IMD   2.532063   0.416171  6.0842 1.171e-09 ***
-Ymax:EPX   13.150048   1.199954 10.9588 &lt; 2.2e-16 ***
+Ymax:EPX   13.150048   1.199950 10.9588 &lt; 2.2e-16 ***
 Ymax:IMD   13.351038   1.012604 13.1849 &lt; 2.2e-16 ***
-EC50:EPX  201.101334  39.014008  5.1546 2.542e-07 ***
+EC50:EPX  201.101334  39.013821  5.1546 2.541e-07 ***
 EC50:IMD    0.268727   0.034528  7.7829 7.097e-15 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
@@ -884,7 +893,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <img src="CE_Comparison_Single_Mix_files/figure-html/fig-drcIMDEPXcomp-1.png" class="img-fluid figure-img" width="768">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-drcIMDEPXcomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.3: Comparaison of the results obtained in the experiment B (dark blues) with the results of Experiment A (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
+Figure&nbsp;9.3: Comparaison of the results obtained in the experiment MIX (dark blues) with the results of Experiment UNI (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.
 </figcaption>
 </figure>
 </div>
@@ -920,14 +929,14 @@ Figure&nbsp;9.3: Comparaison of the results obtained in the experiment B (dark b
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_EC50_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Molecule =</span> <span class="fu">c</span>(<span class="st">"EPX"</span>, <span class="st">"EPX"</span>, <span class="st">"IMD"</span>, <span class="st">"IMD"</span>),</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Experiment =</span> <span class="fu">c</span>(<span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>, <span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Experiment =</span> <span class="fu">c</span>(<span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>, <span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>),</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">c</span>(pEC50EPXExpA, pEC50EPXExpB, pEC50IMDExpA, pEC50IMDExpB),</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmin =</span> <span class="fu">c</span>(pminEC50EPXExpA, pminEC50EPXExpB, pminEC50IMDExpA, pminEC50IMDExpB),</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmax =</span> <span class="fu">c</span>(pmaxEC50EPXExpA, pmaxEC50EPXExpB, pmaxEC50IMDExpA, pmaxEC50IMDExpB)</span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(<span class="fu">paste0</span>(Molecule, Experiment)))</span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>df_EC50_comp<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_EC50_comp<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>df_EC50_comp<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_EC50_comp<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>))</span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_EC50_comp,</span>
@@ -967,25 +976,24 @@ Figure&nbsp;9.4: Comparison of the EC<span class="math inline">\(_{50}\)</span> 
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_drc_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Parameter = c("Ymax", "Slope", "EC50(EPX)", "EC50(IMD)"),</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ExpA =</span> <span class="fu">c</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">2</span>],</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">4</span>],</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">6</span>]</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ExpB =</span> <span class="fu">c</span>(</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">2</span>],</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">4</span>],</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">6</span>]</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ratio =</span> ExpA <span class="sc">/</span> ExpB,</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Per_difference =</span> (ExpB <span class="sc">-</span> ExpA) <span class="sc">/</span> ExpA <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), signif, <span class="dv">2</span>))</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>df_drc_comp <span class="sc">|&gt;</span> <span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">dom =</span> <span class="st">"t"</span>), <span class="at">class =</span> <span class="st">"hover"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">UNI_exp =</span> <span class="fu">c</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">2</span>],</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">4</span>],</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">6</span>]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">MIX_exp =</span> <span class="fu">c</span>(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">2</span>],</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">4</span>],</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">6</span>]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ratio =</span> UNI_exp <span class="sc">/</span> MIX_exp,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Per_difference =</span> (MIX_exp <span class="sc">-</span> UNI_exp) <span class="sc">/</span> UNI_exp <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), signif, <span class="dv">2</span>))</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>df_drc_comp <span class="sc">|&gt;</span> <span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">dom =</span> <span class="st">"t"</span>), <span class="at">class =</span> <span class="st">"hover"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-MIXcompdrc" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -994,8 +1002,8 @@ Table&nbsp;9.1: Inter-experiment comparison of dose-response curves for EPX &amp
 </figcaption>
 <div aria-describedby="tbl-MIXcompdrc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-64a7c31faf572db57a45" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-64a7c31faf572db57a45">{"x":{"filter":"none","vertical":false,"data":[["slope:EPX","slope:IMD","Ymax:EPX","Ymax:IMD","EC50:EPX","EC50:IMD"],[1.1,2.8,19,14,130,0.55],[1.8,2.5,13,13,200,0.27],[0.59,1.1,1.4,1.1,0.63,2],[70,-9.6,-30,-6.5,59,-51]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ExpA<\/th>\n      <th>ExpB<\/th>\n      <th>Ratio<\/th>\n      <th>Per_difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"ExpA","targets":1},{"name":"ExpB","targets":2},{"name":"Ratio","targets":3},{"name":"Per_difference","targets":4}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-09714a492ee4bcb7aebf" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-09714a492ee4bcb7aebf">{"x":{"filter":"none","vertical":false,"data":[["slope:EPX","slope:IMD","Ymax:EPX","Ymax:IMD","EC50:EPX","EC50:IMD"],[1.1,2.8,19,14,130,0.55],[1.8,2.5,13,13,200,0.27],[0.59,1.1,1.4,1.1,0.63,2],[70,-9.6,-30,-6.5,59,-51]],"container":"<table class=\"hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>UNI_exp<\/th>\n      <th>MIX_exp<\/th>\n      <th>Ratio<\/th>\n      <th>Per_difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"UNI_exp","targets":1},{"name":"MIX_exp","targets":2},{"name":"Ratio","targets":3},{"name":"Per_difference","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </figure>
@@ -1007,22 +1015,22 @@ Table&nbsp;9.1: Inter-experiment comparison of dose-response curves for EPX &amp
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_expA_repro_simple_IMD <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"A"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"UNI"</span>)</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>df_expA_repro_simple_EPX <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"A"</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"UNI"</span>)</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>df_expB_repro_simple_IMD <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"B"</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"MIX"</span>)</span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>df_expB_repro_simple_EPX <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"B"</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"MIX"</span>)</span>
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>df_comp_IMD <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_simple_IMD, df_expB_repro_simple_IMD)</span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>df_comp_EPX <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_simple_EPX, df_expB_repro_simple_EPX)</span>
@@ -1657,7 +1665,7 @@ For EPX :</code></pre>
 <span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="fu"># Comparison of the single substances experiment with the mixture experiment ? {#sec-MIXSpringComp}</span></span>
 <span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX &amp; IMD obtained with the experiment A and the experiment B (Autumn 2024 vs. Spring 2025).</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>Because the single substances were tested again during the mixture experiment, the goal here is to compare the observed effects in both experiments and therefore to judge the reproducibility between the experiments. We then need to compare the dose-response curves for EPX &amp; IMD obtained with the experiment UNI and the experiment MIX (Autumn 2024 vs. Spring 2025).</span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data importation</span></span>
 <span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -1696,11 +1704,11 @@ For EPX :</code></pre>
 <span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-53"><a href="#cb26-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## Initial state of the mixture experiment (experiment B)</span></span>
 <span id="cb26-54"><a href="#cb26-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a>We can first take a look at the initial weights of individuals from the mixture experiment (@fig-init).</span>
+<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a>We can first take a look at the initial weights of individuals from the mixture experiment (@fig-initMIXSpringcomp).</span>
 <span id="cb26-56"><a href="#cb26-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-57"><a href="#cb26-57" aria-hidden="true" tabindex="-1"></a><span class="in">```{r D0, warning=F, message=F}</span></span>
 <span id="cb26-58"><a href="#cb26-58" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Initial weights of earthworms according to batches. </span></span>
-<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-init</span></span>
+<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-initMIXSpringcomp</span></span>
 <span id="cb26-60"><a href="#cb26-60" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 10</span></span>
 <span id="cb26-61"><a href="#cb26-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
 <span id="cb26-62"><a href="#cb26-62" aria-hidden="true" tabindex="-1"></a>pal_lot <span class="ot">&lt;-</span> <span class="fu">c</span>(Nord_frost[<span class="dv">3</span>], Nord_polar[<span class="dv">4</span>])</span>
@@ -1779,25 +1787,25 @@ For EPX :</code></pre>
 <span id="cb26-135"><a href="#cb26-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparison of the controls</span></span>
 <span id="cb26-136"><a href="#cb26-136" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-137"><a href="#cb26-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=F, warning=F}</span></span>
-<span id="cb26-138"><a href="#cb26-138" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment A (blues). </span></span>
+<span id="cb26-138"><a href="#cb26-138" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparaison of the controls obtained in the mixture experiment (dark blues) with the results of the experiment UNI (blues). </span></span>
 <span id="cb26-139"><a href="#cb26-139" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-drcIMDEPXcompctrl</span></span>
 <span id="cb26-140"><a href="#cb26-140" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 4</span></span>
 <span id="cb26-141"><a href="#cb26-141" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 5</span></span>
 <span id="cb26-142"><a href="#cb26-142" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-143"><a href="#cb26-143" aria-hidden="true" tabindex="-1"></a>df_expB_repro_ctrl <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_expB_repro, Ratio <span class="sc">==</span> <span class="st">"N"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-144"><a href="#cb26-144" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb26-145"><a href="#cb26-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"Experiment B"</span>)</span>
+<span id="cb26-145"><a href="#cb26-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"Experiment MIX"</span>)</span>
 <span id="cb26-146"><a href="#cb26-146" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-147"><a href="#cb26-147" aria-hidden="true" tabindex="-1"></a>df_expA_repro_ctrl <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_expA_repro, Dose <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-148"><a href="#cb26-148" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons, Lot) <span class="sc">|&gt;</span></span>
 <span id="cb26-149"><a href="#cb26-149" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="fu">case_when</span>(</span>
-<span id="cb26-150"><a href="#cb26-150" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"A"</span> <span class="sc">~</span> <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Spring 2024"</span>,</span>
-<span id="cb26-151"><a href="#cb26-151" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"B"</span> <span class="sc">~</span> <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Summer 2024"</span></span>
+<span id="cb26-150"><a href="#cb26-150" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"A"</span> <span class="sc">~</span> <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Spring 2024"</span>,</span>
+<span id="cb26-151"><a href="#cb26-151" aria-hidden="true" tabindex="-1"></a>    Lot <span class="sc">==</span> <span class="st">"B"</span> <span class="sc">~</span> <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Summer 2024"</span></span>
 <span id="cb26-152"><a href="#cb26-152" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
 <span id="cb26-153"><a href="#cb26-153" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Nb_cocoons, Experiment)</span>
 <span id="cb26-154"><a href="#cb26-154" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-155"><a href="#cb26-155" aria-hidden="true" tabindex="-1"></a>df_controls <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_ctrl, df_expB_repro_ctrl)</span>
-<span id="cb26-156"><a href="#cb26-156" aria-hidden="true" tabindex="-1"></a>df_controls<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_controls<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Spring 2024"</span>, <span class="st">"Experiment A</span><span class="sc">\n</span><span class="st">Summer 2024"</span>, <span class="st">"Experiment B"</span>))</span>
+<span id="cb26-156"><a href="#cb26-156" aria-hidden="true" tabindex="-1"></a>df_controls<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_controls<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Spring 2024"</span>, <span class="st">"Experiment UNI</span><span class="sc">\n</span><span class="st">Summer 2024"</span>, <span class="st">"Experiment MIX"</span>))</span>
 <span id="cb26-157"><a href="#cb26-157" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-158"><a href="#cb26-158" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
 <span id="cb26-159"><a href="#cb26-159" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_controls,</span>
@@ -1855,9 +1863,9 @@ For EPX :</code></pre>
 <span id="cb26-211"><a href="#cb26-211" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-212"><a href="#cb26-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dose-response curves</span></span>
 <span id="cb26-213"><a href="#cb26-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-214"><a href="#cb26-214" aria-hidden="true" tabindex="-1"></a><span class="fu">### Experiment A - Dose-response curves</span></span>
+<span id="cb26-214"><a href="#cb26-214" aria-hidden="true" tabindex="-1"></a>We then get the dose-response curves of the single substances from experiment UNI and experiment MIX.</span>
 <span id="cb26-215"><a href="#cb26-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-216"><a href="#cb26-216" aria-hidden="true" tabindex="-1"></a>We then get the dose-response curves of the single substances from experiment A and experiment B.</span>
+<span id="cb26-216"><a href="#cb26-216" aria-hidden="true" tabindex="-1"></a><span class="fu">### Experiment UNI - Dose-response curves</span></span>
 <span id="cb26-217"><a href="#cb26-217" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-218"><a href="#cb26-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{r drcexpA, warning=F, message=F}</span></span>
 <span id="cb26-219"><a href="#cb26-219" aria-hidden="true" tabindex="-1"></a></span>
@@ -1891,7 +1899,7 @@ For EPX :</code></pre>
 <span id="cb26-247"><a href="#cb26-247" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-248"><a href="#cb26-248" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb26-249"><a href="#cb26-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-250"><a href="#cb26-250" aria-hidden="true" tabindex="-1"></a><span class="fu">### Experiment B - Dose-response curves</span></span>
+<span id="cb26-250"><a href="#cb26-250" aria-hidden="true" tabindex="-1"></a><span class="fu">### Experiment MIX - Dose-response curves</span></span>
 <span id="cb26-251"><a href="#cb26-251" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-252"><a href="#cb26-252" aria-hidden="true" tabindex="-1"></a><span class="in">```{r drcexpB, warning=F, message=F}</span></span>
 <span id="cb26-253"><a href="#cb26-253" aria-hidden="true" tabindex="-1"></a></span>
@@ -1929,347 +1937,347 @@ For EPX :</code></pre>
 <span id="cb26-285"><a href="#cb26-285" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparison of the two experiments for single substances</span></span>
 <span id="cb26-286"><a href="#cb26-286" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-287"><a href="#cb26-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
-<span id="cb26-288"><a href="#cb26-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparaison of the results obtained in the experiment B (dark blues) with the results of Experiment A (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.</span></span>
+<span id="cb26-288"><a href="#cb26-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparaison of the results obtained in the experiment MIX (dark blues) with the results of Experiment UNI (blues). The line represents the dose-response curves obtained for the number of cocoons produced. Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.</span></span>
 <span id="cb26-289"><a href="#cb26-289" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-drcIMDEPXcomp</span></span>
 <span id="cb26-290"><a href="#cb26-290" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 8</span></span>
 <span id="cb26-291"><a href="#cb26-291" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb26-292"><a href="#cb26-292" aria-hidden="true" tabindex="-1"></a>df_expA_repro_IMD <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
-<span id="cb26-293"><a href="#cb26-293" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
-<span id="cb26-294"><a href="#cb26-294" aria-hidden="true" tabindex="-1"></a>df_expA_repro_EPX <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
-<span id="cb26-295"><a href="#cb26-295" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
-<span id="cb26-296"><a href="#cb26-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-297"><a href="#cb26-297" aria-hidden="true" tabindex="-1"></a>df_expA_repro_IMD_mean <span class="ot">&lt;-</span> df_expA_repro_mean <span class="sc">|&gt;</span></span>
-<span id="cb26-298"><a href="#cb26-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
-<span id="cb26-299"><a href="#cb26-299" aria-hidden="true" tabindex="-1"></a>df_expA_repro_EPX_mean <span class="ot">&lt;-</span> df_expA_repro_mean <span class="sc">|&gt;</span></span>
-<span id="cb26-300"><a href="#cb26-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
-<span id="cb26-301"><a href="#cb26-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-302"><a href="#cb26-302" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_IMD <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
-<span id="cb26-303"><a href="#cb26-303" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
-<span id="cb26-304"><a href="#cb26-304" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_EPX <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
-<span id="cb26-305"><a href="#cb26-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
-<span id="cb26-306"><a href="#cb26-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-307"><a href="#cb26-307" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_IMD_mean <span class="ot">&lt;-</span> df_expB_repro_single_mean <span class="sc">|&gt;</span></span>
-<span id="cb26-308"><a href="#cb26-308" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
-<span id="cb26-309"><a href="#cb26-309" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_EPX_mean <span class="ot">&lt;-</span> df_expB_repro_single_mean <span class="sc">|&gt;</span></span>
-<span id="cb26-310"><a href="#cb26-310" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
-<span id="cb26-311"><a href="#cb26-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-312"><a href="#cb26-312" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.0001</span>, <span class="dv">5000</span>, <span class="fl">0.01</span>)</span>
-<span id="cb26-313"><a href="#cb26-313" aria-hidden="true" tabindex="-1"></a>line_width <span class="ot">&lt;-</span> <span class="fl">1.2</span></span>
-<span id="cb26-314"><a href="#cb26-314" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-315"><a href="#cb26-315" aria-hidden="true" tabindex="-1"></a>darkening <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
-<span id="cb26-316"><a href="#cb26-316" aria-hidden="true" tabindex="-1"></a>col_IMD_dark <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">darken</span>(col_IMD, darkening)</span>
-<span id="cb26-317"><a href="#cb26-317" aria-hidden="true" tabindex="-1"></a>col_EPX_dark <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">darken</span>(col_EPX, darkening)</span>
-<span id="cb26-318"><a href="#cb26-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-319"><a href="#cb26-319" aria-hidden="true" tabindex="-1"></a>p_E <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb26-320"><a href="#cb26-320" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
-<span id="cb26-321"><a href="#cb26-321" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
-<span id="cb26-322"><a href="#cb26-322" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-323"><a href="#cb26-323" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-324"><a href="#cb26-324" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
-<span id="cb26-325"><a href="#cb26-325" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
-<span id="cb26-326"><a href="#cb26-326" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
-<span id="cb26-327"><a href="#cb26-327" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-328"><a href="#cb26-328" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
-<span id="cb26-329"><a href="#cb26-329" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_EPX_dark,</span>
-<span id="cb26-330"><a href="#cb26-330" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-331"><a href="#cb26-331" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
-<span id="cb26-332"><a href="#cb26-332" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
-<span id="cb26-333"><a href="#cb26-333" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-334"><a href="#cb26-334" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-335"><a href="#cb26-335" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
-<span id="cb26-336"><a href="#cb26-336" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
-<span id="cb26-337"><a href="#cb26-337" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
-<span id="cb26-338"><a href="#cb26-338" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-339"><a href="#cb26-339" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
-<span id="cb26-340"><a href="#cb26-340" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_EPX,</span>
-<span id="cb26-341"><a href="#cb26-341" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-342"><a href="#cb26-342" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb26-343"><a href="#cb26-343" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
-<span id="cb26-344"><a href="#cb26-344" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-345"><a href="#cb26-345" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-346"><a href="#cb26-346" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
-<span id="cb26-347"><a href="#cb26-347" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-348"><a href="#cb26-348" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
-<span id="cb26-349"><a href="#cb26-349" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
-<span id="cb26-350"><a href="#cb26-350" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-351"><a href="#cb26-351" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb26-352"><a href="#cb26-352" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
-<span id="cb26-353"><a href="#cb26-353" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-354"><a href="#cb26-354" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-355"><a href="#cb26-355" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
-<span id="cb26-356"><a href="#cb26-356" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-357"><a href="#cb26-357" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
-<span id="cb26-358"><a href="#cb26-358" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
-<span id="cb26-359"><a href="#cb26-359" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-360"><a href="#cb26-360" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-361"><a href="#cb26-361" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_EPX,</span>
-<span id="cb26-362"><a href="#cb26-362" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-363"><a href="#cb26-363" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-364"><a href="#cb26-364" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-365"><a href="#cb26-365" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-366"><a href="#cb26-366" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
-<span id="cb26-367"><a href="#cb26-367" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.6</span>,</span>
-<span id="cb26-368"><a href="#cb26-368" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
-<span id="cb26-369"><a href="#cb26-369" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-370"><a href="#cb26-370" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-371"><a href="#cb26-371" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expA_repro_EPX,</span>
-<span id="cb26-372"><a href="#cb26-372" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-373"><a href="#cb26-373" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-374"><a href="#cb26-374" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-375"><a href="#cb26-375" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-376"><a href="#cb26-376" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
-<span id="cb26-377"><a href="#cb26-377" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb26-378"><a href="#cb26-378" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
-<span id="cb26-379"><a href="#cb26-379" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-380"><a href="#cb26-380" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-381"><a href="#cb26-381" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_EPX_mean,</span>
-<span id="cb26-382"><a href="#cb26-382" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-383"><a href="#cb26-383" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-384"><a href="#cb26-384" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-385"><a href="#cb26-385" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-386"><a href="#cb26-386" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
-<span id="cb26-387"><a href="#cb26-387" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb26-388"><a href="#cb26-388" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-389"><a href="#cb26-389" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-390"><a href="#cb26-390" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_expA_repro_EPX_mean, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
-<span id="cb26-391"><a href="#cb26-391" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-392"><a href="#cb26-392" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-393"><a href="#cb26-393" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-394"><a href="#cb26-394" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-395"><a href="#cb26-395" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
-<span id="cb26-396"><a href="#cb26-396" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb26-397"><a href="#cb26-397" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-398"><a href="#cb26-398" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb26-399"><a href="#cb26-399" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">"text"</span>,</span>
-<span id="cb26-400"><a href="#cb26-400" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">1500</span>,</span>
-<span id="cb26-401"><a href="#cb26-401" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2</span>,</span>
-<span id="cb26-402"><a href="#cb26-402" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"E"</span>,</span>
-<span id="cb26-403"><a href="#cb26-403" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span></span>
-<span id="cb26-404"><a href="#cb26-404" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-405"><a href="#cb26-405" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
-<span id="cb26-406"><a href="#cb26-406" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>), <span class="co"># inclure la valeur fictive</span></span>
-<span id="cb26-407"><a href="#cb26-407" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
-<span id="cb26-408"><a href="#cb26-408" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-409"><a href="#cb26-409" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb26-410"><a href="#cb26-410" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Concentration of EPX (mg/kg)"</span>,</span>
-<span id="cb26-411"><a href="#cb26-411" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of cocoons produced per cosm (#)"</span></span>
-<span id="cb26-412"><a href="#cb26-412" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-413"><a href="#cb26-413" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb26-414"><a href="#cb26-414" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-415"><a href="#cb26-415" aria-hidden="true" tabindex="-1"></a>p_I <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb26-416"><a href="#cb26-416" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
-<span id="cb26-417"><a href="#cb26-417" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
-<span id="cb26-418"><a href="#cb26-418" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-419"><a href="#cb26-419" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-420"><a href="#cb26-420" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
-<span id="cb26-421"><a href="#cb26-421" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
-<span id="cb26-422"><a href="#cb26-422" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
-<span id="cb26-423"><a href="#cb26-423" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-424"><a href="#cb26-424" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
-<span id="cb26-425"><a href="#cb26-425" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_IMD_dark,</span>
-<span id="cb26-426"><a href="#cb26-426" aria-hidden="true" tabindex="-1"></a>    <span class="co"># color = col_IMD</span></span>
-<span id="cb26-427"><a href="#cb26-427" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-428"><a href="#cb26-428" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
-<span id="cb26-429"><a href="#cb26-429" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
-<span id="cb26-430"><a href="#cb26-430" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-431"><a href="#cb26-431" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-432"><a href="#cb26-432" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
-<span id="cb26-433"><a href="#cb26-433" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
-<span id="cb26-434"><a href="#cb26-434" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
-<span id="cb26-435"><a href="#cb26-435" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-436"><a href="#cb26-436" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
-<span id="cb26-437"><a href="#cb26-437" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_IMD,</span>
-<span id="cb26-438"><a href="#cb26-438" aria-hidden="true" tabindex="-1"></a>    <span class="co"># color = col_IMD</span></span>
-<span id="cb26-439"><a href="#cb26-439" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-440"><a href="#cb26-440" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb26-441"><a href="#cb26-441" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
-<span id="cb26-442"><a href="#cb26-442" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-443"><a href="#cb26-443" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-444"><a href="#cb26-444" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
-<span id="cb26-445"><a href="#cb26-445" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-446"><a href="#cb26-446" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
-<span id="cb26-447"><a href="#cb26-447" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
-<span id="cb26-448"><a href="#cb26-448" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-449"><a href="#cb26-449" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb26-450"><a href="#cb26-450" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
-<span id="cb26-451"><a href="#cb26-451" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-452"><a href="#cb26-452" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
-<span id="cb26-453"><a href="#cb26-453" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
-<span id="cb26-454"><a href="#cb26-454" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-455"><a href="#cb26-455" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
-<span id="cb26-456"><a href="#cb26-456" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
-<span id="cb26-457"><a href="#cb26-457" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-458"><a href="#cb26-458" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-459"><a href="#cb26-459" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_IMD,</span>
-<span id="cb26-460"><a href="#cb26-460" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-461"><a href="#cb26-461" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-462"><a href="#cb26-462" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-463"><a href="#cb26-463" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-464"><a href="#cb26-464" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
-<span id="cb26-465"><a href="#cb26-465" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.6</span>,</span>
-<span id="cb26-466"><a href="#cb26-466" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
-<span id="cb26-467"><a href="#cb26-467" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-468"><a href="#cb26-468" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-469"><a href="#cb26-469" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expA_repro_IMD,</span>
-<span id="cb26-470"><a href="#cb26-470" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-471"><a href="#cb26-471" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-472"><a href="#cb26-472" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-473"><a href="#cb26-473" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-474"><a href="#cb26-474" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
-<span id="cb26-475"><a href="#cb26-475" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb26-476"><a href="#cb26-476" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
-<span id="cb26-477"><a href="#cb26-477" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-478"><a href="#cb26-478" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-479"><a href="#cb26-479" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_IMD_mean,</span>
-<span id="cb26-480"><a href="#cb26-480" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-481"><a href="#cb26-481" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-482"><a href="#cb26-482" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-483"><a href="#cb26-483" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-484"><a href="#cb26-484" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
-<span id="cb26-485"><a href="#cb26-485" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb26-486"><a href="#cb26-486" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-487"><a href="#cb26-487" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb26-488"><a href="#cb26-488" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_expA_repro_IMD_mean, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
-<span id="cb26-489"><a href="#cb26-489" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb26-490"><a href="#cb26-490" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
-<span id="cb26-491"><a href="#cb26-491" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
-<span id="cb26-492"><a href="#cb26-492" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb26-493"><a href="#cb26-493" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
-<span id="cb26-494"><a href="#cb26-494" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb26-495"><a href="#cb26-495" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-496"><a href="#cb26-496" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb26-497"><a href="#cb26-497" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">"text"</span>,</span>
-<span id="cb26-498"><a href="#cb26-498" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">1500</span>,</span>
-<span id="cb26-499"><a href="#cb26-499" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2</span>,</span>
-<span id="cb26-500"><a href="#cb26-500" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"I"</span>,</span>
-<span id="cb26-501"><a href="#cb26-501" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span></span>
-<span id="cb26-502"><a href="#cb26-502" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-503"><a href="#cb26-503" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
-<span id="cb26-504"><a href="#cb26-504" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>), <span class="co"># inclure la valeur fictive</span></span>
-<span id="cb26-505"><a href="#cb26-505" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
-<span id="cb26-506"><a href="#cb26-506" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-507"><a href="#cb26-507" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb26-508"><a href="#cb26-508" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Concentration of IMD (mg/kg)"</span>,</span>
-<span id="cb26-509"><a href="#cb26-509" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of cocoons produced per cosm (#)"</span></span>
-<span id="cb26-510"><a href="#cb26-510" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-511"><a href="#cb26-511" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb26-512"><a href="#cb26-512" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-513"><a href="#cb26-513" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p_E <span class="sc">+</span> p_I</span>
-<span id="cb26-514"><a href="#cb26-514" aria-hidden="true" tabindex="-1"></a>p</span>
-<span id="cb26-515"><a href="#cb26-515" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb26-516"><a href="#cb26-516" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-517"><a href="#cb26-517" aria-hidden="true" tabindex="-1"></a><span class="in">```{r savecompdrc, include=F}</span></span>
-<span id="cb26-518"><a href="#cb26-518" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb26-519"><a href="#cb26-519" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_drc.png"</span>,</span>
-<span id="cb26-520"><a href="#cb26-520" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
-<span id="cb26-521"><a href="#cb26-521" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
-<span id="cb26-522"><a href="#cb26-522" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
-<span id="cb26-523"><a href="#cb26-523" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-524"><a href="#cb26-524" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb26-525"><a href="#cb26-525" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_drc.jpg"</span>,</span>
-<span id="cb26-526"><a href="#cb26-526" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
-<span id="cb26-527"><a href="#cb26-527" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
-<span id="cb26-528"><a href="#cb26-528" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
-<span id="cb26-529"><a href="#cb26-529" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-530"><a href="#cb26-530" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb26-531"><a href="#cb26-531" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-532"><a href="#cb26-532" aria-hidden="true" tabindex="-1"></a><span class="in">```{r synthparamdrc, results="hide", warning=F, message = F}</span></span>
-<span id="cb26-533"><a href="#cb26-533" aria-hidden="true" tabindex="-1"></a>pEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb26-534"><a href="#cb26-534" aria-hidden="true" tabindex="-1"></a>pEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
-<span id="cb26-535"><a href="#cb26-535" aria-hidden="true" tabindex="-1"></a>pEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">1</span>]</span>
-<span id="cb26-536"><a href="#cb26-536" aria-hidden="true" tabindex="-1"></a>pEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">1</span>]</span>
-<span id="cb26-537"><a href="#cb26-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-538"><a href="#cb26-538" aria-hidden="true" tabindex="-1"></a>pminEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">3</span>]</span>
-<span id="cb26-539"><a href="#cb26-539" aria-hidden="true" tabindex="-1"></a>pminEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">3</span>]</span>
-<span id="cb26-540"><a href="#cb26-540" aria-hidden="true" tabindex="-1"></a>pminEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">3</span>]</span>
-<span id="cb26-541"><a href="#cb26-541" aria-hidden="true" tabindex="-1"></a>pminEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">3</span>]</span>
-<span id="cb26-542"><a href="#cb26-542" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-543"><a href="#cb26-543" aria-hidden="true" tabindex="-1"></a>pmaxEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">4</span>]</span>
-<span id="cb26-544"><a href="#cb26-544" aria-hidden="true" tabindex="-1"></a>pmaxEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">4</span>]</span>
-<span id="cb26-545"><a href="#cb26-545" aria-hidden="true" tabindex="-1"></a>pmaxEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">4</span>]</span>
-<span id="cb26-546"><a href="#cb26-546" aria-hidden="true" tabindex="-1"></a>pmaxEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">4</span>]</span>
-<span id="cb26-547"><a href="#cb26-547" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-548"><a href="#cb26-548" aria-hidden="true" tabindex="-1"></a>ec50_IMD_ExpA <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,])</span>
-<span id="cb26-549"><a href="#cb26-549" aria-hidden="true" tabindex="-1"></a>ec50_IMD_ExpB <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,])</span>
-<span id="cb26-550"><a href="#cb26-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-551"><a href="#cb26-551" aria-hidden="true" tabindex="-1"></a>ec50_EPX_ExpA <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,])</span>
-<span id="cb26-552"><a href="#cb26-552" aria-hidden="true" tabindex="-1"></a>ec50_EPX_ExpB <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,])</span>
-<span id="cb26-553"><a href="#cb26-553" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb26-554"><a href="#cb26-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-555"><a href="#cb26-555" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
-<span id="cb26-556"><a href="#cb26-556" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparison of the EC$_{50}$ obtained in the different experiments.</span></span>
-<span id="cb26-557"><a href="#cb26-557" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-EC50compmix</span></span>
-<span id="cb26-558"><a href="#cb26-558" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 6</span></span>
-<span id="cb26-559"><a href="#cb26-559" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
-<span id="cb26-560"><a href="#cb26-560" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-561"><a href="#cb26-561" aria-hidden="true" tabindex="-1"></a>df_EC50_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb26-562"><a href="#cb26-562" aria-hidden="true" tabindex="-1"></a>  <span class="at">Molecule =</span> <span class="fu">c</span>(<span class="st">"EPX"</span>, <span class="st">"EPX"</span>, <span class="st">"IMD"</span>, <span class="st">"IMD"</span>),</span>
-<span id="cb26-563"><a href="#cb26-563" aria-hidden="true" tabindex="-1"></a>  <span class="at">Experiment =</span> <span class="fu">c</span>(<span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>, <span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>),</span>
-<span id="cb26-564"><a href="#cb26-564" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">c</span>(pEC50EPXExpA, pEC50EPXExpB, pEC50IMDExpA, pEC50IMDExpB),</span>
-<span id="cb26-565"><a href="#cb26-565" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmin =</span> <span class="fu">c</span>(pminEC50EPXExpA, pminEC50EPXExpB, pminEC50IMDExpA, pminEC50IMDExpB),</span>
-<span id="cb26-566"><a href="#cb26-566" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmax =</span> <span class="fu">c</span>(pmaxEC50EPXExpA, pmaxEC50EPXExpB, pmaxEC50IMDExpA, pmaxEC50IMDExpB)</span>
-<span id="cb26-567"><a href="#cb26-567" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb26-568"><a href="#cb26-568" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(<span class="fu">paste0</span>(Molecule, Experiment)))</span>
-<span id="cb26-569"><a href="#cb26-569" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-570"><a href="#cb26-570" aria-hidden="true" tabindex="-1"></a>df_EC50_comp<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_EC50_comp<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ExpA"</span>, <span class="st">"ExpB"</span>))</span>
-<span id="cb26-571"><a href="#cb26-571" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-572"><a href="#cb26-572" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb26-573"><a href="#cb26-573" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_EC50_comp,</span>
-<span id="cb26-574"><a href="#cb26-574" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb26-575"><a href="#cb26-575" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Experiment,</span>
-<span id="cb26-576"><a href="#cb26-576" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> p,</span>
-<span id="cb26-577"><a href="#cb26-577" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> pmin,</span>
-<span id="cb26-578"><a href="#cb26-578" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> pmax,</span>
-<span id="cb26-579"><a href="#cb26-579" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> color</span>
-<span id="cb26-580"><a href="#cb26-580" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb26-581"><a href="#cb26-581" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb26-582"><a href="#cb26-582" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>() <span class="sc">+</span></span>
-<span id="cb26-583"><a href="#cb26-583" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Molecule, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb26-584"><a href="#cb26-584" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(col_EPX_dark, col_EPX, col_IMD_dark, col_IMD)) <span class="sc">+</span></span>
-<span id="cb26-585"><a href="#cb26-585" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb26-586"><a href="#cb26-586" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"EC50"</span>,</span>
-<span id="cb26-587"><a href="#cb26-587" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">""</span></span>
-<span id="cb26-588"><a href="#cb26-588" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb26-589"><a href="#cb26-589" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb26-590"><a href="#cb26-590" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
-<span id="cb26-591"><a href="#cb26-591" aria-hidden="true" tabindex="-1"></a>p</span>
-<span id="cb26-592"><a href="#cb26-592" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb26-593"><a href="#cb26-593" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-594"><a href="#cb26-594" aria-hidden="true" tabindex="-1"></a><span class="in">```{r savecompec, include=F}</span></span>
-<span id="cb26-595"><a href="#cb26-595" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb26-596"><a href="#cb26-596" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_ec50.png"</span>,</span>
-<span id="cb26-597"><a href="#cb26-597" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
-<span id="cb26-598"><a href="#cb26-598" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">6</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
-<span id="cb26-599"><a href="#cb26-599" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
-<span id="cb26-600"><a href="#cb26-600" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-601"><a href="#cb26-601" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb26-602"><a href="#cb26-602" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_ec50.jpg"</span>,</span>
-<span id="cb26-603"><a href="#cb26-603" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
-<span id="cb26-604"><a href="#cb26-604" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">6</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
-<span id="cb26-605"><a href="#cb26-605" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
-<span id="cb26-606"><a href="#cb26-606" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-607"><a href="#cb26-607" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb26-608"><a href="#cb26-608" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-609"><a href="#cb26-609" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
-<span id="cb26-610"><a href="#cb26-610" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: Inter-experiment comparison of dose-response curves for EPX &amp; IMD.</span></span>
-<span id="cb26-611"><a href="#cb26-611" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-MIXcompdrc</span></span>
-<span id="cb26-612"><a href="#cb26-612" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-613"><a href="#cb26-613" aria-hidden="true" tabindex="-1"></a>df_drc_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb26-614"><a href="#cb26-614" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Parameter = c("Ymax", "Slope", "EC50(EPX)", "EC50(IMD)"),</span></span>
-<span id="cb26-615"><a href="#cb26-615" aria-hidden="true" tabindex="-1"></a>  <span class="at">ExpA =</span> <span class="fu">c</span>(</span>
+<span id="cb26-292"><a href="#cb26-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-293"><a href="#cb26-293" aria-hidden="true" tabindex="-1"></a>df_expA_repro_IMD <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
+<span id="cb26-294"><a href="#cb26-294" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
+<span id="cb26-295"><a href="#cb26-295" aria-hidden="true" tabindex="-1"></a>df_expA_repro_EPX <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
+<span id="cb26-296"><a href="#cb26-296" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
+<span id="cb26-297"><a href="#cb26-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-298"><a href="#cb26-298" aria-hidden="true" tabindex="-1"></a>df_expA_repro_IMD_mean <span class="ot">&lt;-</span> df_expA_repro_mean <span class="sc">|&gt;</span></span>
+<span id="cb26-299"><a href="#cb26-299" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
+<span id="cb26-300"><a href="#cb26-300" aria-hidden="true" tabindex="-1"></a>df_expA_repro_EPX_mean <span class="ot">&lt;-</span> df_expA_repro_mean <span class="sc">|&gt;</span></span>
+<span id="cb26-301"><a href="#cb26-301" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
+<span id="cb26-302"><a href="#cb26-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-303"><a href="#cb26-303" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_IMD <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
+<span id="cb26-304"><a href="#cb26-304" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
+<span id="cb26-305"><a href="#cb26-305" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_EPX <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
+<span id="cb26-306"><a href="#cb26-306" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
+<span id="cb26-307"><a href="#cb26-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-308"><a href="#cb26-308" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_IMD_mean <span class="ot">&lt;-</span> df_expB_repro_single_mean <span class="sc">|&gt;</span></span>
+<span id="cb26-309"><a href="#cb26-309" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>)</span>
+<span id="cb26-310"><a href="#cb26-310" aria-hidden="true" tabindex="-1"></a>df_expB_repro_single_EPX_mean <span class="ot">&lt;-</span> df_expB_repro_single_mean <span class="sc">|&gt;</span></span>
+<span id="cb26-311"><a href="#cb26-311" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>)</span>
+<span id="cb26-312"><a href="#cb26-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-313"><a href="#cb26-313" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.0001</span>, <span class="dv">5000</span>, <span class="fl">0.01</span>)</span>
+<span id="cb26-314"><a href="#cb26-314" aria-hidden="true" tabindex="-1"></a>line_width <span class="ot">&lt;-</span> <span class="fl">1.2</span></span>
+<span id="cb26-315"><a href="#cb26-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-316"><a href="#cb26-316" aria-hidden="true" tabindex="-1"></a>darkening <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb26-317"><a href="#cb26-317" aria-hidden="true" tabindex="-1"></a>col_IMD_dark <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">darken</span>(col_IMD, darkening)</span>
+<span id="cb26-318"><a href="#cb26-318" aria-hidden="true" tabindex="-1"></a>col_EPX_dark <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">darken</span>(col_EPX, darkening)</span>
+<span id="cb26-319"><a href="#cb26-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-320"><a href="#cb26-320" aria-hidden="true" tabindex="-1"></a>p_E <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb26-321"><a href="#cb26-321" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
+<span id="cb26-322"><a href="#cb26-322" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
+<span id="cb26-323"><a href="#cb26-323" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-324"><a href="#cb26-324" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-325"><a href="#cb26-325" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
+<span id="cb26-326"><a href="#cb26-326" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
+<span id="cb26-327"><a href="#cb26-327" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
+<span id="cb26-328"><a href="#cb26-328" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-329"><a href="#cb26-329" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
+<span id="cb26-330"><a href="#cb26-330" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_EPX_dark,</span>
+<span id="cb26-331"><a href="#cb26-331" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-332"><a href="#cb26-332" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
+<span id="cb26-333"><a href="#cb26-333" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
+<span id="cb26-334"><a href="#cb26-334" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-335"><a href="#cb26-335" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-336"><a href="#cb26-336" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
+<span id="cb26-337"><a href="#cb26-337" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
+<span id="cb26-338"><a href="#cb26-338" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
+<span id="cb26-339"><a href="#cb26-339" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-340"><a href="#cb26-340" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
+<span id="cb26-341"><a href="#cb26-341" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_EPX,</span>
+<span id="cb26-342"><a href="#cb26-342" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-343"><a href="#cb26-343" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb26-344"><a href="#cb26-344" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
+<span id="cb26-345"><a href="#cb26-345" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-346"><a href="#cb26-346" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-347"><a href="#cb26-347" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
+<span id="cb26-348"><a href="#cb26-348" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-349"><a href="#cb26-349" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
+<span id="cb26-350"><a href="#cb26-350" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
+<span id="cb26-351"><a href="#cb26-351" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-352"><a href="#cb26-352" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb26-353"><a href="#cb26-353" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
+<span id="cb26-354"><a href="#cb26-354" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-355"><a href="#cb26-355" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-356"><a href="#cb26-356" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
+<span id="cb26-357"><a href="#cb26-357" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-358"><a href="#cb26-358" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
+<span id="cb26-359"><a href="#cb26-359" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
+<span id="cb26-360"><a href="#cb26-360" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-361"><a href="#cb26-361" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-362"><a href="#cb26-362" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_EPX,</span>
+<span id="cb26-363"><a href="#cb26-363" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-364"><a href="#cb26-364" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-365"><a href="#cb26-365" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-366"><a href="#cb26-366" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-367"><a href="#cb26-367" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
+<span id="cb26-368"><a href="#cb26-368" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.6</span>,</span>
+<span id="cb26-369"><a href="#cb26-369" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
+<span id="cb26-370"><a href="#cb26-370" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-371"><a href="#cb26-371" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-372"><a href="#cb26-372" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expA_repro_EPX,</span>
+<span id="cb26-373"><a href="#cb26-373" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-374"><a href="#cb26-374" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-375"><a href="#cb26-375" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-376"><a href="#cb26-376" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-377"><a href="#cb26-377" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
+<span id="cb26-378"><a href="#cb26-378" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb26-379"><a href="#cb26-379" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
+<span id="cb26-380"><a href="#cb26-380" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-381"><a href="#cb26-381" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-382"><a href="#cb26-382" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_EPX_mean,</span>
+<span id="cb26-383"><a href="#cb26-383" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-384"><a href="#cb26-384" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-385"><a href="#cb26-385" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-386"><a href="#cb26-386" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-387"><a href="#cb26-387" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX_dark,</span>
+<span id="cb26-388"><a href="#cb26-388" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb26-389"><a href="#cb26-389" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-390"><a href="#cb26-390" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-391"><a href="#cb26-391" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_expA_repro_EPX_mean, Molecule <span class="sc">==</span> <span class="st">"EPX"</span>),</span>
+<span id="cb26-392"><a href="#cb26-392" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-393"><a href="#cb26-393" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-394"><a href="#cb26-394" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-395"><a href="#cb26-395" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-396"><a href="#cb26-396" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_EPX,</span>
+<span id="cb26-397"><a href="#cb26-397" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb26-398"><a href="#cb26-398" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-399"><a href="#cb26-399" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb26-400"><a href="#cb26-400" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">"text"</span>,</span>
+<span id="cb26-401"><a href="#cb26-401" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">1500</span>,</span>
+<span id="cb26-402"><a href="#cb26-402" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2</span>,</span>
+<span id="cb26-403"><a href="#cb26-403" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"E"</span>,</span>
+<span id="cb26-404"><a href="#cb26-404" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span></span>
+<span id="cb26-405"><a href="#cb26-405" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-406"><a href="#cb26-406" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
+<span id="cb26-407"><a href="#cb26-407" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>), <span class="co"># inclure la valeur fictive</span></span>
+<span id="cb26-408"><a href="#cb26-408" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
+<span id="cb26-409"><a href="#cb26-409" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-410"><a href="#cb26-410" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-411"><a href="#cb26-411" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Concentration of EPX (mg/kg)"</span>,</span>
+<span id="cb26-412"><a href="#cb26-412" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of cocoons produced per cosm (#)"</span></span>
+<span id="cb26-413"><a href="#cb26-413" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-414"><a href="#cb26-414" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb26-415"><a href="#cb26-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-416"><a href="#cb26-416" aria-hidden="true" tabindex="-1"></a>p_I <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb26-417"><a href="#cb26-417" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
+<span id="cb26-418"><a href="#cb26-418" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
+<span id="cb26-419"><a href="#cb26-419" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-420"><a href="#cb26-420" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-421"><a href="#cb26-421" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
+<span id="cb26-422"><a href="#cb26-422" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
+<span id="cb26-423"><a href="#cb26-423" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
+<span id="cb26-424"><a href="#cb26-424" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-425"><a href="#cb26-425" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
+<span id="cb26-426"><a href="#cb26-426" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_IMD_dark,</span>
+<span id="cb26-427"><a href="#cb26-427" aria-hidden="true" tabindex="-1"></a>    <span class="co"># color = col_IMD</span></span>
+<span id="cb26-428"><a href="#cb26-428" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-429"><a href="#cb26-429" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
+<span id="cb26-430"><a href="#cb26-430" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
+<span id="cb26-431"><a href="#cb26-431" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-432"><a href="#cb26-432" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-433"><a href="#cb26-433" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p,</span>
+<span id="cb26-434"><a href="#cb26-434" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin =</span> pmin,</span>
+<span id="cb26-435"><a href="#cb26-435" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax =</span> pmax</span>
+<span id="cb26-436"><a href="#cb26-436" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-437"><a href="#cb26-437" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
+<span id="cb26-438"><a href="#cb26-438" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> col_IMD,</span>
+<span id="cb26-439"><a href="#cb26-439" aria-hidden="true" tabindex="-1"></a>    <span class="co"># color = col_IMD</span></span>
+<span id="cb26-440"><a href="#cb26-440" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-441"><a href="#cb26-441" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb26-442"><a href="#cb26-442" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpB, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
+<span id="cb26-443"><a href="#cb26-443" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-444"><a href="#cb26-444" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-445"><a href="#cb26-445" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
+<span id="cb26-446"><a href="#cb26-446" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-447"><a href="#cb26-447" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
+<span id="cb26-448"><a href="#cb26-448" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
+<span id="cb26-449"><a href="#cb26-449" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-450"><a href="#cb26-450" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb26-451"><a href="#cb26-451" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_CI_ExpA, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
+<span id="cb26-452"><a href="#cb26-452" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-453"><a href="#cb26-453" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose,</span>
+<span id="cb26-454"><a href="#cb26-454" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> p</span>
+<span id="cb26-455"><a href="#cb26-455" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-456"><a href="#cb26-456" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
+<span id="cb26-457"><a href="#cb26-457" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> line_width</span>
+<span id="cb26-458"><a href="#cb26-458" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-459"><a href="#cb26-459" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-460"><a href="#cb26-460" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_IMD,</span>
+<span id="cb26-461"><a href="#cb26-461" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-462"><a href="#cb26-462" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-463"><a href="#cb26-463" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-464"><a href="#cb26-464" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-465"><a href="#cb26-465" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
+<span id="cb26-466"><a href="#cb26-466" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.6</span>,</span>
+<span id="cb26-467"><a href="#cb26-467" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
+<span id="cb26-468"><a href="#cb26-468" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-469"><a href="#cb26-469" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-470"><a href="#cb26-470" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expA_repro_IMD,</span>
+<span id="cb26-471"><a href="#cb26-471" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-472"><a href="#cb26-472" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-473"><a href="#cb26-473" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-474"><a href="#cb26-474" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-475"><a href="#cb26-475" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
+<span id="cb26-476"><a href="#cb26-476" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb26-477"><a href="#cb26-477" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">4</span></span>
+<span id="cb26-478"><a href="#cb26-478" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-479"><a href="#cb26-479" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-480"><a href="#cb26-480" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_expB_repro_single_IMD_mean,</span>
+<span id="cb26-481"><a href="#cb26-481" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-482"><a href="#cb26-482" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-483"><a href="#cb26-483" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-484"><a href="#cb26-484" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-485"><a href="#cb26-485" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD_dark,</span>
+<span id="cb26-486"><a href="#cb26-486" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb26-487"><a href="#cb26-487" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-488"><a href="#cb26-488" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb26-489"><a href="#cb26-489" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(df_expA_repro_IMD_mean, Molecule <span class="sc">==</span> <span class="st">"IMD"</span>),</span>
+<span id="cb26-490"><a href="#cb26-490" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb26-491"><a href="#cb26-491" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> Dose_plot,</span>
+<span id="cb26-492"><a href="#cb26-492" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> Nb_cocoons</span>
+<span id="cb26-493"><a href="#cb26-493" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb26-494"><a href="#cb26-494" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> col_IMD,</span>
+<span id="cb26-495"><a href="#cb26-495" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb26-496"><a href="#cb26-496" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-497"><a href="#cb26-497" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb26-498"><a href="#cb26-498" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">"text"</span>,</span>
+<span id="cb26-499"><a href="#cb26-499" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">1500</span>,</span>
+<span id="cb26-500"><a href="#cb26-500" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2</span>,</span>
+<span id="cb26-501"><a href="#cb26-501" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"I"</span>,</span>
+<span id="cb26-502"><a href="#cb26-502" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span></span>
+<span id="cb26-503"><a href="#cb26-503" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-504"><a href="#cb26-504" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
+<span id="cb26-505"><a href="#cb26-505" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>), <span class="co"># inclure la valeur fictive</span></span>
+<span id="cb26-506"><a href="#cb26-506" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
+<span id="cb26-507"><a href="#cb26-507" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-508"><a href="#cb26-508" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-509"><a href="#cb26-509" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Concentration of IMD (mg/kg)"</span>,</span>
+<span id="cb26-510"><a href="#cb26-510" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of cocoons produced per cosm (#)"</span></span>
+<span id="cb26-511"><a href="#cb26-511" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-512"><a href="#cb26-512" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb26-513"><a href="#cb26-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-514"><a href="#cb26-514" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p_E <span class="sc">+</span> p_I</span>
+<span id="cb26-515"><a href="#cb26-515" aria-hidden="true" tabindex="-1"></a>p</span>
+<span id="cb26-516"><a href="#cb26-516" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb26-517"><a href="#cb26-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-518"><a href="#cb26-518" aria-hidden="true" tabindex="-1"></a><span class="in">```{r savecompdrc, include=F}</span></span>
+<span id="cb26-519"><a href="#cb26-519" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb26-520"><a href="#cb26-520" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_drc.png"</span>,</span>
+<span id="cb26-521"><a href="#cb26-521" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
+<span id="cb26-522"><a href="#cb26-522" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
+<span id="cb26-523"><a href="#cb26-523" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
+<span id="cb26-524"><a href="#cb26-524" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-525"><a href="#cb26-525" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb26-526"><a href="#cb26-526" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_drc.jpg"</span>,</span>
+<span id="cb26-527"><a href="#cb26-527" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
+<span id="cb26-528"><a href="#cb26-528" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
+<span id="cb26-529"><a href="#cb26-529" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
+<span id="cb26-530"><a href="#cb26-530" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-531"><a href="#cb26-531" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb26-532"><a href="#cb26-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-533"><a href="#cb26-533" aria-hidden="true" tabindex="-1"></a><span class="in">```{r synthparamdrc, results="hide", warning=F, message = F}</span></span>
+<span id="cb26-534"><a href="#cb26-534" aria-hidden="true" tabindex="-1"></a>pEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb26-535"><a href="#cb26-535" aria-hidden="true" tabindex="-1"></a>pEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb26-536"><a href="#cb26-536" aria-hidden="true" tabindex="-1"></a>pEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">1</span>]</span>
+<span id="cb26-537"><a href="#cb26-537" aria-hidden="true" tabindex="-1"></a>pEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">1</span>]</span>
+<span id="cb26-538"><a href="#cb26-538" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-539"><a href="#cb26-539" aria-hidden="true" tabindex="-1"></a>pminEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">3</span>]</span>
+<span id="cb26-540"><a href="#cb26-540" aria-hidden="true" tabindex="-1"></a>pminEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">3</span>]</span>
+<span id="cb26-541"><a href="#cb26-541" aria-hidden="true" tabindex="-1"></a>pminEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">3</span>]</span>
+<span id="cb26-542"><a href="#cb26-542" aria-hidden="true" tabindex="-1"></a>pminEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">3</span>]</span>
+<span id="cb26-543"><a href="#cb26-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-544"><a href="#cb26-544" aria-hidden="true" tabindex="-1"></a>pmaxEC50EPXExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">4</span>]</span>
+<span id="cb26-545"><a href="#cb26-545" aria-hidden="true" tabindex="-1"></a>pmaxEC50EPXExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,<span class="dv">4</span>]</span>
+<span id="cb26-546"><a href="#cb26-546" aria-hidden="true" tabindex="-1"></a>pmaxEC50IMDExpA <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">4</span>]</span>
+<span id="cb26-547"><a href="#cb26-547" aria-hidden="true" tabindex="-1"></a>pmaxEC50IMDExpB <span class="ot">&lt;-</span> <span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,<span class="dv">4</span>]</span>
+<span id="cb26-548"><a href="#cb26-548" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-549"><a href="#cb26-549" aria-hidden="true" tabindex="-1"></a>ec50_IMD_ExpA <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,])</span>
+<span id="cb26-550"><a href="#cb26-550" aria-hidden="true" tabindex="-1"></a>ec50_IMD_ExpB <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">2</span>,])</span>
+<span id="cb26-551"><a href="#cb26-551" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-552"><a href="#cb26-552" aria-hidden="true" tabindex="-1"></a>ec50_EPX_ExpA <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpA, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,])</span>
+<span id="cb26-553"><a href="#cb26-553" aria-hidden="true" tabindex="-1"></a>ec50_EPX_ExpB <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">ED</span>(drc.ExpB, <span class="dv">50</span>, <span class="at">interval =</span> <span class="st">"delta"</span>)[<span class="dv">1</span>,])</span>
+<span id="cb26-554"><a href="#cb26-554" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb26-555"><a href="#cb26-555" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-556"><a href="#cb26-556" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
+<span id="cb26-557"><a href="#cb26-557" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Comparison of the EC$_{50}$ obtained in the different experiments.</span></span>
+<span id="cb26-558"><a href="#cb26-558" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-EC50compmix</span></span>
+<span id="cb26-559"><a href="#cb26-559" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 6</span></span>
+<span id="cb26-560"><a href="#cb26-560" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 4</span></span>
+<span id="cb26-561"><a href="#cb26-561" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-562"><a href="#cb26-562" aria-hidden="true" tabindex="-1"></a>df_EC50_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-563"><a href="#cb26-563" aria-hidden="true" tabindex="-1"></a>  <span class="at">Molecule =</span> <span class="fu">c</span>(<span class="st">"EPX"</span>, <span class="st">"EPX"</span>, <span class="st">"IMD"</span>, <span class="st">"IMD"</span>),</span>
+<span id="cb26-564"><a href="#cb26-564" aria-hidden="true" tabindex="-1"></a>  <span class="at">Experiment =</span> <span class="fu">c</span>(<span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>, <span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>),</span>
+<span id="cb26-565"><a href="#cb26-565" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">c</span>(pEC50EPXExpA, pEC50EPXExpB, pEC50IMDExpA, pEC50IMDExpB),</span>
+<span id="cb26-566"><a href="#cb26-566" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmin =</span> <span class="fu">c</span>(pminEC50EPXExpA, pminEC50EPXExpB, pminEC50IMDExpA, pminEC50IMDExpB),</span>
+<span id="cb26-567"><a href="#cb26-567" aria-hidden="true" tabindex="-1"></a>  <span class="at">pmax =</span> <span class="fu">c</span>(pmaxEC50EPXExpA, pmaxEC50EPXExpB, pmaxEC50IMDExpA, pmaxEC50IMDExpB)</span>
+<span id="cb26-568"><a href="#cb26-568" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb26-569"><a href="#cb26-569" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(<span class="fu">paste0</span>(Molecule, Experiment)))</span>
+<span id="cb26-570"><a href="#cb26-570" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-571"><a href="#cb26-571" aria-hidden="true" tabindex="-1"></a>df_EC50_comp<span class="sc">$</span>Experiment <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_EC50_comp<span class="sc">$</span>Experiment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"UNI Exp"</span>, <span class="st">"MIX Exp"</span>))</span>
+<span id="cb26-572"><a href="#cb26-572" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-573"><a href="#cb26-573" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb26-574"><a href="#cb26-574" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_EC50_comp,</span>
+<span id="cb26-575"><a href="#cb26-575" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb26-576"><a href="#cb26-576" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Experiment,</span>
+<span id="cb26-577"><a href="#cb26-577" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> p,</span>
+<span id="cb26-578"><a href="#cb26-578" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> pmin,</span>
+<span id="cb26-579"><a href="#cb26-579" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymax =</span> pmax,</span>
+<span id="cb26-580"><a href="#cb26-580" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> color</span>
+<span id="cb26-581"><a href="#cb26-581" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-582"><a href="#cb26-582" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb26-583"><a href="#cb26-583" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>() <span class="sc">+</span></span>
+<span id="cb26-584"><a href="#cb26-584" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Molecule, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb26-585"><a href="#cb26-585" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(col_EPX_dark, col_EPX, col_IMD_dark, col_IMD)) <span class="sc">+</span></span>
+<span id="cb26-586"><a href="#cb26-586" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-587"><a href="#cb26-587" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"EC50"</span>,</span>
+<span id="cb26-588"><a href="#cb26-588" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">""</span></span>
+<span id="cb26-589"><a href="#cb26-589" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-590"><a href="#cb26-590" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-591"><a href="#cb26-591" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb26-592"><a href="#cb26-592" aria-hidden="true" tabindex="-1"></a>p</span>
+<span id="cb26-593"><a href="#cb26-593" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb26-594"><a href="#cb26-594" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-595"><a href="#cb26-595" aria-hidden="true" tabindex="-1"></a><span class="in">```{r savecompec, include=F}</span></span>
+<span id="cb26-596"><a href="#cb26-596" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb26-597"><a href="#cb26-597" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_ec50.png"</span>,</span>
+<span id="cb26-598"><a href="#cb26-598" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
+<span id="cb26-599"><a href="#cb26-599" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">6</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
+<span id="cb26-600"><a href="#cb26-600" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
+<span id="cb26-601"><a href="#cb26-601" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-602"><a href="#cb26-602" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb26-603"><a href="#cb26-603" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename =</span> <span class="st">"Comp_expA_expB_ec50.jpg"</span>,</span>
+<span id="cb26-604"><a href="#cb26-604" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p,</span>
+<span id="cb26-605"><a href="#cb26-605" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">6</span>, <span class="at">height =</span> <span class="dv">4</span>,</span>
+<span id="cb26-606"><a href="#cb26-606" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> path_fig</span>
+<span id="cb26-607"><a href="#cb26-607" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-608"><a href="#cb26-608" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb26-609"><a href="#cb26-609" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-610"><a href="#cb26-610" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
+<span id="cb26-611"><a href="#cb26-611" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: Inter-experiment comparison of dose-response curves for EPX &amp; IMD.</span></span>
+<span id="cb26-612"><a href="#cb26-612" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-MIXcompdrc</span></span>
+<span id="cb26-613"><a href="#cb26-613" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-614"><a href="#cb26-614" aria-hidden="true" tabindex="-1"></a>df_drc_comp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-615"><a href="#cb26-615" aria-hidden="true" tabindex="-1"></a>  <span class="at">UNI_exp =</span> <span class="fu">c</span>(</span>
 <span id="cb26-616"><a href="#cb26-616" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">2</span>],</span>
 <span id="cb26-617"><a href="#cb26-617" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">4</span>],</span>
 <span id="cb26-618"><a href="#cb26-618" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpA)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpA)[<span class="dv">6</span>]</span>
 <span id="cb26-619"><a href="#cb26-619" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb26-620"><a href="#cb26-620" aria-hidden="true" tabindex="-1"></a>  <span class="at">ExpB =</span> <span class="fu">c</span>(</span>
+<span id="cb26-620"><a href="#cb26-620" aria-hidden="true" tabindex="-1"></a>  <span class="at">MIX_exp =</span> <span class="fu">c</span>(</span>
 <span id="cb26-621"><a href="#cb26-621" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">1</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">2</span>],</span>
 <span id="cb26-622"><a href="#cb26-622" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">3</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">4</span>],</span>
 <span id="cb26-623"><a href="#cb26-623" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coef</span>(drc.ExpB)[<span class="dv">5</span>], <span class="fu">coef</span>(drc.ExpB)[<span class="dv">6</span>]</span>
 <span id="cb26-624"><a href="#cb26-624" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb26-625"><a href="#cb26-625" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb26-626"><a href="#cb26-626" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb26-627"><a href="#cb26-627" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ratio =</span> ExpA <span class="sc">/</span> ExpB,</span>
-<span id="cb26-628"><a href="#cb26-628" aria-hidden="true" tabindex="-1"></a>    <span class="at">Per_difference =</span> (ExpB <span class="sc">-</span> ExpA) <span class="sc">/</span> ExpA <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb26-627"><a href="#cb26-627" aria-hidden="true" tabindex="-1"></a>    <span class="at">Ratio =</span> UNI_exp <span class="sc">/</span> MIX_exp,</span>
+<span id="cb26-628"><a href="#cb26-628" aria-hidden="true" tabindex="-1"></a>    <span class="at">Per_difference =</span> (MIX_exp <span class="sc">-</span> UNI_exp) <span class="sc">/</span> UNI_exp <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb26-629"><a href="#cb26-629" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb26-630"><a href="#cb26-630" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), signif, <span class="dv">2</span>))</span>
 <span id="cb26-631"><a href="#cb26-631" aria-hidden="true" tabindex="-1"></a></span>
@@ -2281,22 +2289,22 @@ For EPX :</code></pre>
 <span id="cb26-637"><a href="#cb26-637" aria-hidden="true" tabindex="-1"></a>df_expA_repro_simple_IMD <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
 <span id="cb26-638"><a href="#cb26-638" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-639"><a href="#cb26-639" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb26-640"><a href="#cb26-640" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"A"</span>)</span>
+<span id="cb26-640"><a href="#cb26-640" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"UNI"</span>)</span>
 <span id="cb26-641"><a href="#cb26-641" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-642"><a href="#cb26-642" aria-hidden="true" tabindex="-1"></a>df_expA_repro_simple_EPX <span class="ot">&lt;-</span> df_expA_repro <span class="sc">|&gt;</span></span>
 <span id="cb26-643"><a href="#cb26-643" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-644"><a href="#cb26-644" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb26-645"><a href="#cb26-645" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"A"</span>)</span>
+<span id="cb26-645"><a href="#cb26-645" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"UNI"</span>)</span>
 <span id="cb26-646"><a href="#cb26-646" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-647"><a href="#cb26-647" aria-hidden="true" tabindex="-1"></a>df_expB_repro_simple_IMD <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
 <span id="cb26-648"><a href="#cb26-648" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"IMD"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-649"><a href="#cb26-649" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb26-650"><a href="#cb26-650" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"B"</span>)</span>
+<span id="cb26-650"><a href="#cb26-650" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"MIX"</span>)</span>
 <span id="cb26-651"><a href="#cb26-651" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-652"><a href="#cb26-652" aria-hidden="true" tabindex="-1"></a>df_expB_repro_simple_EPX <span class="ot">&lt;-</span> df_expB_repro_single <span class="sc">|&gt;</span></span>
 <span id="cb26-653"><a href="#cb26-653" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Molecule <span class="sc">==</span> <span class="st">"EPX"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb26-654"><a href="#cb26-654" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Molecule, Dose, Nb_cocoons) <span class="sc">|&gt;</span></span>
-<span id="cb26-655"><a href="#cb26-655" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"B"</span>)</span>
+<span id="cb26-655"><a href="#cb26-655" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Experiment =</span> <span class="st">"MIX"</span>)</span>
 <span id="cb26-656"><a href="#cb26-656" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-657"><a href="#cb26-657" aria-hidden="true" tabindex="-1"></a>df_comp_IMD <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_simple_IMD, df_expB_repro_simple_IMD)</span>
 <span id="cb26-658"><a href="#cb26-658" aria-hidden="true" tabindex="-1"></a>df_comp_EPX <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_expA_repro_simple_EPX, df_expB_repro_simple_EPX)</span>
