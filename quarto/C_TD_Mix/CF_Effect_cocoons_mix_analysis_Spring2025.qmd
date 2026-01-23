@@ -684,7 +684,7 @@ p_comp <- ggplot() +
       color = Ratio_plot,
       fill = Ratio_plot
     ),
-    linewidth = line_width
+    linewidth = 0.8
   ) +
   scale_color_manual(values = pal_ratio) +
   scale_fill_manual(values = pal_ratio) +
