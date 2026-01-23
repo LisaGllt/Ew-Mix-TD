@@ -1,4 +1,4 @@
-# How to study a binary mixture ?
+# How to study a binary mixture ? {#sec-howmix}
 
 Considering mixtures, there are 3 possible outcomes in terms of toxic effects :
 

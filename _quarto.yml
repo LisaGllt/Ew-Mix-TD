@@ -35,7 +35,7 @@ book:
   date: "6/25/2024"
   chapters:
     - index.qmd
-    - quarto/A_Earthworm_culture.qmd
+    - quarto/A_General_method.qmd
     - part: quarto/B_TD_Single/B_TD_EPX_IMD_single.qmd
       chapters: 
         - quarto/B_TD_Single/BA_Preliminary_tests.qmd

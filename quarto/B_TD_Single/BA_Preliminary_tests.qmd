@@ -4,53 +4,15 @@ source(file = here::here("functions/fun.R"))
 f_load_libraries_colors()
 ```
 
-# Experimental design
-
-Our experimental designs are based on OECD TG 222 about reproduction tests performed on earthworms. A summary of the procedure is given in this section but detailled protocols are available in the `protocols` folder.
-
-All experiments were performed at 18°C with a soil from a permanent grassland in Versailles (48°48′ N, 2°5′ E, called "les Closeaux") where no pesticides have been applied for more than 25 years. More information is available @sec-A. Individuals were always fed with 3 g/ind/14 days (*ad libitum* conditions). Soil humidity is checked and adjusted every week. At the end of the experiments, earthworms are starved to empty their gut content on wet filter paper in Petri dishes before being frozen at -80°C.
-
-Pesticides concentrations were chosen thanks to preliminary tests presented @sec-CAPrelim.
-
-## Soil contamination
-
-The contamination of soil was performed a day prior to the beginning of the experiment. Due to the very low water solubility of epoxiconazole and the relatively high tested concentrations, it was not possible to spike the soil with a water solution containing epoxiconazole. The alternative use of a co-solvent was avoided, as they are often toxic to earthworms, and the required quantity would have been excessive. One day prior to the start of the tests, the soil contamination was carried out depending on the substance : a dry mixture of epoxiconazole and soil at 20% of its WHC with an addition of water to adjust the soil WHC to 70% ; a spiking the soil with a water solution of imidacloprid with an addition of water to adjust the soil WHC to 70%. The soil isn't mixed until the morning after on the start of the experiment.
-
-## Growth experiments
-
-```{r, message=F, warning=F}
-#| fig-cap: Experimental design of the growth experiments
-#| fig-width: 3
-#| fig-label: fig-growthexp
-
-knitr::include_graphics(here::here("photos/Growth_experiment_design.png")) 
-```
-
-The growth experiments were performed using juveniles from our culture. One replicate correspond to an individual placed in a cosm made of a plastic vessel (11 cm x 7.7 cm x 4.5 cm) containing the equivalent of 200 g of dry soil for 28 days.
-
-## Reproduction experiments
-
-```{r, message=F, warning=F}
-#| fig-cap: Experimental design of the reproduction experiments
-#| fig-width: 3
-#| fig-label: fig-reproexp
-
-knitr::include_graphics(here::here("photos/Reproduction_experiment_design.png")) 
-```
-
-For each replicate, two earthworms are placed in a cosm made of a plastic vessel (11 cm x 7.7 cm x 4.5 cm) containing the equivalent of 200 g of dry soil for 28 days. Individuals are weighted at the beginning and the end of the experiment. Cocoons produced during the experiment are retrieved by wet sieving the soil through a 1-mm mesh size [@bart_2018], and incubated at 18°C in Petri dishes on wet filter papers [@holmstrup_1991]. Cocoon hatching is monitored over the next four weeks.
-
-As nothing ever goes according to plan, the cocoon hatling monitoring could not be properly done as a power shortage disrupted the temperature of our incubator.
-
-## Preliminary tests {#sec-CAPrelim}
+# Preliminary tests {#sec-CAPrelim}
 
 Preliminary tests were performed to identify the concentration range capturing the whole range of effect of each substance. This would allow us to choose more carrefully the tested concentrations for each substance.
 
 ### Method
 
-At the time of these preliminary tests, our lab culture had just started and thus we could not use *A. caliginosa* from our lab. In the Closeaux meadow, *A. icterica* were easy to find so we chose to performed the test with these collected individuals.
+At the time of these preliminary tests, our new lab culture had just started and thus we could not use *A. caliginosa* from our lab. In the Closeaux meadow, *A. icterica* were easy to find so we chose to performed the test with these collected individuals.
 
-These tests were performed as described above with the difference being that juveniles were put by 2 instead of 1 in cosms. Growth tests were performed in 1 replicate and reproduction tests were performed in 2 replicates.
+These tests were performed as described by @sec-methodtests with the difference being that juveniles were put by 2 instead of 1 in cosms. Growth tests were performed in 1 replicate and reproduction tests were performed in 2 replicates.
 
 The tested concentrations are the following :
 
