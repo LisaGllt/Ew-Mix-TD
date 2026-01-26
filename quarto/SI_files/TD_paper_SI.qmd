@@ -1,39 +1,39 @@
 ---
-title: "Toxic cocktails in soils : Assessing fungicide-insecticide mixture effects on earthworm growth and reproduction"
-subtitle: "Supplementary information"
-author: 
+title: "Toxic cocktails in soils: Assessing fungicide–insecticide mixture effects on earthworm growth and reproduction"
+subtitle: "Supplementary Information"
+author:
   - name: Lisa Gollot
   - name: Cleo Bodin
   - name: Laura Frattaroli
   - name: Rémy Beaudouin
   - name: Raphaël Royauté
   - name: Juliette Faburé
-lang: eng
-format:
-  pdf:
-    documentclass: scrreprt
-    toc: true
-    toc-depth: 3
-    lof: true
-    lot: true
-    tbl-colwidths: auto
-    df-print: tibble
-    number-sections: true
-    fontsize: large
-    linestretch: 1.2
+lang: en
+
+format: 
+  pdf: 
+    documentclass: scrreprt 
+    toc: true 
+    toc-depth: 3 
+    lof: true 
+    lot: true 
+    tbl-colwidths: auto 
+    df-print: tibble 
+    number-sections: true 
+    fontsize: large 
+    linestretch: 1.2 
     layout: 
-      - header=1cm
+      - header=1cm 
     geometry: 
-      - top=2cm
-      - bottom=2cm
-      - left=2cm
+      - top=2cm 
+      - bottom=2cm 
+      - left=2cm 
       - right=2cm
-    include-in-header: 
-      text: 
-        \usepackage{pdfpages}
-editor: 
-    markdown:
-      canonical: true
+
+editor:
+  markdown:
+    canonical: true
+
 bibliography: references.bib
 csl: apa.csl
 ---
@@ -72,7 +72,7 @@ csl: apa.csl
 
 ![Overview of the reproduction experiments](../../photos/Reproduction_experiment_design.png){width="80%"}
 
-## Experiment A - Single substance
+## Experiment UNI - Single substance
 
 ### Juvenile growth
 
@@ -175,13 +175,13 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 : Estimated parameters of the dose-response curve for normalized cocoon production of earthworms exposed to imidacloprid or epoxiconazole and their respective 95% confidence intervals (with common slope and Ymax).
 
-## Experiment B - Mixture
+## Experiment MIX - Mixture
 
-![Experimental design of experiment B.](../../fig/Mixture/Design/Mixture_design_exp.png)
+![Experimental design of experiment MIX.](../../fig/Mixture/Design/Mixture_design_exp.png)
 
 ![Expected effect range for each effect isobole (red points).](../../fig/Mixture/Design/Mixture_design_effect_range.png)
 
-![Initial body weight of earthworms used in the experiment B. Earthworm assigned to lot D are represented in blue while the ones assigned to lot E are represented in dark grey.](../../fig/Mixture/Spring/ExpB_initial_weights.png)
+![Initial body weight of earthworms used in the experiment MIX. Earthworm assigned to lot D are represented in blue while the ones assigned to lot E are represented in dark grey.](../../fig/Mixture/Spring/ExpB_initial_weights.png)
 
 |                      | Imidacloprid         | Epoxiconazole        |
 |----------------------|----------------------|----------------------|
@@ -190,7 +190,7 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 | EC$_{50}$ (mg/kg)    | 0.26 \[0.20 ; 0.33\] | 216 \[160 ; 271\]    |
 | \alpha               | 2.28 \[1.65 ; 2.9\]  | 2.28 \[1.65 ; 2.9\]  |
 
-: Estimated parameters of the dose-response curves from experiment B (common slope and Y$_{max}$, used in Jonker models.
+: Estimated parameters of the dose-response curves from experiment MIX (common slope and Y$_{max}$, used in Jonker models.
 
 ![Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common Y$_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.](../../fig/mixture/Spring/ExpB_drc_single_commonslope.png)
 
@@ -381,7 +381,7 @@ Probability of direction (pd)
 
 lacke-of-fit test with likelihood-ratio test : p value = 1.
 
-## Dose-response curves for the single substance tested during experiment B
+## Dose-response curves for the single substance tested during experiment MIX
 
 |                      | Imidacloprid         | Epoxiconazole        |
 |----------------------|----------------------|----------------------|
