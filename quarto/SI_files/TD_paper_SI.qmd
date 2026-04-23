@@ -1,13 +1,6 @@
 ---
-title: "Toxic cocktails in soils: Assessing fungicide–insecticide mixture effects on earthworm growth and reproduction"
+title: "Toxic cocktails in soils: Evidence for synergistic effects of the imidacloprid-epoxiconazole mixture on earthworm life-history traits"
 subtitle: "Supplementary Information"
-author:
-  - name: Lisa Gollot
-  - name: Cleo Bodin
-  - name: Laura Frattaroli
-  - name: Rémy Beaudouin
-  - name: Raphaël Royauté
-  - name: Juliette Faburé
 lang: en
 
 format: 
@@ -64,6 +57,10 @@ csl: apa.csl
 
 ![Results of the DNA barcoding of 10 individuals from the culture (highlighted in yellow)](../../photos/DNA_barcoding.png)
 
+The phylogenetic tree was realised thanks to maximum likelyhood bootstrap method (1000 simulations) with the Tamura-Nei model (nucleotides). Bootstrap frequency is indicated on each branch.
+
+*Aporrectodea caliginosa* is a cryptic species complex comprising three lineages. Our earthworm culture is known to include individuals from two closely related lineages (2 and 3). While these lineages could potentially exhibit differences in sensitivity, previous research on *Gammarus roeselii* has shown that tolerance within cryptic species complexes is not always lineage dependent [@kabus_2024].
+
 # Experiments
 
 ## Growth and reproduction experiments
@@ -76,7 +73,7 @@ csl: apa.csl
 
 ### Juvenile growth
 
-***Initial state of earthworms***
+**Initial state of earthworms**
 
 ![Initial weight of juvenile earthworms.](../../fig/Single_expo/Growth/ExpA_growth_initial_weights.png)
 
@@ -89,13 +86,13 @@ However, earthworms were non the less randomly attributed to conditions and the 
 
 For EPX, there is no significant effect of the dose on the initial weight of earthworms (Student test : pval(IMD) = 0.125).
 
-***Mortality during the experiment***
+**Mortality during the experiment**
 
 Mortality was observed for the highest concentrations of IMD (@fig-ExpAGrowthJuvDead).
 
 ![Number of dead individuals per condition at the end of the experiment](../../fig/Single_expo/Growth/ExpA_growth_single_dead.png){#fig-ExpAGrowthJuvDead}
 
-***Growth curves***
+**Growth curves**
 
 Growth curves of juveniles exposed to IMD or EPX are presented @fig-ExpAGrowthJuvEPX and @fig-ExpAGrowthJuvIMD
 
@@ -118,13 +115,13 @@ Growth curves of juvenile earthworms.
 
 ### Reproduction
 
-***Initial state***
+**Initial state**
 
 ![Initial weight of adult earthworms.](../../fig/Single_expo/Reproduction/ExpA_repro_initial_weights.png)
 
 There is no effect of the dose on the initial weight of earthworms (Student test : pval(EPX) = 0.17 & pval(IMD) = 0.573).
 
-***Effect on cocoon production***
+**Effect on cocoon production**
 
 |                      | Imidacloprid         | Epoxiconazole          |
 |----------------------|----------------------|------------------------|
@@ -135,7 +132,7 @@ There is no effect of the dose on the initial weight of earthworms (Student test
 
 : Estimated parameters of the dose-response curve for cocoon production of earthworms exposed to imidacloprid or epoxiconazole and their respective 95% confidence intervals.
 
-lacke-of-fit test : p value = 1.
+lack-of-fit test : p value = 1.
 
 Log-Likelihood ratio test - Comparison of the dose-response curve models with or without common slope with data normalized with respective controls :
 
@@ -153,7 +150,7 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 : NOEC and LOEC estimated with a Dunnett test.
 
-***Effect on adult growth***
+**Effect on adult growth**
 
 ![Effect of the pesticides on adult growth rates.](../../fig/Single_expo/Reproduction/ExpA_repro_growth_rates.png)
 
@@ -164,7 +161,7 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 : NOEC and LOEC estimated with a Dunnett test.
 
-***Design determination***
+**Design determination**
 
 |                      | Imidacloprid           | Epoxiconazole          |
 |----------------------|------------------------|------------------------|
@@ -181,7 +178,7 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 ![Expected effect range for each effect isobole (red points).](../../fig/Mixture/Design/Mixture_design_effect_range.png)
 
-![Initial body weight of earthworms used in the experiment MIX. Earthworm assigned to lot D are represented in blue while the ones assigned to lot E are represented in dark grey.](../../fig/Mixture/Spring/ExpB_initial_weights.png)
+![Initial body weight of earthworms used in the experiment MIX. Earthworm assigned to lot D are represented in blue while the ones assigned to lot E are represented in dark grey.](../../fig/Mixture/Spring/ExpB_initial_weights.png){#fig-initMIX fig-scap="Initial body weight of earthworms used in the experiment MIX."}
 
 |                      | Imidacloprid         | Epoxiconazole        |
 |----------------------|----------------------|----------------------|
@@ -192,7 +189,9 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 : Estimated parameters of the dose-response curves from experiment MIX (common slope and Y$_{max}$, used in Jonker models.
 
-![Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common Y$_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.](../../fig/mixture/Spring/ExpB_drc_single_commonslope.png)
+![Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common Y$_{max}$ and slope for the 2 active substances). Crosses correspond to the number of cocoons produced by one cosm and the bold points represents the mean per dose.](../../fig/mixture/Spring/ExpB_drc_single_commonslope.png){#fig-drcMIX fig-scap="Dose response curves obtained with cocoon production. The line represents the modelled dose-response curve (with common Y$_{max}$ and slope for the 2 active substances)." width="80%"}
+
+![Mean-variance relationship of the MIX experiment data.](../../fig/mixture/Spring/ExpB_Mean_Variance.png)
 
 # Jonker interaction models
 
@@ -334,13 +333,13 @@ Probability of direction (pd)
 
 :   The probability of direction is the posterior probability that a model parameter has a positive or a negative sign. It is defined as the proportion of the posterior distribution that lies on the same side of zero as the median, and quantifies the certainty about the direction of an effect.
 
-![Density of error on the estimated interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right. Vertical light blue bars indicate the true simulated interaction value, and the probability of direction for each distribution is shown above the corresponding panel.](../../fig/Mixture/Power/Mix_power_CA_dens_error.png){height="80%"}
+![Density of error on the estimated interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right. Vertical light blue bars indicate the true simulated interaction value, and the probability of direction for each distribution is shown above the corresponding panel.](../../fig/Mixture/Power/Mix_power_CA_dens_error.png){height="80%" fig-scap="Density of error on the estimated interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter."}
 
-![Density of error on the estimated interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right. Vertical light blue bars indicate the true simulated interaction value, and the probability of direction for each distribution is shown above the corresponding panel.](../../fig/Mixture/Power/Mix_power_IA_dens_error.png){height="80%"}
+![Density of error on the estimated interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right. Vertical light blue bars indicate the true simulated interaction value, and the probability of direction for each distribution is shown above the corresponding panel.](../../fig/Mixture/Power/Mix_power_IA_dens_error.png){height="80%" fig-scap="Density of error on the estimated interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter."}
 
-![Density of percentage errors in the estimation of the interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Power/Mix_power_CA_per_error.png){height="80%"}
+![Density of percentage errors in the estimation of the interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Power/Mix_power_CA_per_error.png){height="80%" fig-scap="Density of percentage errors in the estimation of the interaction parameter using the SA model with CA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter."}
 
-![Density of percentage errors in the estimation of the interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Power/Mix_power_IA_per_error.png){height="80%"}
+![Density of percentage errors in the estimation of the interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter. Each panel corresponds to one simulated value, indicated on the right of the panels.](../../fig/Mixture/Power/Mix_power_IA_per_error.png){height="80%" fig-scap="Density of percentage errors in the estimation of the interaction parameter using the SA model with IA as reference, for the experimental design with four replicates and different simulated values of the interaction parameter."}
 
 | Interaction value | Power | Misclassification rate (when estimated interaction is significant) | Median estimation relative error | \>25% error in the estimated interaction value | \>50% error in the estimated interaction value |
 |----|----|----|----|----|----|
@@ -361,7 +360,7 @@ Probability of direction (pd)
 
 ## Dose-response curve prediction for each ratio
 
-![Dose-response curves obtained for each mixture ratio. The lines represent the dose-response curves obtained (with common Y$_{max}$ and Y$_{min}$ set to 0). Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.](../../fig/mixture/Spring/ExpB_drcRatios.png)
+![Dose-response curves obtained for each mixture ratio. The lines represent the dose-response curves obtained (with common Y$_{max}$ and Y$_{min}$ set to 0). Crosses correspond to the number of cocoons produced by one cosm and the bold points represent the mean per condition.](../../fig/mixture/Spring/ExpB_drcRatios.png){fig-scap="Dose-response curves obtained for each mixture ratio."}
 
 | Parameter                     | Estimate \[CI 95%\]  |
 |-------------------------------|----------------------|
@@ -379,7 +378,7 @@ Probability of direction (pd)
 
 : Estimated dose-response curves for each mixture ratios. $Y_{min}$ set to 0.
 
-lacke-of-fit test with likelihood-ratio test : p value = 1.
+lack-of-fit test with likelihood-ratio test : p value = 1.
 
 ## Dose-response curves for the single substance tested during experiment MIX
 
@@ -403,20 +402,20 @@ Log-Likelihood ratio test - Comparison of the dose-response curve models with or
 
 ## Mixture model comparisons
 
-| Model type | a                       | b                      | Log-Likelihood |
-|------------|-------------------------|------------------------|----------------|
-| CA         | \-                      | \-                     | -395.2         |
-| CA-SA      | -0.005 \[-1.06 ; 0.84\] | \-                     | -395.2         |
-| CA-DL      | 1.6 \[-0.7 ; 5.5\]      | 0.63 \[-174.4 ; 0.65\] | -392.3         |
-| CA-DR      | -0.40 \[-3.4 ; 2.3\]    | 0.9 \[-5.1 ; 6.7\]     | -395.1         |
-| IA         | \-                      | \-                     | -397.5         |
-| IA-SA      | -1.5 \[-3.0 ; -0.2\]    | \-                     | -391.3         |
-| IA-DL      | -1.9 \[-6.8 ; -0.004\]  | 0.6 \[-298.5 ; 2.3\]   | -391.1         |
-| IA-DR      | -1.6 \[-5.6 ; 2.1\]     | 0.3 \[-8.2 ; 8.1\]     | -391.3         |
+| Model type | a | b | Log-Likelihood | Lack-of-fit p-value |
+|----|----|----|----|----|
+| CA | \- | \- | -395.2 | 6.75e-10 |
+| CA-SA | -0.005 \[-1.06 ; 0.84\] | \- | -395.2 | 3.57e-10 |
+| CA-DL | 1.6 \[-0.7 ; 5.5\] | 0.63 \[-174.4 ; 0.65\] | -392.3 | 1.63e-09 |
+| CA-DR | -0.40 \[-3.4 ; 2.3\] | 0.9 \[-5.1 ; 6.7\] | -395.1 | 2.02e-10 |
+| IA | \- | \- | -397.5 | 1.23e-10 |
+| IA-SA | -1.5 \[-3.0 ; -0.2\] | \- | -391.3 | 5.92e-09 |
+| IA-DL | -1.9 \[-6.8 ; -0.004\] | 0.6 \[-298.5 ; 2.3\] | -391.1 | 3.72e-09 |
+| IA-DR | -1.6 \[-5.6 ; 2.1\] | 0.3 \[-8.2 ; 8.1\] | -391.3 | 3.21e-09 |
 
-: Estimated interaction parameters by the different Jonker interaction models.
+: Estimated interaction parameters by the different Jonker interaction models and their lack-of-fit test.
 
-lacke-of-fit tests were performed on each model with log-likelihood-ratio tests (Log-likelihood anova model = -342.1) :
+lack-of-fit tests were performed on each model with log-likelihood-ratio tests (Log-likelihood anova model = -342.1) :
 
 -   Lack-of-fit test CA/Anova: D = 106.26, df = 32, p = 6.75e-10
 -   Lack-of-fit test CA-SA/Anova: D = 106.26, df = 31, p = 3.57e-10
@@ -440,17 +439,21 @@ lacke-of-fit tests were performed on each model with log-likelihood-ratio tests 
 
 : Comparison of the different models with Likelihood Ratio tests.
 
-![Estimated dose-response surfaces isoboles by the CA (grey) and the IA (blue) model. Blue numbers aside each isobole correspond to the level of the isobole in produced cocoons.](../../fig/Mixture/Spring/ExpB_2D_data_CAIA.png)
+![Estimated dose-response surfaces isoboles by the CA (grey) and the IA (blue) model. Blue numbers aside each isobole correspond to the level of the isobole in produced cocoons.](../../fig/Mixture/Spring/ExpB_2D_data_CAIA.png){fig-scap="Estimated dose-response surfaces isoboles by the CA (grey) and the IA (blue) model."}
 
-![Estimated dose-response surfaces isoboles by the IA-SA (blue) model. The isoboles from the IA model are represented in dotted lines.](../../fig/Mixture/Spring/ExpB_2D_data_IASA.png)
+![Estimated dose-response surfaces isoboles by the IA-SA (blue) model. The isoboles from the IA model are represented in dotted lines.](../../fig/Mixture/Spring/ExpB_2D_data_IASA.png){fig-scap="Estimated dose-response surfaces isoboles by the IA-SA (blue) model."}
 
-![Results of the CA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Spring/ExpB_Jonker_predobs_CA.png)
+::: {#fig-predobs .unlisted layout-ncol="2"}
+![Results of the CA model fit on experimental data.](fig/Article_2_SI/Figures_compressees/ExpB_Jonker_predobs_CA.png){.unlisted fig-scap="Results of the CA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively."}
 
-![Results of the IA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Spring/ExpB_Jonker_predobs_IA.png)
+![Results of the IA model fit on experimental data.](fig/Article_2_SI/Figures_compressees/ExpB_Jonker_predobs_IA.png){.unlisted fig-scap="Results of the IA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively."}
 
-![Results of the CA-SA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Spring/ExpB_Jonker_predobs_CASA.png)
+![Results of the CA-SA model fit on experimental data.](fig/Article_2_SI/Figures_compressees/ExpB_Jonker_predobs_CASA.png){.unlisted fig-scap="Results of the CA-SA model fit on experimental data."}
 
-![Results of the IA-SA model fit on experimental data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.](../../fig/Mixture/Spring/ExpB_Jonker_predobs_IASA.png)
+![Results of the IA-SA model fit on experimental data.](fig/Article_2_SI/Figures_compressees/ExpB_Jonker_predobs_IASA.png){.unlisted fig-scap="Results of the IA-SA model fit on experimental data."}
+
+Predicted vs. observed data. Thin black and grey lines represent the 2-folds and 5-fold changes, respectively. The thicker black line represents the identity line.
+:::
 
 Predicted responses will always be strictly above zero hence the points represented on the left hedge of the plots which correspond to the cosms where no cocoon were found.
 

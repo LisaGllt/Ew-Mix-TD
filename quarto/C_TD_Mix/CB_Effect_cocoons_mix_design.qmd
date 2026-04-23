@@ -744,19 +744,21 @@ factor_design <- 10^(1/4)
 
 EPX_x <- c(
   EPX_x,
-  EPX_x/(factor_design^9),
-  EPX_x/(factor_design^5), 
-  EPX_x/(factor_design^2), 
-  EPX_x/factor_design,
+  EPX_x/(factor_design^9), #1
+  EPX_x/(factor_design^5), #2
+  EPX_x/(factor_design^2), #3
+  EPX_x/factor_design, #4
+  
   factor_design*EPX_x, 
   factor_design^2*EPX_x
   )
 IMD_x <- c(
   IMD_x,
-  IMD_x/(factor_design^9),
+  IMD_x/(factor_design^9), 
   IMD_x/(factor_design^5), 
   IMD_x/(factor_design^2), 
   IMD_x/factor_design,
+  
   factor_design*IMD_x, 
   factor_design^2*IMD_x
   )

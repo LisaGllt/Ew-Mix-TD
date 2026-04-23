@@ -225,6 +225,22 @@ p
 variance_mean |> datatable(options = list(dom = "t"), class = "hover")
 ```
 
+```{r savemeanvariance, include=F}
+ggsave(
+  filename = "ExpB_Mean_Variance.png",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
+
+ggsave(
+  filename = "ExpB_Mean_Variance.jpg",
+  plot = p,
+  width = 8, height = 6,
+  path = path_fig
+)
+```
+
 For count data, the default distribution is Poisson. Our data are overdispersed for intermediate values of produced cocoons. This overdispersion cannot be reproduced using neither the Quasi-Poisson nor the Negative Binomial distributions. We therefore made the choice to keep a Poisson distribution.
 
 ## Step 1 - Dose-response curves from experiment B
@@ -467,7 +483,7 @@ anova(drc.mix.IE_notcommonslope, drc.mix.IE, test = "Chisq")
 
 Which is the case here.
 
-#### Lacke-of-fit test
+#### lacke-of-fit test
 
 We need to perform a lacke of fit test for these dose-response curves.
 
@@ -1158,7 +1174,7 @@ Due to the structure of the error model, model comparison using F-tests is not p
 
 The performance of these models was then compared against the CA or IA baseline using Likelihood ratio tests, in order to determine whether including interaction terms significantly improved model fit. Uncertainty around the interaction parameters ($a$, $b$) was quantified by bootstrap resampling ($n$ = 5000 with the same number of draws per condition), which provided confidence intervals and allowed us to classify interactions as synergistic, antagonistic, or additive.
 
-### Lacke-of-fit tests
+### lacke-of-fit tests
 
 We need first to test the acceptability of the CA and IA model against an anova model.
 
@@ -1186,7 +1202,7 @@ anova.mix <- glm(
 ```{r loftestjonker}
 ##### CA #####
 
-print("Lacke-of-Fit test - CA")
+print("lacke-of-Fit test - CA")
 # Likelihoods
 LL_model <- LogLikelihood_CA
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1199,7 +1215,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### IA #####
 
-print("Lacke-of-Fit test - IA")
+print("lacke-of-Fit test - IA")
 # Likelihoods
 LL_model <- LogLikelihood_IA
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1211,7 +1227,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### CASA #####
 
-print("Lacke-of-Fit test - CASA")
+print("lacke-of-Fit test - CASA")
 # Likelihoods
 LL_model <- LogLikelihood_CASA
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1223,7 +1239,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### IASA #####
 
-print("Lacke-of-Fit test - IASA")
+print("lacke-of-Fit test - IASA")
 # Likelihoods
 LL_model <- LogLikelihood_IASA
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1235,7 +1251,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### CADL #####
 
-print("Lacke-of-Fit test - CADL")
+print("lacke-of-Fit test - CADL")
 # Likelihoods
 LL_model <- LogLikelihood_CADL
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1247,7 +1263,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### IADL #####
 
-print("Lacke-of-Fit test - IADL")
+print("lacke-of-Fit test - IADL")
 # Likelihoods
 LL_model <- LogLikelihood_IADL
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1259,7 +1275,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### CADR #####
 
-print("Lacke-of-Fit test - CADR")
+print("lacke-of-Fit test - CADR")
 # Likelihoods
 LL_model <- LogLikelihood_CADR
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1271,7 +1287,7 @@ f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
 
 ##### IADR #####
 
-print("Lacke-of-Fit test - IADR")
+print("lacke-of-Fit test - IADR")
 # Likelihoods
 LL_model <- LogLikelihood_IADR
 LL_anova <- as.numeric(logLik(anova.mix))
@@ -1962,6 +1978,25 @@ ggsave(
   filename = "ExpB_2D_data_IASA.svg",
   plot = p,
   width = 6, height = 5,
+  path = path_fig
+)
+
+# Poster 
+
+p_poster <- p +
+  theme(
+    panel.background = element_rect(fill = "transparent", color = NA),
+    plot.background  = element_rect(fill = "transparent", color = NA),
+    legend.background = element_rect(fill = "transparent", color = NA),
+    legend.box.background = element_rect(fill = "transparent", color = NA)
+  )
+
+ggsave(
+  filename = "ExpB_2D_data_IASA_poster.png",
+  plot = p_poster,
+  width = 6,
+  height = 5,
+  bg = "transparent",
   path = path_fig
 )
 ```

@@ -132,6 +132,10 @@ ggsave(
 )
 ```
 
+```{r}
+summary(subset(df_expB_growth, t == 0))
+```
+
 ## Comparison of the controls
 
 ```{r, message=F, warning=F}

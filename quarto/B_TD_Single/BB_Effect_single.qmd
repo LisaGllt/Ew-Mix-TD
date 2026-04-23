@@ -325,6 +325,13 @@ summary(dunnett_test)
 
 There is no effect of the dose on the initial mean weight of earthworms for both pesticides.
 
+```{r}
+cat("IMD initial weight\n")
+summary(subset(df_expA_repro_tot, t == 0 & Molecule == "IMD")$w)
+cat("EPX initial weight\n")
+summary(subset(df_expA_repro_tot, t == 0 & Molecule == "EPX")$w)
+```
+
 #### Effect on cocoon production
 
 For reproduction, we have count data and therefor the error model is a Poisson distribution. Additionaly, the minimal response is obviously 0 thus we set $Y_{min}$ to 0 in our model.
@@ -542,6 +549,182 @@ ggsave(
   plot = plot_drc,
   width = 6,
   height = 4,
+  path = path_repro
+)
+```
+
+```{r, include=F}
+plot_drc_r_IMD <- ggplot() +
+  geom_ribbon_interactive(
+    data = subset(CI.r, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin, ymax = pmax,
+      group = Molecule,
+      fill = Molecule
+    ),
+    alpha = 0.2
+  ) +
+  geom_line_interactive(
+    data = subset(CI.r, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p,
+      color = Molecule,
+      shape = Molecule
+    ),
+    linewidth = 1.2
+  ) +
+  geom_point_interactive(
+    data = subset(df_expA_repro, Molecule == "IMD"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      color = Molecule,
+      shape = Molecule
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
+  geom_point_interactive(
+    data = subset(df_expA_repro_mean, Molecule == "IMD"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha = 1,
+    size = 3
+  ) +
+  scale_color_manual(name = "", values = rev(col_molec)) +
+  scale_shape_manual(name = "", values = rev(shape_molec)) +
+  scale_fill_manual(name = "", values = rev(col_molec)) +
+  theme_minimal() +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
+  labs(
+    x = "Dose (mg/kg)",
+    y = "Number of cocoons produced\nper cosm (#)",
+  ) +
+  theme(
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
+    axis.title.x = element_text(
+      size = sizetitle,
+      face = "plain"
+    ),
+    axis.title.y = element_text(
+      size = sizetitle,
+      face = "plain"
+    )
+  )
+
+plot_drc_r_EPX <- ggplot() +
+  geom_ribbon_interactive(
+    data = subset(CI.r, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin, ymax = pmax,
+      group = Molecule,
+      fill = Molecule
+    ),
+    alpha = 0.2
+  ) +
+  geom_line_interactive(
+    data = subset(CI.r, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p,
+      color = Molecule,
+      shape = Molecule
+    ),
+    linewidth = 1.2
+  ) +
+  geom_point_interactive(
+    data = subset(df_expA_repro, Molecule == "EPX"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      color = Molecule,
+      shape = Molecule
+    ),
+    cex = 2,
+    alpha = 0.4
+  ) +
+  geom_point_interactive(
+    data = subset(df_expA_repro_mean, Molecule == "EPX"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons,
+      shape = Molecule,
+      color = Molecule,
+      shape = Molecule
+    ),
+    alpha = 1,
+    size = 3
+  ) +
+  scale_color_manual(name = "", values = col_molec) +
+  scale_shape_manual(name = "", values = shape_molec) +
+  scale_fill_manual(name = "", values = col_molec) +
+  theme_minimal() +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.001, 0.01, 0.1, 1, 10, 100, 1000),
+    labels = c(Label_Ctrl, "0.001", "0.01", "0.1", "1", "10", "100", "1000")
+  ) +
+  labs(
+    x = "Dose (mg/kg)",
+    y = "Number of cocoons produced\nper cosm (#)",
+  ) +
+  theme(
+    legend.position = "none",
+    legend.title = element_text(
+      size = sizetitle - 2,
+      face = "bold"
+    ),
+    title = element_text(
+      size = sizetitle,
+      face = "bold"
+    ),
+    axis.title.x = element_text(
+      size = sizetitle,
+      face = "plain"
+    ),
+    axis.title.y = element_text(
+      size = sizetitle,
+      face = "plain"
+    )
+  )
+```
+
+```{r, include=F}
+ggsave(
+  filename = "ExpA_repro_drc_single_IMD.png",
+  plot = plot_drc_r_IMD,
+  width = 3.5,
+  height = 3,
+  path = path_repro
+)
+
+ggsave(
+  filename = "ExpA_repro_drc_single_EPX.png",
+  plot = plot_drc_r_EPX,
+  width = 3.5,
+  height = 3,
   path = path_repro
 )
 ```
@@ -1278,6 +1461,13 @@ For IMD, there is a significant effect of the dose on earthworm initial weights.
 
 However, earthworms were non the less randomly attributed to conditions and the growth model allows to take the differences in initial weight into account.
 
+```{r}
+cat("IMD initial weight\n")
+summary(subset(df_expA_growth_tot, t == 0 & Molecule == "IMD")$w)
+cat("EPX initial weight\n")
+summary(subset(df_expA_growth_tot, t == 0 & Molecule == "EPX")$w)
+```
+
 ##### Earthworms growth
 
 ```{r, warning=F, message=F}
@@ -1973,6 +2163,44 @@ ggsave(
   height = 4,
   path = here::here("fig/")
 )
+
+# Poster 
+
+p_poster_r <- plot_drc_r +
+  theme(
+    panel.background = element_rect(fill = "transparent", color = NA),
+    plot.background  = element_rect(fill = "transparent", color = NA),
+    legend.background = element_rect(fill = "transparent", color = NA),
+    legend.box.background = element_rect(fill = "transparent", color = NA),
+    legend.position = "none"
+  )
+
+ggsave(
+  filename = "Poster_drc_repro.png",
+  plot = p_poster_r,
+  width = 4.5,
+  height = 3.5,
+  bg = "transparent",
+  path = here::here("fig/")
+)
+
+p_poster_g <- plot_drc_g +
+  theme(
+    panel.background = element_rect(fill = "transparent", color = NA),
+    plot.background  = element_rect(fill = "transparent", color = NA),
+    legend.background = element_rect(fill = "transparent", color = NA),
+    legend.box.background = element_rect(fill = "transparent", color = NA)
+  )
+
+ggsave(
+  filename = "Poster_drc_growth.png",
+  plot = p_poster_g,
+  width = 4.5,
+  height = 3.5,
+  bg = "transparent",
+  path = here::here("fig/")
+)
+
 ```
 
 The individual toxicity profiles of epoxiconazole and imidacloprid in earthworms confirm both compounds as environmentally relevant stressors, albeit with markedly different potencies.

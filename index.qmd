@@ -1,5 +1,7 @@
 # Information about this project
 
+A preprint of this work is available [here](https://hal.science/hal-05512403).
+
 ## Abstract
 
 ![Graphical abstract](photos/Graphical_abstract.png)
@@ -66,7 +68,7 @@ data_gantt <- data.frame(
   start_date = as.Date(
     c(
       "2024-03-05",                              # 1
-      "2024-04-01",                              # 2
+      "2024-03-01",                              # 2
       "2024-05-03",                              # 3
       "2024-10-14",                              # 4
       "2025-01-07",                              # 5

@@ -1,0 +1,4829 @@
+library(here)
+source(file = here::here("fun.R"))
+f_load_libraries_colors()
+
+palette <- colorRampPalette(c("#5E81AC", "#88C0D0"))
+col_mix <- Nord_polar[4]
+pal_ratio <- c("#88C0D0", col_mix, col_mix, col_mix, "#5E81AC",col_mix)
+
+# 1. Experimental design ----
+
+## 1.1. Tests of different joint dose-response model for EPX and IMD ----
+
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
+
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+path_mixture <- here::here("fig/Mixture/Design")
+
+# No common parameter
+drc.1<- drm(
+  r_Nb_cocoons~Dose, Molecule, 
+  data = df_expA_repro,
+  type="continuous",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed=c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(Molecule, Molecule, Molecule)
+)
+# summary(drc.1)
+
+Dose_x <- expand.grid(
+  exp(
+    seq(
+      log(0.0001),log(5000),
+      by=(log(5000)-log(0.0001))/100
+    )
+  )
+)
+
+CI.1 <- data.frame(
+  Dose=c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+)
+
+pm.1 <- predict(drc.1, newdata=CI.1, interval="confidence")
+CI.1$p <- pm.1[,1]
+CI.1$pmin <- pm.1[,2]
+CI.1$pmax <- pm.1[,3]
+
+# Common Ymax
+drc.2<- drm(
+  r_Nb_cocoons~Dose, Molecule, 
+  data = df_expA_repro,
+  type="continuous",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed=c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(Molecule, 1, Molecule)
+)
+# summary(drc.2)
+
+CI.2 <- data.frame(
+  Dose=c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+)
+
+pm.2 <- predict(drc.2, newdata=CI.2, interval="confidence")
+CI.2$p <- pm.2[,1]
+CI.2$pmin <- pm.2[,2]
+CI.2$pmax <- pm.2[,3]
+
+# Common slope
+drc.3<- drm(
+  r_Nb_cocoons~Dose, Molecule, 
+  data = df_expA_repro,
+  type="continuous",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed=c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(1, Molecule, Molecule)
+)
+# summary(drc.3)
+
+CI.3 <- data.frame(
+  Dose = c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+)
+
+pm.3 <- predict(drc.3, newdata=CI.3, interval="confidence")
+CI.3$p <- pm.3[,1]
+CI.3$pmin <- pm.3[,2]
+CI.3$pmax <- pm.3[,3]
+
+# Common Ymax and slope
+drc.4<- drm(
+  r_Nb_cocoons~Dose, Molecule, 
+  data = df_expA_repro,
+  type="continuous",
+  fct=LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ), 
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels=data.frame(1, 1, Molecule)
+)
+# summary(drc.4)
+
+CI.4 <- data.frame(
+  Dose = c(Dose_x$Var1, Dose_x$Var1),
+  Molecule = c(rep("EPX", length(Dose_x$Var1)), rep("IMD", length(Dose_x$Var1)))
+)
+
+pm.4 <- predict(drc.4, newdata=CI.4, interval="confidence")
+CI.4$p <- pm.4[,1]
+CI.4$pmin <- pm.4[,2]
+CI.4$pmax <- pm.4[,3]
+
+line_width <- 1.2
+
+x <- seq(0.000001, 5000, 0.01)
+
+plot_drc_1 <- ggplot()+
+  
+  geom_ribbon(
+    data=CI.1, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+    ), 
+    alpha=0.2
+  )+
+  geom_line(
+    data=CI.1, 
+    aes(
+      x=Dose, 
+      y=p, 
+      group=Molecule, 
+      color=Molecule
+    ), 
+    linewidth=line_width
+  )+
+  geom_point(
+    data=df_expA_repro, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=2, 
+    alpha=0.4
+  )+
+  geom_point(
+    data=df_expA_repro_mean, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=3, 
+    alpha=1
+  )+
+  #geom_ribbon(data=CI.1, aes(x=x, y=p, ymin=pmin, ymax=pmax), alpha=0.2)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  
+  scale_color_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  scale_shape_manual(name="Dose (mg/kg)",values=c(shape_molec, shape_molec))+
+  scale_fill_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  
+  theme_minimal()+
+  
+  labs(
+    x="Dose (mg/kg)", 
+    y=expression(paste("Relative number of cocoons produced per cosm")), 
+    title = "No common parameter"
+  )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"), 
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+  )
+
+plot_drc_2 <- ggplot()+
+  
+  geom_ribbon(
+    data=CI.2, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+    ), 
+    alpha=0.2
+  )+
+  geom_line(
+    data=CI.2, 
+    aes(
+      x=Dose, 
+      y=p, 
+      group=Molecule, 
+      color=Molecule
+    ), 
+    linewidth=line_width
+  )+
+  geom_point(
+    data=df_expA_repro, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=2, 
+    alpha=0.4
+  )+
+  geom_point(
+    data=df_expA_repro_mean, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=3, 
+    alpha=1
+  )+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  
+  scale_color_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  scale_shape_manual(name="Dose (mg/kg)",values=c(shape_molec, shape_molec))+
+  scale_fill_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  
+  theme_minimal()+
+  
+  labs(
+    x="Dose (mg/kg)", 
+    y=expression(paste("Relative number of cocoons produced per cosm")), 
+    title = "Common Ymax"
+  )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"), 
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+  )
+
+plot_drc_3 <- ggplot()+
+  
+  geom_ribbon(
+    data=CI.3, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+    ), 
+    alpha=0.2
+  )+
+  geom_line(
+    data=CI.3, 
+    aes(
+      x=Dose, 
+      y=p, 
+      group=Molecule, 
+      color=Molecule
+    ), 
+    linewidth=line_width
+  )+
+  geom_point(
+    data=df_expA_repro, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=2, 
+    alpha=0.4
+  )+
+  geom_point(
+    data=df_expA_repro_mean, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=3, 
+    alpha=1
+  )+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  
+  scale_color_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  scale_shape_manual(name="Dose (mg/kg)",values=c(shape_molec, shape_molec))+
+  scale_fill_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  
+  theme_minimal()+
+  
+  labs(
+    x="Dose (mg/kg)", 
+    y=expression(paste("Relative number of cocoons produced per cosm")), 
+    title = "Common slope"
+  )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"), 
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+  )
+
+plot_drc_4 <- ggplot()+
+  
+  geom_ribbon(
+    data=CI.4, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, ymax=pmax, 
+      group=Molecule, 
+      fill=Molecule
+    ), 
+    alpha=0.2
+  )+
+  geom_line(
+    data=CI.4, 
+    aes(
+      x=Dose, 
+      y=p, 
+      group=Molecule, 
+      color=Molecule
+    ), 
+    linewidth=line_width
+  )+
+  geom_point(
+    data=df_expA_repro, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=2, 
+    alpha=0.4
+  )+
+  geom_point(
+    data=df_expA_repro_mean, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons, 
+      color=Molecule, 
+      shape=Molecule
+    ), 
+    cex=3, 
+    alpha=1
+  )+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  
+  scale_color_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  scale_shape_manual(name="Dose (mg/kg)",values=c(shape_molec, shape_molec))+
+  scale_fill_manual(name="Dose (mg/kg)",values=c(col_molec, col_molec))+
+  
+  theme_minimal()+
+  
+  labs(
+    x="Dose (mg/kg)", 
+    y=expression(paste("Relative number of cocoons produced per cosm")), 
+    title = "Common slope and Ymax"
+  )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"), 
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+  )
+
+plot_save <- plot_drc_1 + plot_drc_2 + plot_drc_3 + plot_drc_4 + 
+  plot_layout(ncol=2, guides="collect") & 
+  theme(
+    legend.position = "bottom", 
+    title=element_text(size=12, face="bold"), 
+    axis.title.x = element_text(face="plain"), 
+    axis.title.y = element_text(face="plain")
+  )
+
+plot_save
+
+AIC <- AIC(
+  drc.1, 
+  drc.2, 
+  drc.3, 
+  drc.4
+)
+AIC
+
+delta_AIC_24 <- round(abs(AIC$AIC[2]-AIC$AIC[4]), 2)
+
+anova(
+  drc.1, 
+  drc.2, 
+  test="Chisq"
+)
+
+anova(
+  drc.1, 
+  drc.3, 
+  test="Chisq"
+)
+
+anova(
+  drc.1, 
+  drc.4, 
+  test="Chisq"
+)
+
+anova(
+  drc.2, 
+  drc.4, 
+  test="Chisq"
+)
+
+
+# Check drc.4
+
+col_diag <- Nord_polar[4]
+
+plot_QQ <- ggplot(mapping=aes(sample=residuals(drc.4)))+
+  
+  stat_qq(alpha=0.3)+
+  stat_qq_line(color=col_diag)+
+  
+  labs(
+    x="Normal quantiles", 
+    y="Residuals"
+  )+
+  
+  theme_minimal()
+
+plot_resfit <- ggplot()+
+  geom_point(
+    mapping=aes(
+      x=fitted(drc.4), 
+      y=residuals(drc.4)
+    ), 
+    alpha=0.3, 
+    color=col_diag
+  )+
+  labs(
+    x="Fitted", 
+    y="Residuals"
+  )+
+  
+  scale_x_log10()+
+  
+  theme_minimal()
+
+plot <- plot_resfit + plot_QQ + 
+  plot_layout(ncol=2)
+plot
+
+# Residus normality
+shapiro.test(residuals(drc.4))
+# Residus variance homogeneity
+bartlett.test(residuals(drc.4), as.factor(subset(df_expA_repro, t==28)$Dose))
+
+summary(drc.4)
+confint(object = drc.4, level=0.95)
+
+Ratio_EC50 <- EDcomp(drc.4, c(50, 50),interval="delta") # Estimate of the EC50 ratio
+Ratio_EC50_print <- round(Ratio_EC50[1],2)
+
+res <- as.data.frame(coef(drc.4))
+#write.csv(x= res, file=here::here("DRC_parameters_cocoons.csv"))
+
+## 1.2. Experimental design ----
+
+drc_res <- read.csv(here::here("DRC_parameters_cocoons_really_used.csv"), sep=",")
+
+Y_max <- drc_res[2, 2]
+Y_min <- 0
+slope <- drc_res[1, 2]
+EPX_EC50 <- drc_res[3, 2]
+IMD_EC50 <- drc_res[4, 2]
+
+EPX_drc <- function(dose){
+  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(dose)-log(EPX_EC50)))))
+}
+
+IMD_drc <- function(dose){
+  Y_max <- drc_res[2, 2]
+  Y_min <- 0
+  slope <- drc_res[1, 2]
+  EPX_EC50 <- drc_res[3, 2]
+  IMD_EC50 <- drc_res[4, 2]
+  return(Y_min+(Y_max-Y_min)/(1+exp(slope*(log(dose)-log(IMD_EC50)))))
+}
+
+# Ratios considered
+ratios = c(0, 1/4, 1/2, 3/4, 1)
+
+EPX_x = NULL
+IMD_x = NULL
+
+ratio_EC50 <- IMD_EC50/EPX_EC50
+
+for(i in ratios){
+  EPX_x=rbind(EPX_x,EPX_EC50*i)
+  IMD_x=rbind(IMD_x,IMD_EC50*(1-i))
+}
+
+factor_design <- 10^(1/4)
+
+EPX_x <- c(
+  EPX_x,
+  EPX_x/(factor_design^9),
+  EPX_x/(factor_design^5), 
+  EPX_x/(factor_design^2), 
+  EPX_x/factor_design,
+  factor_design*EPX_x, 
+  factor_design^2*EPX_x
+)
+IMD_x <- c(
+  IMD_x,
+  IMD_x/(factor_design^9),
+  IMD_x/(factor_design^5), 
+  IMD_x/(factor_design^2), 
+  IMD_x/factor_design,
+  factor_design*IMD_x, 
+  factor_design^2*IMD_x
+)
+
+
+df_design <- data.frame(EPX=EPX_x,
+                        IMD=IMD_x,
+                        Ratio=EPX_x/IMD_x*IMD_EC50/EPX_EC50)
+
+write.csv(df_design, file=here::here("data/Design_mixture.csv"))
+
+width_iso <- 1.1
+size_points <- 3
+
+df_design_plot <- df_design |> 
+  mutate(
+    label=paste(
+      "[IMD] = ", 
+      signif(IMD, 3), 
+      "mg/kg\n [EPX] = ", 
+      signif(EPX,3), "mg/kg"
+    )
+  )
+
+plot_design <- ggplot()+
+  xlim(min(EPX_x), max(EPX_x))+
+  ylim(min(IMD_x), max(IMD_x))+
+  # Ligne des ratios
+  geom_abline(
+    intercept=0, 
+    slope=ratio_EC50/3, 
+    color=pal_col[2]
+  )+
+  geom_abline(
+    intercept=0, 
+    slope=ratio_EC50*3, 
+    color=pal_col[2]
+  )+
+  geom_abline(
+    intercept=0, 
+    slope=ratio_EC50, 
+    color=pal_col[2]
+  )+
+  geom_abline(
+    intercept=0, 
+    slope=0, 
+    color=pal_col[2]
+  )+
+  geom_vline(
+    xintercept = 0, 
+    color=pal_col[2]
+  )+
+  
+  # Effect isoboles
+  geom_abline(
+    intercept=IMD_EC50*factor_design^2, 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50*factor_design, 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50, 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50/factor_design, 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50/(factor_design^2), 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50/(factor_design^5), 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  geom_abline(
+    intercept=IMD_EC50/(factor_design^9), 
+    slope=-ratio_EC50, 
+    color=pal_col[1], 
+    lwd=width_iso
+  )+
+  
+  # Ratios annotations
+  annotate(
+    geom="text", 
+    x=30, 
+    y=max(IMD_x), 
+    label="0:1", 
+    color=pal_col[2], 
+    fontface="bold"
+  )+
+  annotate(
+    geom="text", 
+    x=200, 
+    y=max(IMD_x), 
+    label="3:1", 
+    color=pal_col[2], 
+    fontface="bold"
+  )+
+  annotate(
+    geom="text", 
+    x=max(EPX_x)-30, 
+    y=max(IMD_x), 
+    label="1:1", 
+    color=pal_col[2], 
+    fontface="bold"
+  )+
+  annotate(
+    geom="text",
+    x=max(EPX_x),
+    y=0.8,
+    label="1:3", 
+    color=pal_col[2], 
+    fontface="bold"
+  )+
+  annotate(
+    geom="text", 
+    x=max(EPX_x), 
+    y=0.1, 
+    label="1:0", 
+    color=pal_col[2], 
+    fontface="bold"
+  )+
+  
+  # Design points
+  geom_point_interactive(
+    data=df_design_plot, 
+    aes(
+      x=EPX, 
+      y=IMD,
+      tooltip = label), 
+    size=size_points, 
+    color=Nord_polar[1]
+  )+
+  
+  labs(
+    x="Epoxiconazole (mg/kg)",
+    y="Imidacloprid (mg/kg)"
+  )+
+  
+  theme_minimal(12)
+
+IMD_point_design <- subset(df_design, EPX==0)$IMD
+EPX_point_design <- subset(df_design, IMD==0)$EPX
+
+CI.design <- data.frame(
+  Dose=c(EPX_point_design, IMD_point_design),
+  Molecule = c(rep("EPX", length(EPX_point_design)), rep("IMD", length(IMD_point_design)))
+)
+
+pm.design <- predict(drc.1, newdata=CI.design, interval="confidence")
+CI.design$p <- pm.design[,1]
+CI.design$pmin <- pm.design[,2]
+CI.design$pmax <- pm.design[,3]
+
+plot_drc_th <- ggplot()+
+  geom_ribbon(
+    data=CI.1, 
+    aes(
+      x=Dose, 
+      y=p, 
+      ymin=pmin, 
+      ymax=pmax,
+      fill = Molecule
+    ), 
+    alpha=0.2
+  )+
+  geom_line(
+    data=CI.1, 
+    aes(
+      x=Dose, 
+      y=p,
+      color=Molecule
+    )
+  )+
+  geom_point(
+    data=df_expA_repro, 
+    aes(
+      x=Dose_plot, 
+      y=r_Nb_cocoons,
+      color=Molecule, 
+      shape=Molecule, 
+    ), 
+    cex=2, 
+    alpha=0.4
+  )+
+  
+  geom_point(
+    data = CI.design,
+    aes(
+      x=Dose, 
+      y=p,
+      shape = Molecule
+    ), 
+    color=col_red,
+    cex=3,
+    alpha = 1
+  )+
+  
+  scale_color_manual(values=col_molec)+
+  scale_fill_manual(values=col_molec)+
+  scale_shape_manual(values=shape_molec)+
+  
+  facet_wrap(~Molecule, ncol=2)+
+  
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100),  
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  )+
+  # ylim(y_min, y_max)+
+  
+  theme_minimal()+
+  
+  labs(
+    x="Dose (mg/kg)", 
+    y=expression(paste("Relative cocoon production"))
+  )+
+  theme(
+    legend.position = "right", 
+    legend.title=element_text(size=sizetitle-2,face="bold"), 
+    
+    title=element_text(size=sizetitle, face="bold"), 
+    
+    axis.title.x = element_text(size=sizetitle,face="plain"), 
+    axis.title.y = element_text(size=sizetitle,face="plain")
+  )
+
+plot_drc_th
+
+# 2. Comparison of drc from exp UNI and MIX ----
+
+## 2.1. Load data ----
+
+# Value given to controls for plot
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+
+# Data from experiment A (Single substances experiement)
+data_expA_repro    <- f_read_data_expA_repro()
+df_expA_repro_tot  <- data_expA_repro$df_expA_repro
+df_expA_repro      <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
+
+# Retriving EC50 
+df_drc_param <- read.csv(here::here("DRC_parameters_cocoons_really_used.csv"))
+EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
+IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
+
+# Data from experiment B (Mixture experiment)
+data_expB                 <- f_read_data_expB()
+df_expB_growth            <- data_expB$df_expB_growth
+df_expB_repro             <- data_expB$df_expB_repro
+df_expB_repro_mean        <- data_expB$df_expB_repro_mean
+df_expB_repro_single      <- data_expB$df_expB_repro_single
+df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
+
+# Retriving EC50 
+df_drc_param <- read.csv(here::here("DRC_parameters_cocoons_really_used.csv"))
+EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
+IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
+
+## 2.2. Initial state ----
+
+pal_lot <- c(Nord_frost[3], Nord_polar[4])
+
+# Weights at t=0
+p <- ggplot(
+  data = subset(df_expB_growth, t == 0),
+  aes(
+    x = Condition,
+    y = w
+  )
+) +
+  geom_boxplot(
+    alpha = 0.2,
+    color = Nord_polar[1]
+  ) +
+  geom_dotplot(
+    aes(
+      color = Lot,
+      fill = Lot
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.5,
+    alpha = 0.7
+  ) +
+  scale_color_manual(values = pal_lot) +
+  scale_fill_manual(values = pal_lot) +
+  labs(x = "Condition", y = "Weight (mg)") +
+  theme_classic(12) +
+  theme(
+    # legend.position = "none",
+    legend.title = element_text(size = sizetitle - 2, face = "bold"),
+    legend.text = element_text(size = sizetitle - 2, face = "plain"),
+    title = element_text(size = sizetitle, face = "bold"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = sizetitle, face = "plain"),
+    
+    # axis.text.x = element_blank(),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+p
+
+df_expB_repro_ctrl <- subset(df_expB_repro, Ratio == "N") |>
+  dplyr::select(Nb_cocoons) |>
+  mutate(Experiment = "Experiment MIX")
+
+df_expA_repro_ctrl <- subset(df_expA_repro, Dose == 0) |>
+  dplyr::select(Nb_cocoons, Lot) |>
+  mutate(Experiment = case_when(
+    Lot == "A" ~ "Experiment UNI\nSpring 2024",
+    Lot == "B" ~ "Experiment UNI\nSummer 2024"
+  )) |>
+  dplyr::select(Nb_cocoons, Experiment)
+
+df_controls <- rbind(df_expA_repro_ctrl, df_expB_repro_ctrl)
+df_controls$Experiment <- factor(df_controls$Experiment, levels = c("Experiment UNI\nSpring 2024", "Experiment UNI\nSummer 2024", "Experiment MIX"))
+
+p <- ggplot(
+  data = df_controls,
+  aes(
+    x = Experiment,
+    y = Nb_cocoons
+  )
+) +
+  geom_dotplot(
+    binaxis = "y",
+    stackdir = "center",
+    dotsize = 0.8,
+    alpha = 0.7,
+    color = Nord_aurora[4],
+    fill = Nord_aurora[4]
+  ) +
+  labs(
+    x = "",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+p
+
+pairwise.wilcox.test(df_controls$Nb_cocoons, df_controls$Experiment, p.adjust.method = "bonferroni", exact=F)
+
+lm.controls <- lm(Nb_cocoons ~ Experiment, data = df_controls)
+lsmeans(lm.controls,pairwise~Experiment,adjust='bonferroni')
+
+## 2.3. DRC ----
+
+### 2.3.1 UNI experiment ----
+
+
+drc.ExpA <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expA_repro,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Molecule, Molecule, Molecule)
+)
+
+data_CI_ExpA <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.ExpA,
+  signif_param = 3
+)
+
+df_CI_ExpA <- data_CI_ExpA$df_CI
+df_param.ExpA <- data_CI_ExpA$df_param
+
+EPX_EC50_ExpA <- coef(drc.ExpA)[5]
+IMD_EC50_ExpA <- coef(drc.ExpA)[6]
+
+summary(drc.ExpA)
+
+### 2.3.2. MIX experiment ----
+
+# Common Ymax and slope
+drc.ExpB <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expB_repro_single,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Molecule, Molecule, Molecule)
+)
+
+data_CI_ExpB <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.ExpB,
+  signif_param = 3
+)
+
+df_CI_ExpB <- data_CI_ExpB$df_CI
+df_param.ExpB <- data_CI_ExpB$df_param
+
+EPX_EC50_ExpB <- coef(drc.ExpB)[5]
+IMD_EC50_ExpB <- coef(drc.ExpB)[6]
+
+summary(drc.ExpB)
+
+### 2.4. Comparison ----
+
+df_expA_repro_IMD <- df_expA_repro |>
+  filter(Molecule == "IMD")
+df_expA_repro_EPX <- df_expA_repro |>
+  filter(Molecule == "EPX")
+
+df_expA_repro_IMD_mean <- df_expA_repro_mean |>
+  filter(Molecule == "IMD")
+df_expA_repro_EPX_mean <- df_expA_repro_mean |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_IMD <- df_expB_repro_single |>
+  filter(Molecule == "IMD")
+df_expB_repro_single_EPX <- df_expB_repro_single |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_IMD_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "IMD")
+df_expB_repro_single_EPX_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "EPX")
+
+x <- seq(0.0001, 5000, 0.01)
+line_width <- 1.2
+
+darkening <- 0.2
+col_IMD_dark <- colorspace::darken(col_IMD, darkening)
+col_EPX_dark <- colorspace::darken(col_EPX, darkening)
+
+p_E <- ggplot() +
+  geom_ribbon(
+    data = subset(df_CI_ExpB, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_EPX_dark,
+  ) +
+  geom_ribbon(
+    data = subset(df_CI_ExpA, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_EPX,
+  ) +
+  geom_line(
+    data = subset(df_CI_ExpB, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX_dark,
+    linewidth = line_width
+  ) +
+  geom_line(
+    data = subset(df_CI_ExpA, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
+  geom_point(
+    data = df_expB_repro_single_EPX,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_EPX_dark,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expA_repro_EPX,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_EPX,
+    alpha = 0.5,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_single_EPX_mean,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_EPX_dark,
+    size = 3
+  ) +
+  geom_point(
+    data = subset(df_expA_repro_EPX_mean, Molecule == "EPX"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_EPX,
+    size = 3
+  ) +
+  annotate(
+    geom = "text",
+    x = 1500,
+    y = 2,
+    label = "E",
+    fontface = "bold"
+  ) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Concentration of EPX (mg/kg)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw()
+
+p_I <- ggplot() +
+  geom_ribbon(
+    data = subset(df_CI_ExpB, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_IMD_dark,
+    # color = col_IMD
+  ) +
+  geom_ribbon(
+    data = subset(df_CI_ExpA, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_IMD,
+    # color = col_IMD
+  ) +
+  geom_line(
+    data = subset(df_CI_ExpB, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_IMD_dark,
+    linewidth = line_width
+  ) +
+  geom_line(
+    data = subset(df_CI_ExpA, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_IMD,
+    linewidth = line_width
+  ) +
+  geom_point(
+    data = df_expB_repro_single_IMD,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_IMD_dark,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expA_repro_IMD,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_IMD,
+    alpha = 0.5,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_single_IMD_mean,
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_IMD_dark,
+    size = 3
+  ) +
+  geom_point(
+    data = subset(df_expA_repro_IMD_mean, Molecule == "IMD"),
+    aes(
+      x = Dose_plot,
+      y = Nb_cocoons
+    ),
+    color = col_IMD,
+    size = 3
+  ) +
+  annotate(
+    geom = "text",
+    x = 1500,
+    y = 2,
+    label = "I",
+    fontface = "bold"
+  ) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Concentration of IMD (mg/kg)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw()
+
+p <- p_E + p_I
+p
+
+pEC50EPXExpA <- ED(drc.ExpA, 50, interval = "delta")[1,1]
+pEC50EPXExpB <- ED(drc.ExpB, 50, interval = "delta")[1,1]
+pEC50IMDExpA <- ED(drc.ExpA, 50, interval = "delta")[2,1]
+pEC50IMDExpB <- ED(drc.ExpB, 50, interval = "delta")[2,1]
+
+pminEC50EPXExpA <- ED(drc.ExpA, 50, interval = "delta")[1,3]
+pminEC50EPXExpB <- ED(drc.ExpB, 50, interval = "delta")[1,3]
+pminEC50IMDExpA <- ED(drc.ExpA, 50, interval = "delta")[2,3]
+pminEC50IMDExpB <- ED(drc.ExpB, 50, interval = "delta")[2,3]
+
+pmaxEC50EPXExpA <- ED(drc.ExpA, 50, interval = "delta")[1,4]
+pmaxEC50EPXExpB <- ED(drc.ExpB, 50, interval = "delta")[1,4]
+pmaxEC50IMDExpA <- ED(drc.ExpA, 50, interval = "delta")[2,4]
+pmaxEC50IMDExpB <- ED(drc.ExpB, 50, interval = "delta")[2,4]
+
+ec50_IMD_ExpA <- as.numeric(ED(drc.ExpA, 50, interval = "delta")[2,])
+ec50_IMD_ExpB <- as.numeric(ED(drc.ExpB, 50, interval = "delta")[2,])
+
+ec50_EPX_ExpA <- as.numeric(ED(drc.ExpA, 50, interval = "delta")[1,])
+ec50_EPX_ExpB <- as.numeric(ED(drc.ExpB, 50, interval = "delta")[1,])
+
+
+df_EC50_comp <- data.frame(
+  Molecule = c("EPX", "EPX", "IMD", "IMD"),
+  Experiment = c("UNI Exp", "MIX Exp", "UNI Exp", "MIX Exp"),
+  p = c(pEC50EPXExpA, pEC50EPXExpB, pEC50IMDExpA, pEC50IMDExpB),
+  pmin = c(pminEC50EPXExpA, pminEC50EPXExpB, pminEC50IMDExpA, pminEC50IMDExpB),
+  pmax = c(pmaxEC50EPXExpA, pmaxEC50EPXExpB, pmaxEC50IMDExpA, pmaxEC50IMDExpB)
+) |>
+  mutate(color = as.factor(paste0(Molecule, Experiment)))
+
+df_EC50_comp$Experiment <- factor(df_EC50_comp$Experiment, levels = c("UNI Exp", "MIX Exp"))
+
+p <- ggplot(
+  data = df_EC50_comp,
+  aes(
+    x = Experiment,
+    y = p,
+    ymin = pmin,
+    ymax = pmax,
+    color = color
+  )
+) +
+  geom_pointrange() +
+  facet_wrap(~Molecule, scales = "free") +
+  scale_color_manual(values = c(col_EPX_dark, col_EPX, col_IMD_dark, col_IMD)) +
+  labs(
+    y = "EC50",
+    x = ""
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+p
+
+df_drc_comp <- data.frame(
+  UNI_exp = c(
+    coef(drc.ExpA)[1], coef(drc.ExpA)[2],
+    coef(drc.ExpA)[3], coef(drc.ExpA)[4],
+    coef(drc.ExpA)[5], coef(drc.ExpA)[6]
+  ),
+  MIX_exp = c(
+    coef(drc.ExpB)[1], coef(drc.ExpB)[2],
+    coef(drc.ExpB)[3], coef(drc.ExpB)[4],
+    coef(drc.ExpB)[5], coef(drc.ExpB)[6]
+  )
+) |>
+  mutate(
+    Ratio = UNI_exp / MIX_exp,
+    Per_difference = (MIX_exp - UNI_exp) / UNI_exp * 100
+  ) |>
+  mutate(across(where(is.numeric), signif, 2))
+
+df_drc_comp |> datatable(options = list(dom = "t"), class = "hover")
+
+df_expA_repro_simple_IMD <- df_expA_repro |>
+  filter(Molecule == "IMD") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
+  mutate(Experiment = "UNI")
+
+df_expA_repro_simple_EPX <- df_expA_repro |>
+  filter(Molecule == "EPX") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
+  mutate(Experiment = "UNI")
+
+df_expB_repro_simple_IMD <- df_expB_repro_single |>
+  filter(Molecule == "IMD") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
+  mutate(Experiment = "MIX")
+
+df_expB_repro_simple_EPX <- df_expB_repro_single |>
+  filter(Molecule == "EPX") |>
+  dplyr::select(Molecule, Dose, Nb_cocoons) |>
+  mutate(Experiment = "MIX")
+
+df_comp_IMD <- rbind(df_expA_repro_simple_IMD, df_expB_repro_simple_IMD)
+df_comp_EPX <- rbind(df_expA_repro_simple_EPX, df_expB_repro_simple_EPX)
+
+drc.compIMD <- drm(
+  Nb_cocoons ~ Dose, Experiment,
+  data = df_comp_IMD,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Experiment, Experiment, Experiment)
+)
+
+drc.compEPX <- drm(
+  Nb_cocoons ~ Dose, Experiment,
+  data = df_comp_EPX,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Experiment, Experiment, Experiment)
+)
+
+drc.compIMD_same_ec <- drm(
+  Nb_cocoons ~ Dose, Experiment,
+  data = df_comp_IMD,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Experiment, Experiment, 1)
+)
+
+drc.compEPX_same_ec <- drm(
+  Nb_cocoons ~ Dose, Experiment,
+  data = df_comp_EPX,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Experiment, Experiment, 1)
+)
+
+cat("For IMD :")
+anova(drc.compIMD_same_ec, drc.compIMD, test = "F")
+cat("\nFor EPX :")
+anova(drc.compEPX_same_ec, drc.compEPX, test = "F")
+
+# 3. Mixture effect ----
+
+## 3.1. Load data ----
+
+# Value given to controls for plot
+Val_Ctrl <- 1e-4
+Label_Ctrl <- "0 (Ctrl)"
+
+
+# Data from experiment A (Single substances experiement)
+data_expA_repro <- f_read_data_expA_repro()
+df_expA_repro_tot <- data_expA_repro$df_expA_repro
+df_expA_repro <- data_expA_repro$df_expA_repro_alive
+df_expA_repro_mean <- data_expA_repro$df_expA_repro_alive_mean
+
+# Retriving EC50
+df_drc_param <- read.csv(here::here("data/DRC_parameters_cocoons_really_used.csv"))
+EPX_EC50_drc <- df_drc_param$coef.drc.4.[3]
+IMD_EC50_drc <- df_drc_param$coef.drc.4.[4]
+
+# Data from experiment B (Mixture experiment)
+data_expB <- f_read_data_expB()
+df_expB_growth <- data_expB$df_expB_growth
+df_expB_repro <- data_expB$df_expB_repro
+df_expB_repro_mean <- data_expB$df_expB_repro_mean
+df_expB_repro_single <- data_expB$df_expB_repro_single
+df_expB_repro_single_mean <- data_expB$df_expB_repro_single_mean
+
+pal_lot <- c(Nord_frost[3], Nord_polar[4])
+
+## 3.2. Mean-Variance relationship ----
+
+df_expB_repro <- df_expB_repro |>
+  mutate(
+    Condition = paste0(Ratio, Line),
+    Condition_f = as.factor(Condition)
+  )
+
+# Models with different distributions
+m.Poisson <- glm(Nb_cocoons ~ Condition_f, family = poisson, data = df_expB_repro)
+m.NB <- glm.nb(Nb_cocoons ~ Condition_f, data = df_expB_repro)
+theta_nb <- summary(m.NB)$theta
+
+# Dispersion test
+dispersion <- sum(residuals(m.Poisson, type = "pearson")^2) / m.Poisson$df.residual
+cat("Dispersion : ", dispersion)
+
+library(AER)
+dispersiontest(m.Poisson)
+
+variance_mean <- df_expB_repro %>%
+  group_by(Condition_f) %>%
+  summarise(
+    mean = mean(Nb_cocoons),
+    variance = var(Nb_cocoons),
+    n = n()
+  )
+
+mean_range <- seq(0, max(variance_mean$mean) * 1.1, length.out = 100)
+
+theoretical <- data.frame(
+  mean = rep(mean_range, 3),
+  variance = c(
+    mean_range, # Poisson
+    dispersion * mean_range, # Quasi-Poisson
+    mean_range + mean_range^2 / theta_nb # Negative Binomial
+  ),
+  model = rep(c("Poisson", "Quasi-Poisson", "Binomiale Negative"),
+              each = length(mean_range)
+  )
+)
+
+p <- ggplot() +
+  # Theoretical lines
+  geom_line(
+    data = theoretical,
+    aes(x = mean, y = variance, color = model, linetype = model),
+    linewidth = 1.2
+  ) +
+  # Experimental data
+  geom_point(
+    data = variance_mean,
+    aes(x = mean, y = variance),
+    size = 4, color = "black", alpha = 0.5
+  ) +
+  # Labels of conditions
+  geom_text(
+    data = variance_mean,
+    aes(x = mean, y = variance, label = Condition_f),
+    vjust = -1.2, hjust = 0.5, size = 3.5, fontface = "bold"
+  ) +
+  labs(
+    x = "Mean (μ)",
+    y = "Variance (σ²)",
+    title = "Variance-Mean Relationship - Choice of distribution model",
+    subtitle = "Black points represent observed values per condition",
+    color = "Theoretical distribution",
+    linetype = "Theoretical distribution"
+  ) +
+  theme_minimal(base_size = 12) +
+  lims(y = c(NA, 85)) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, color = "gray30")
+  ) +
+  scale_color_manual(values = c(
+    "Poisson" = Nord_polar[1],
+    "Quasi-Poisson" = Nord_aurora[1],
+    "Binomiale Negative" = Nord_frost[2]
+  )) +
+  scale_linetype_manual(values = c(
+    "Poisson" = "dashed",
+    "Quasi-Poisson" = "solid",
+    "Binomiale Negative" = "solid"
+  )) +
+  guides(
+    color = guide_legend(nrow = 3),
+    linetype = guide_legend(nrow = 3)
+  )
+
+p
+
+variance_mean |> datatable(options = list(dom = "t"), class = "hover")
+
+## 3.3. Step 1 - Dose-response curves ----
+
+# Common Ymax and slope
+drc.mix.IE <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expB_repro_single,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(1, 1, Molecule)
+)
+
+data_CI_mix.IE <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.mix.IE,
+  signif_param = 3
+)
+
+df_CI_mix.IE <- data_CI_mix.IE$df_CI
+df_param.mix.IE <- data_CI_mix.IE$df_param
+
+EPX_EC50_mix.IE <- coef(drc.mix.IE)[3]
+IMD_EC50_mix.IE <- coef(drc.mix.IE)[4]
+
+df_expB_repro <- df_expB_repro |>
+  mutate(
+    TU_mix = Dose_IMD / IMD_EC50_mix.IE + Dose_EPX / EPX_EC50_mix.IE,
+    TU_mix_plot = case_when(
+      TU_mix == 0 ~ Val_Ctrl,
+      !(TU_mix == 0) ~ TU_mix
+    )
+  )
+
+df_expB_repro_mean <- df_expB_repro_mean |>
+  mutate(
+    TU_mix = Dose_IMD / IMD_EC50_mix.IE + Dose_EPX / EPX_EC50_mix.IE,
+    TU_mix_plot = case_when(
+      TU_mix == 0 ~ Val_Ctrl,
+      !(TU_mix == 0) ~ TU_mix
+    )
+  )
+
+summary(drc.mix.IE)
+
+df_param.mix.IE
+
+x <- seq(Val_Ctrl, 5000, 0.01)
+line_width <- 1.2
+ymax <- 22.5
+
+df_expB_repro_single_IMD <- df_expB_repro_single |>
+  filter(Molecule == "IMD")
+
+df_expB_repro_single_EPX <- df_expB_repro_single |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_EPX_plot <- rbind(
+  df_expB_repro_single_EPX,
+  subset(df_expB_repro_single_IMD, Dose == 0)
+) |>
+  mutate(
+    Molecule = "EPX"
+  )
+
+df_expB_repro_single_IMD_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "IMD")
+
+df_expB_repro_single_EPX_mean <- df_expB_repro_single_mean |>
+  filter(Molecule == "EPX")
+
+df_expB_repro_single_EPX_mean_plot <- rbind(
+  df_expB_repro_single_EPX_mean,
+  subset(df_expB_repro_single_IMD_mean, Dose == 0)
+)
+
+p_I <- ggplot() +
+  geom_ribbon(
+    data = subset(df_CI_mix.IE, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_IMD
+  ) +
+  geom_line(
+    data = subset(df_CI_mix.IE, Molecule == "IMD"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_IMD,
+    linewidth = line_width
+  ) +
+  geom_point(
+    data = df_expB_repro_single_IMD,
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_IMD,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_single_IMD_mean,
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_IMD,
+    size = 3
+  ) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  ylim(NA, ymax) +
+  labs(
+    x = "Concentration of IMD (mg/kg)",
+    y = "Cocoon production (#)"
+  ) +
+  theme_bw()
+
+p_E <- ggplot() +
+  geom_ribbon(
+    data = subset(df_CI_mix.IE, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p,
+      ymin = pmin,
+      ymax = pmax
+    ),
+    alpha = 0.2,
+    fill = col_EPX,
+    # color = col_IMD
+  ) +
+  geom_line(
+    data = subset(df_CI_mix.IE, Molecule == "EPX"),
+    aes(
+      x = Dose,
+      y = p
+    ),
+    color = col_EPX,
+    linewidth = line_width
+  ) +
+  geom_point(
+    data = df_expB_repro_single_EPX_plot,
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_EPX,
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_single_EPX_mean_plot,
+    aes(x = Dose_plot, y = Nb_cocoons),
+    color = col_EPX,
+    size = 3
+  ) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  ylim(NA, ymax) +
+  labs(
+    x = "Concentration of EPX (mg/kg)",
+    y = "Cocoon production (#)"
+  ) +
+  theme_bw()
+
+p <- p_I + p_E
+p
+
+drc.mix.IE_notcommonslope <- drm(
+  Nb_cocoons ~ Dose, Molecule,
+  data = df_expB_repro_single,
+  type = "Poisson",
+  fct = LL.4(
+    names = c("slope", "Ymin", "Ymax", "EC50"),
+    fixed = c(NA, 0, NA, NA)
+  ),
+  # Reproduction is expected to reach 0 for large concentrations
+  pmodels = data.frame(Molecule, 1, Molecule)
+)
+
+data_CI_mix.IE_notcommonslope <- f_CI_drc(
+  Dose_min = Val_Ctrl,
+  Dose_max = 5000,
+  Molecules = c("EPX", "IMD"),
+  drc.model = drc.mix.IE_notcommonslope,
+  signif_param = 3
+)
+
+df_CI_mix.IE_notcommonslope <- data_CI_mix.IE_notcommonslope$df_CI |>
+  mutate(Ratio = Molecule)
+df_param.mix.IE_notcommonslope <- data_CI_mix.IE_notcommonslope$df_param
+
+summary(drc.mix.IE_notcommonslope)
+df_param.mix.IE_notcommonslope
+
+anova(drc.mix.IE_notcommonslope, drc.mix.IE, test = "Chisq")
+
+# Lack of fit test
+
+# Anova model
+df_expB_repro_single <- df_expB_repro_single |>
+  mutate(
+    Condition_f = as.factor(paste0(Molecule, Dose_plot)),
+    Molecule = as.factor(Molecule)
+  )
+
+anova.IE <- glm(
+  Nb_cocoons ~ Condition_f,
+  family = poisson(link = "log"),
+  data = df_expB_repro_single
+)
+# check_model(glm_anova)
+# predict(glm_anova)
+
+# Likelihoods
+LL_model <- as.numeric(logLik(drc.ratios))
+LL_anova <- as.numeric(logLik(anova.ratios))
+
+# Number of parameters
+k_model <- 11
+k_anova <- attr(logLik(anova.ratios), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+## 3.4. Step 2 - Fit model to data ----
+
+# Preparation of model entry
+
+df_design <- read.csv(here::here("data/Design_mixture.csv"))
+
+slope <- coef(drc.mix.IE)[1]
+Y_max <- coef(drc.mix.IE)[2]
+EPX_EC50 <- coef(drc.mix.IE)[3]
+IMD_EC50 <- coef(drc.mix.IE)[4]
+Y_min <- 0
+
+C_mat <- cbind(df_design$EPX, df_design$IMD)
+Max <- Y_max
+Slopes <- c(slope, slope)
+Ec50s <- c(EPX_EC50, IMD_EC50)
+
+param <- data.frame(Slopes = Slopes, Max = Max, Ec50s = Ec50s)
+
+min_dose_EPX <- min(subset(df_design, !EPX == 0)$EPX)
+max_dose_EPX <- max(subset(df_design, !EPX == 0)$EPX)
+
+min_dose_IMD <- min(subset(df_design, !IMD == 0)$IMD)
+max_dose_IMD <- max(subset(df_design, !IMD == 0)$IMD)
+
+by_EPX <- (log(max_dose_EPX) - log(min_dose_EPX)) / 100
+by_IMD <- (log(max_dose_IMD) - log(min_dose_IMD)) / 100
+
+grid_C1 <- exp(seq(log(min_dose_EPX), log(max_dose_EPX), by = by_EPX))
+grid_C2 <- exp(seq(log(min_dose_IMD), log(max_dose_IMD), by = by_IMD))
+grid <- expand.grid(
+  x = grid_C1,
+  y = grid_C2
+)
+
+df_expB_repro_Jonker <- df_expB_repro |>
+  mutate(Response = Nb_cocoons) |>
+  dplyr::select(Dose_EPX, Dose_IMD, Response, Line, Ratio, TU_mix, TU_drc, Nb_rep) |>
+  as.data.frame() |>
+  # Because there are log calculations :
+  mutate(
+    Dose_EPX = case_when(
+      Ratio == "N" ~ 1e-10,
+      Ratio != "N" ~ Dose_EPX
+    ),
+    Dose_IMD = case_when(
+      Ratio == "N" ~ 1e-10,
+      Ratio != "N" ~ Dose_IMD
+    )
+  )
+
+signif_LL <- 5 # Significative digits for LL printing
+
+######## CA ##################################################################
+
+CA_fit <- data.frame(Error = NA)
+CA_fit$Error <- CA_complete2_Poisson(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "none",
+  multicore = TRUE,
+  mc.cores = 4
+)
+
+LogLikelihood_CA <- -CA_fit$Error
+
+CA_fit$a <- NA
+CA_fit$b <- NA
+CA_fit$Type <- "CA"
+CA_fit$Ref <- "CA"
+
+CA_fit <- CA_fit |>
+  as.data.frame()
+
+######## IA ##################################################################
+
+IA_fit <- data.frame(Error = NA)
+IA_fit$Error <- IA_complete2_Poisson(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "none"
+)
+
+LogLikelihood_IA <- -IA_fit$Error
+
+IA_fit$a <- NA
+IA_fit$b <- NA
+IA_fit$Type <- "IA"
+IA_fit$Ref <- "IA"
+
+IA_fit <- IA_fit |>
+  as.data.frame()
+
+######## CASA ##################################################################
+
+CASA_fit <- CA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "SA",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+CASA_fit$Type <- "SA"
+CASA_fit$Ref <- "CA"
+
+LogLikelihood_CASA <- -CASA_fit$Error
+a_CASA <- CASA_fit$a
+CASA_fit$b <- NA
+# Printing results
+a_CASA_print <- signif(a_CASA, 3)
+LogLikelihood_CASA_print <- signif(LogLikelihood_CASA, signif_LL)
+
+######## IASA ##################################################################
+
+IASA_fit <- IA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "SA",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+IASA_fit$Type <- "SA"
+IASA_fit$Ref <- "IA"
+
+LogLikelihood_IASA <- -IASA_fit$Error
+a_IASA <- IASA_fit$a
+IASA_fit$b <- NA
+# Printing results
+a_IASA_print <- signif(a_IASA, 3)
+LogLikelihood_IASA_print <- signif(LogLikelihood_IASA, signif_LL)
+
+######## CADL ##################################################################
+
+CADL_fit <- CA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "DL",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+CADL_fit$Type <- "DL"
+CADL_fit$Ref <- "CA"
+
+LogLikelihood_CADL <- -CADL_fit$Error
+a_CADL <- CADL_fit$a
+b_CADL <- CADL_fit$b
+# Printing results
+a_CADL_print <- signif(a_CADL, 3)
+b_CADL_print <- signif(b_CADL, 3)
+LogLikelihood_CADL_print <- signif(LogLikelihood_CADL, signif_LL)
+
+######## IADL ##################################################################
+
+IADL_fit <- IA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "DL",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+IADL_fit$Type <- "DL"
+IADL_fit$Ref <- "IA"
+
+LogLikelihood_IADL <- -IADL_fit$Error
+a_IADL <- IADL_fit$a
+b_IADL <- IADL_fit$b
+# Printing results
+a_IADL_print <- signif(a_IADL, 3)
+b_IADL_print <- signif(b_IADL, 3)
+LogLikelihood_IADL_print <- signif(LogLikelihood_IADL, signif_LL)
+
+######## CADR ##################################################################
+
+CADR_fit <- CA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "DR",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+CADR_fit$Type <- "DR"
+CADR_fit$Ref <- "CA"
+
+LogLikelihood_CADR <- -CADR_fit$Error
+a_CADR <- CADR_fit$a
+b_CADR <- CADR_fit$b
+# Printing results
+a_CADR_print <- signif(a_CADR, 3)
+b_CADR_print <- signif(b_CADR, 3)
+LogLikelihood_CADR_print <- signif(LogLikelihood_CADR, signif_LL)
+
+######## IADR ##################################################################
+
+IADR_fit <- IA_complete_fit_speed(
+  C_mat = cbind(
+    df_expB_repro_Jonker$Dose_EPX,
+    df_expB_repro_Jonker$Dose_IMD
+  ),
+  Response = df_expB_repro_Jonker$Response,
+  interact = "DR",
+  param = param,
+  error_type = "Poisson",
+  multicore = TRUE,
+  mc.cores = 4
+) |>
+  as.data.frame()
+IADR_fit$Type <- "DR"
+IADR_fit$Ref <- "IA"
+
+LogLikelihood_IADR <- -IADR_fit$Error
+a_IADR <- IADR_fit$a
+b_IADR <- IADR_fit$b
+# Printing results
+a_IADR_print <- signif(a_IADR, 3)
+b_IADR_print <- signif(b_IADR, 3)
+LogLikelihood_IADR_print <- signif(LogLikelihood_IADR, signif_LL)
+
+
+# CI calculations (!!! very heavy calculations !!!)
+
+N_draws <- 2000
+
+CI_CASA <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "SA",
+  reference = "CA",
+  error_type = "Poisson"
+    )
+
+save(CI_CASA, file = here::here("mod/CI_cond_CASA.RData"))
+
+load(here::here("mod/CI_cond_CASA.RData"))
+
+CI_CADL <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "DL",
+  reference = "CA",
+  error_type = "Poisson"
+    )
+
+save(CI_CADL, file = here::here("mod/CI_cond_CADL.RData"))
+
+load(here::here("mod/CI_cond_CADL.RData"))
+
+CI_CADR <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "DR",
+  reference = "CA",
+  error_type = "Poisson"
+    )
+
+save(CI_CADR, file = here::here("mod/CI_cond_CADR.RData"))
+
+load(here::here("mod/CI_cond_CADR.RData"))
+
+
+CI_IASA <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "SA",
+  reference = "IA",
+  error_type = "Poisson"
+    )
+
+save(CI_IASA, file = here::here("mod/CI_cond_IASA.RData"))
+
+load(here::here("mod/CI_cond_IASA.RData"))
+
+CI_IADL <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "DL",
+  reference = "IA",
+  error_type = "Poisson"
+    )
+
+save(CI_IADL, file = here::here("mod/CI_cond_IADL.RData"))
+#
+load(here::here("mod/CI_cond_IADL.RData"))
+
+CI_IADR <- f_Jonker_CI_calculations_condition(
+  df_data = df_expB_repro_Jonker,
+  N_draws = N_draws,
+  interact = "DR",
+  reference = "IA",
+  error_type = "Poisson"
+    )
+
+save(CI_IADR, file = here::here("mod/CI_cond_IADR.RData"))
+#
+load(here::here("mod/CI_cond_IADR.RData"))
+
+
+df_Jonker <- rbind(CA_fit, CASA_fit, CADL_fit, CADR_fit, IA_fit, IASA_fit, IADL_fit, IADR_fit) |>
+  as.data.frame() |>
+  mutate(Likelihood = Error)
+
+df_Jonker$a_2.5 <- c(
+  NA, CI_CASA$a_2.5, CI_CADL$a_2.5, CI_CADR$a_2.5,
+  NA, CI_IASA$a_2.5, CI_IADL$a_2.5, CI_IADR$a_2.5
+)
+df_Jonker$a_97.5 <- c(
+  NA, CI_CASA$a_97.5, CI_CADL$a_97.5, CI_CADR$a_97.5,
+  NA, CI_IASA$a_97.5, CI_IADL$a_97.5, CI_IADR$a_97.5
+)
+df_Jonker$b_2.5 <- c(
+  NA, CI_CASA$b_2.5, CI_CADL$b_2.5, CI_CADR$b_2.5,
+  NA, CI_IASA$b_2.5, CI_IADL$b_2.5, CI_IADR$b_2.5
+)
+df_Jonker$b_97.5 <- c(
+  NA, CI_CASA$b_97.5, CI_CADL$b_97.5, CI_CADR$b_97.5,
+  NA, CI_IASA$b_97.5, CI_IADL$b_97.5, CI_IADR$b_97.5
+)
+
+df_Jonker <- df_Jonker[, c(
+  "Type", "a", "a_2.5", "a_97.5",
+  "b", "b_2.5", "b_97.5", "Likelihood", "Ref"
+)]
+
+df_Jonker |>
+  datatable(options = list(dom = "t"), class = "hover") |>
+  formatSignif(columns = c("a", "a_2.5", "a_97.5", "b", "b_2.5", "b_97.5", "Likelihood"), c(4, 4, 4, 4, 4, 4, 7))
+
+## 3.5. Step 3 - Test of models ----
+
+# Anova model
+df_expB_repro_Jonker_anova <- df_expB_repro_Jonker |>
+  mutate(
+    Dose_EPX_f = as.factor(Dose_EPX),
+    Dose_IMD_f = as.factor(Dose_IMD),
+    Dose_IMD_EPX_f = paste0(Dose_EPX_f, Dose_IMD_f)
+  )
+
+# The anova model
+anova.mix <- glm(
+  Response ~ Dose_IMD_EPX_f,
+  family = poisson(link = "log"),
+  data = df_expB_repro_Jonker_anova
+)
+# check_model(glm_anova)
+# predict(glm_anova)
+
+### Lack-of-fit test ----
+
+##### CA #####
+
+print("lacke-of-Fit test - CA")
+# Likelihoods
+LL_model <- LogLikelihood_CA
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+
+##### IA #####
+
+print("lacke-of-Fit test - IA")
+# Likelihoods
+LL_model <- LogLikelihood_IA
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 4
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### CASA #####
+
+print("lacke-of-Fit test - CASA")
+# Likelihoods
+LL_model <- LogLikelihood_CASA
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 5
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### IASA #####
+
+print("lacke-of-Fit test - IASA")
+# Likelihoods
+LL_model <- LogLikelihood_IASA
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 5
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### CADL #####
+
+print("lacke-of-Fit test - CADL")
+# Likelihoods
+LL_model <- LogLikelihood_CADL
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 6
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### IADL #####
+
+print("lacke-of-Fit test - IADL")
+# Likelihoods
+LL_model <- LogLikelihood_IADL
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 6
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### CADR #####
+
+print("lacke-of-Fit test - CADR")
+# Likelihoods
+LL_model <- LogLikelihood_CADR
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 6
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+##### IADR #####
+
+print("lacke-of-Fit test - IADR")
+# Likelihoods
+LL_model <- LogLikelihood_IADR
+LL_anova <- as.numeric(logLik(anova.mix))
+# Number of parameters
+k_model <- 6
+k_anova <- attr(logLik(anova.mix), "df")
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+### Comparisons between models ----
+
+print("Comparison CA & CASA")
+# Likelihoods
+LL_model <- LogLikelihood_CA
+LL_anova <- LogLikelihood_CASA
+# Number of parameters
+k_model <- 0
+k_anova <- 1
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison CA & CADL")
+# Likelihoods
+LL_model <- LogLikelihood_CA
+LL_anova <- LogLikelihood_CADL
+# Number of parameters
+k_model <- 0
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison CA & CADR")
+# Likelihoods
+LL_model <- LogLikelihood_CA
+LL_anova <- LogLikelihood_CADR
+# Number of parameters
+k_model <- 0
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison CASA & CADL")
+# Likelihoods
+LL_model <- LogLikelihood_CASA
+LL_anova <- LogLikelihood_CADL
+# Number of parameters
+k_model <- 1
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison CASA & CADR")
+# Likelihoods
+LL_model <- LogLikelihood_CASA
+LL_anova <- LogLikelihood_CADR
+# Number of parameters
+k_model <- 1
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+
+print("Comparison IA & IASA")
+# Likelihoods
+LL_model <- LogLikelihood_IA
+LL_anova <- LogLikelihood_IASA
+# Number of parameters
+k_model <- 0
+k_anova <- 1
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison IA & IADL")
+# Likelihoods
+LL_model <- LogLikelihood_IA
+LL_anova <- LogLikelihood_IADL
+# Number of parameters
+k_model <- 0
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison IA & IADR")
+# Likelihoods
+LL_model <- LogLikelihood_IA
+LL_anova <- LogLikelihood_IADR
+# Number of parameters
+k_model <- 0
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison IASA & IADL")
+# Likelihoods
+LL_model <- LogLikelihood_IASA
+LL_anova <- LogLikelihood_IADL
+# Number of parameters
+k_model <- 1
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+print("Comparison IASA & IADR")
+# Likelihoods
+LL_model <- LogLikelihood_IASA
+LL_anova <- LogLikelihood_IADR
+# Number of parameters
+k_model <- 1
+k_anova <- 2
+
+f_LLRatio_test(LL_model, LL_anova, k_model, k_anova, 3)
+
+## 3.6. Step 4 - Graphical representations ----
+
+# Takes a bit of time for the calculations of the whole surface
+
+########### CA ################################
+
+df_data_solved_surf_CA <- CA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "none",
+  multicore = TRUE
+)
+
+# save(df_data_solved_surf_CA, file = here::here("mod/MIX/Surface_CA.RData"))
+
+########### CASA ################################
+
+df_data_solved_surf_CASA <- CA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "SA",
+  a = a_CASA,
+  multicore = TRUE
+)
+
+# save(df_data_solved_surf_CASA, file = here::here("mod/MIX/Surface_CASA.RData"))
+
+########### CADL ################################
+
+df_data_solved_surf_CADL <- CA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL,
+  multicore = TRUE
+)
+
+# save(df_data_solved_surf_CADL, file = here::here("mod/MIX/Surface_CADL.RData"))
+
+########### CADR ################################
+
+df_data_solved_surf_CADR <- CA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "DR",
+  a = a_CADR,
+  b = b_CADR,
+  multicore = TRUE
+)
+
+# save(df_data_solved_surf_CADR, file = here::here("mod/MIX/Surface_CADR.RData"))
+
+########### IA ################################
+
+df_data_solved_surf_IA <- IA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "none"
+)
+
+# save(df_data_solved_surf_IA, file = here::here("mod/MIX/Surface_IA.RData"))
+
+########### IASA ################################
+
+df_data_solved_surf_IASA <- IA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+
+# save(df_data_solved_surf_IASA, file = here::here("mod/MIX/Surface_IASA.RData"))
+
+########### IADL ################################
+
+df_data_solved_surf_IADL <- IA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+# save(df_data_solved_surf_IADL, file = here::here("mod/MIX/Surface_IADL.RData"))
+
+########### IADR ################################
+
+df_data_solved_surf_IADR <- IA_complete2(
+  C_mat = grid,
+  Max = Max,
+  Slopes = Slopes,
+  Ec50s = Ec50s,
+  interact = "DR",
+  a = a_IADR,
+  b = b_IADR
+)
+
+# save(df_data_solved_surf_IADR, file = here::here("mod/MIX/Surface_IADR.RData"))
+
+
+########### CA ################################
+
+#load(here::here("mod/MIX/Surface_CA.RData"))
+
+df_data_solved_surf_ordered_CA <- df_data_solved_surf_CA[order(grid[, 2])]
+
+z_CA <- matrix(
+  df_data_solved_surf_ordered_CA,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### CASA ################################
+
+#load(here::here("mod/MIX/Surface_CASA.RData"))
+
+df_data_solved_surf_ordered_CASA <- df_data_solved_surf_CASA[order(grid[, 2])]
+
+z_CASA <- matrix(
+  df_data_solved_surf_ordered_CASA,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### CADL ################################
+
+#load(here::here("mod/MIX/Surface_CADL.RData"))
+
+df_data_solved_surf_ordered_CADL <- df_data_solved_surf_CADL[order(grid[, 2])]
+
+z_CADL <- matrix(
+  df_data_solved_surf_ordered_CADL,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### CADR ################################
+
+#load(here::here("mod/MIX/Surface_CADR.RData"))
+
+df_data_solved_surf_ordered_CADR <- df_data_solved_surf_CADR[order(grid[, 2])]
+
+z_CADR <- matrix(
+  df_data_solved_surf_ordered_CADR,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### IA ################################
+
+#load(here::here("mod/MIX/Surface_IA.RData"))
+
+df_data_solved_surf_ordered_IA <- df_data_solved_surf_IA[order(grid[, 2])]
+
+z_IA <- matrix(
+  df_data_solved_surf_ordered_IA,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### IASA ################################
+
+#load(here::here("mod/MIX/Surface_IASA.RData"))
+
+df_data_solved_surf_ordered_IASA <- df_data_solved_surf_IASA[order(grid[, 2])]
+
+z_IASA <- matrix(
+  df_data_solved_surf_ordered_IASA,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### IADL ################################
+
+#load(here::here("mod/MIX/Surface_IADL.RData"))
+
+df_data_solved_surf_ordered_IADL <- df_data_solved_surf_IADL[order(grid[, 2])]
+
+z_IADL <- matrix(
+  df_data_solved_surf_ordered_IADL,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+########### IADR ################################
+
+#load(here::here("mod/MIX/Surface_IADR.RData"))
+
+df_data_solved_surf_ordered_IADR <- df_data_solved_surf_IADR[order(grid[, 2])]
+
+z_IADR <- matrix(
+  df_data_solved_surf_ordered_IADR,
+  nrow = length(grid_C1),
+  ncol = length(grid_C2),
+  byrow = FALSE
+)
+
+### 3.6.1. 2D representations ----
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_IA <- as.vector(z_IA)
+
+bin_contour <- 2
+
+p <- ggplot(
+  grid,
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_aurora[4],
+    linewidth = 0.8,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_IA),
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    # skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1 * ")"),
+    y = expression("[IMD] (mg·kg"^-1 * ")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_CASA <- as.vector(z_CASA)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid,
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_CASA),
+    color = Nord_frost[4],
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_CASA),
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1 * ")"),
+    y = expression("[IMD] (mg·kg"^-1 * ")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_CA <- as.vector(z_CA)
+grid$z_CADL <- as.vector(z_CADL)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid,
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_CA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_CADL),
+    color = Nord_frost[4],
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_CADL),
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1 * ")"),
+    y = expression("[IMD] (mg·kg"^-1 * ")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_IA <- as.vector(z_IA)
+grid$z_IASA <- as.vector(z_IASA)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid,
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IASA),
+    color = Nord_frost[4],
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_IASA),
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1 * ")"),
+    y = expression("[IMD] (mg·kg"^-1 * ")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+target_effect <- 50
+
+grid <- expand.grid(x = grid_C1, y = grid_C2)
+grid$z_IA <- as.vector(z_IA)
+grid$z_IADL <- as.vector(z_IADL)
+
+bin_contour <- 1
+
+p <- ggplot(
+  grid,
+  aes(x = x, y = y)
+) +
+  geom_contour(
+    aes(z = z_IA),
+    color = Nord_polar[4],
+    linewidth = 0.8,
+    linetype = "dotted",
+    binwidth = bin_contour
+  ) +
+  geom_contour(
+    aes(z = z_IADL),
+    color = Nord_frost[4],
+    linewidth = 1,
+    binwidth = bin_contour
+  ) +
+  metR::geom_text_contour(
+    aes(z = z_IADL),
+    stroke = 0.2,
+    size = 4,
+    color = Nord_frost[4],
+    skip = 1,
+    label.placer = label_placer_flattest(),
+    binwidth = bin_contour
+  ) +
+  labs(
+    x = expression("[EPX] (mg·kg"^-1 * ")"),
+    y = expression("[IMD] (mg·kg"^-1 * ")")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    plot.margin = margin(10, 10, 10, 10)
+  )
+
+p
+
+### 3.6.2. Drc per ratio ----
+
+xIMD_I <- expand.grid(
+  exp(
+    seq(
+      log(0.00001), log(5000),
+      by = (log(5000) - log(0.00001)) / 100
+    )
+  )
+)
+
+xEPX_E <- expand.grid(
+  exp(
+    seq(
+      log(0.00001), log(5000),
+      by = (log(5000) - log(0.00001)) / 100
+    )
+  )
+)
+
+df_x_E <- data.frame(
+  Dose_EPX = xEPX_E$Var1
+) |>
+  mutate(
+    Dose_IMD = 0,
+    Ratio = "I"
+  )
+
+df_x_I <- data.frame(
+  Dose_IMD = xIMD_I$Var1
+) |>
+  mutate(
+    Dose_EPX = 0,
+    Ratio = "E"
+  )
+
+df_x_F <- data.frame(
+  Dose_EPX = 3 / 4 * Ec50s[1] / Ec50s[2] * xEPX_E$Var1 / 100,
+  Dose_IMD = 1 / 4 * Ec50s[1] / Ec50s[2] * xIMD_I$Var1 / 100
+) |>
+  mutate(Ratio = "F")
+df_x_G <- data.frame(
+  Dose_EPX = 1 / 2 * Ec50s[1] / Ec50s[2] * xEPX_E$Var1 / 200,
+  Dose_IMD = 1 / 2 * Ec50s[1] / Ec50s[2] * xIMD_I$Var1 / 200
+) |>
+  mutate(Ratio = "G")
+df_x_H <- data.frame(
+  Dose_EPX = 1 / 4 * Ec50s[1] / Ec50s[2] * xEPX_E$Var1 / 200,
+  Dose_IMD = 3 / 4 * Ec50s[1] / Ec50s[2] * xIMD_I$Var1 / 200
+) |>
+  mutate(Ratio = "H")
+
+df_pred_drc_ratio <- rbind(df_x_E, df_x_F, df_x_G, df_x_H, df_x_I)
+
+C_mat_E <- cbind(df_x_E$Dose_EPX, df_x_E$Dose_IMD)
+C_mat_F <- cbind(df_x_F$Dose_EPX, df_x_F$Dose_IMD)
+C_mat_G <- cbind(df_x_G$Dose_EPX, df_x_G$Dose_IMD)
+C_mat_H <- cbind(df_x_H$Dose_EPX, df_x_H$Dose_IMD)
+C_mat_I <- cbind(df_x_I$Dose_EPX, df_x_I$Dose_IMD)
+
+# We should set the a SA interaction parameter to around 1000 to see a difference between the dose-response curves for the different ratios
+
+response_CA_E <- CA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_CASA_E <- CA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_CASA
+)
+response_CADL_E <- CA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL
+)
+
+response_CA_F <- CA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_CASA_F <- CA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_CASA
+)
+response_CADL_F <- CA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL
+)
+
+response_CA_G <- CA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_CASA_G <- CA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_CASA
+)
+response_CADL_G <- CA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL
+)
+
+response_CA_H <- CA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_CASA_H <- CA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_CASA
+)
+response_CADL_H <- CA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL
+)
+
+response_CA_I <- CA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_CASA_I <- CA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_CASA
+)
+response_CADL_I <- CA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_CADL,
+  b = b_CADL
+)
+
+
+response_IA_E <- IA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_IASA_E <- IA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+response_IADL_E <- IA_complete2(
+  C_mat_E,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+response_IA_F <- IA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_IASA_F <- IA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+response_IADL_F <- IA_complete2(
+  C_mat_F,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+response_IA_G <- IA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_IASA_G <- IA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+response_IADL_G <- IA_complete2(
+  C_mat_G,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+response_IA_H <- IA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_IASA_H <- IA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+response_IADL_H <- IA_complete2(
+  C_mat_H,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+response_IA_I <- IA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+response_IASA_I <- IA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = a_IASA
+)
+response_IADL_I <- IA_complete2(
+  C_mat_I,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = a_IADL,
+  b = b_IADL
+)
+
+
+responses_CA <- c(
+  response_CA_E,
+  response_CA_F,
+  response_CA_G,
+  response_CA_H,
+  response_CA_I
+)
+
+responses_CASA <- c(
+  response_CASA_E,
+  response_CASA_F,
+  response_CASA_G,
+  response_CASA_H,
+  response_CASA_I
+)
+
+responses_CADL <- c(
+  response_CADL_E,
+  response_CADL_F,
+  response_CADL_G,
+  response_CADL_H,
+  response_CADL_I
+)
+
+
+responses_IA <- c(
+  response_IA_E,
+  response_IA_F,
+  response_IA_G,
+  response_IA_H,
+  response_IA_I
+)
+
+responses_IASA <- c(
+  response_IASA_E,
+  response_IASA_F,
+  response_IASA_G,
+  response_IASA_H,
+  response_IASA_I
+)
+
+responses_IADL <- c(
+  response_IADL_E,
+  response_IADL_F,
+  response_IADL_G,
+  response_IADL_H,
+  response_IADL_I
+)
+
+Ratio_E <- "1:0 (EPX only)"
+Ratio_I <- "0:1 (IMD only)"
+Ratio_F <- "3:1"
+Ratio_G <- "1:1"
+Ratio_H <- "1:3"
+
+df_pred_drc_ratio_CA <- cbind(df_pred_drc_ratio, Response = responses_CA) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+df_pred_drc_ratio_CASA <- cbind(df_pred_drc_ratio, Response = responses_CASA) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+df_pred_drc_ratio_CADL <- cbind(df_pred_drc_ratio, Response = responses_CADL) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+
+df_pred_drc_ratio_IA <- cbind(df_pred_drc_ratio, Response = responses_IA) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+df_pred_drc_ratio_IASA <- cbind(df_pred_drc_ratio, Response = responses_IASA) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+df_pred_drc_ratio_IADL <- cbind(df_pred_drc_ratio, Response = responses_IADL) |>
+  mutate(
+    TU = Dose_IMD / Ec50s[2] + Dose_EPX / Ec50s[1],
+    Ratio_plot = case_when(
+      Ratio == "E" ~ Ratio_E,
+      Ratio == "F" ~ Ratio_F,
+      Ratio == "G" ~ Ratio_G,
+      Ratio == "H" ~ Ratio_H,
+      Ratio == "I" ~ Ratio_I
+    ),
+    Ratio_plot = fct_relevel(Ratio_plot, c(Ratio_E, Ratio_F, Ratio_G, Ratio_H, Ratio_I))
+  )
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+p_comp_CA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+
+p_CA <- p_facetCA +
+  inset_element(
+    p_comp_CA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_CA
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCASA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CASA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.0001, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+p_comp_CASA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CASA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.0001, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+
+p_CASA <- p_facetCASA +
+  inset_element(
+    p_comp_CASA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_CASA
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetCADL <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CADL,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.009, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+p_comp_CADL <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_CADL,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.009, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+
+p_CADL <- p_facetCADL +
+  inset_element(
+    p_comp_CADL,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_CADL
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+p_comp_IA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100")
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+
+p_IA <- p_facetIA +
+  inset_element(
+    p_comp_CA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_IA
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIASA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IASA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.0001, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+p_comp_IASA <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IASA,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.0001, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+
+p_IASA <- p_facetIASA +
+  inset_element(
+    p_comp_IASA,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_IASA
+
+line_width <- 1.2
+size_axistitle <- 11
+
+p_facetIADL <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IADL,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  geom_point(
+    data = df_expB_repro_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    alpha = 0.6,
+    shape = 4
+  ) +
+  geom_point(
+    data = df_expB_repro_mean_plotdrc,
+    aes(
+      x = TU_mix_plot,
+      y = Nb_cocoons,
+      color = Ratio_plot,
+      fill = Ratio_plot
+    ),
+    size = 3
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  facet_wrap2(~Ratio_plot, axes = "x") +
+  # ylim(0, 3)+
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.009, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_text(size = size_axistitle),
+    axis.title.y = element_text(size = size_axistitle),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    strip.placement = "outside",
+    strip.background = element_rect(color = "black", fill = "grey95", size = 0, linetype = "solid"),
+    panel.spacing = unit(0.6, "lines")
+  )
+
+p_comp_IADL <- ggplot() +
+  geom_line(
+    data = df_pred_drc_ratio_IADL,
+    aes(
+      x = TU,
+      y = Response,
+      color = Ratio_plot
+    )
+  ) +
+  scale_color_manual(values = pal_ratio) +
+  scale_fill_manual(values = pal_ratio) +
+  scale_x_log10(
+    breaks = c(Val_Ctrl, 0.01, 0.1, 1, 10, 100), # inclure la valeur fictive
+    labels = c(Label_Ctrl, "0.01", "0.1", "1", "10", "100"),
+    limits = c(0.009, 101)
+  ) +
+  labs(
+    x = "Toxic Unit (TU)",
+    y = "Number of cocoons produced per cosm (#)"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    strip.background = element_rect(
+      color = "black",
+      fill = "grey95",
+      size = 0,
+      linetype = "solid"
+    )
+  )
+
+
+p_IADL <- p_facetIADL +
+  inset_element(
+    p_comp_IADL,
+    left = 0.67, bottom = -0.05, right = 1, top = 0.45
+  )
+p_IADL
+
+### 3.6.3. 3D representations ----
+
+p_CA <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_CA,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    showlegend = FALSE,
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    )
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_CA
+
+p_CASA <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_CASA,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_CASA
+
+p_CADL <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_CADL,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_CADL
+
+p_IA <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_IA,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    showlegend = FALSE,
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    )
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_IA
+
+p_IASA <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_IASA,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_IASA
+
+p_IADL <- plotly::plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_IADL,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    # paper_bgcolor = "#F9FAFC",
+    # plot_bgcolor = "#F9FAFC"
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  add_markers(
+    y = df_expB_repro$Dose_EPX,
+    x = df_expB_repro$Dose_IMD,
+    z = df_expB_repro$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 3,
+      color = Nord_polar[4],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  ) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      size = 7,
+      color = Nord_polar[1],
+      symbol = 104
+    ),
+    showlegend = FALSE
+  )
+
+p_IADL
+
+## 3.7. Step 5 - Evaluation of model fit ----
+
+### 3.7.1. Predobs ----
+
+C_mat <- cbind(
+  df_expB_repro_Jonker$Dose_EPX,
+  df_expB_repro_Jonker$Dose_IMD
+)
+
+# Calculation of effects for the design concentrations
+res_CA <- CA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+res_CASA <- CA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = CASA_fit$a
+)
+res_CADL <- CA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = CADL_fit$a,
+  b = CADL_fit$b
+)
+res_CADR <- CA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "DR",
+  a = CADR_fit$a,
+  b = CADR_fit$b
+)
+
+res_IA <- IA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "none"
+)
+res_IASA <- IA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "SA",
+  a = IASA_fit$a
+)
+res_IADL <- IA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "DL",
+  a = IADL_fit$a,
+  b = IADL_fit$b
+)
+res_IADR <- IA_complete2(
+  C_mat,
+  Max, Slopes, Ec50s,
+  interact = "DR",
+  a = IADR_fit$a,
+  b = IADR_fit$b
+)
+
+
+# We add the corresponding response to our design
+df_predobs_CA <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_CA)
+df_predobs_CASA <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_CASA)
+df_predobs_CADL <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_CADL)
+df_predobs_CADR <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_CADR)
+
+df_predobs_IA <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_IA)
+df_predobs_IASA <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_IASA)
+df_predobs_IADL <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_IADL)
+df_predobs_IADR <- df_expB_repro_Jonker %>%
+  mutate(Predicted = res_IADR)
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+xmin <- 0.1
+xmax <- 15
+step <- 0.5
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_CA <- ggplot() +
+  geom_point(
+    data = df_predobs_CA,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    limits = c(0.001, 100)
+  ) +
+  scale_y_log10(
+    limits = c(0.001, 100)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_CA
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_CASA <- ggplot() +
+  geom_point(
+    data = df_predobs_CASA,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  scale_y_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_CASA
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_CADL <- ggplot() +
+  geom_point(
+    data = df_predobs_CADL,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  scale_y_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_CADL
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+xmin <- 0.1
+xmax <- 15
+step <- 0.5
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_IA <- ggplot() +
+  geom_point(
+    data = df_predobs_IA,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  scale_y_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_IA
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_IASA <- ggplot() +
+  geom_point(
+    data = df_predobs_IASA,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  scale_y_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_IASA
+
+fact_1 <- 2
+fact_2 <- 5
+
+col_line0 <- Nord_polar[1]
+col_line1 <- Nord_polar[4]
+col_line2 <- Nord_snow[1]
+seq_line <- seq(xmin, xmax, step)
+
+df_line <- data.frame(
+  x1  = seq_line,
+  y1  = seq_line * fact_1,
+  x_1 = seq_line,
+  y_1 = seq_line / fact_1,
+  x2  = seq_line,
+  y2  = seq_line * fact_2,
+  x_2 = seq_line,
+  y_2 = seq_line / fact_2
+)
+
+p_IADL <- ggplot() +
+  geom_point(
+    data = df_predobs_IADL,
+    mapping = aes(
+      x = Response,
+      y = Predicted,
+      color = as.factor(Line),
+      shape = as.factor(Ratio)
+    ),
+    alpha = 0.5,
+    size = 1.5
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x1, y = y1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_1, y = y_1),
+    color = col_line1
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x2, y = y2),
+    color = col_line2
+  ) +
+  geom_line(
+    data = df_line,
+    mapping = aes(x = x_2, y = y_2),
+    color = col_line2
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = col_line0,
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    name = "Isobole",
+    values = c(Nord_aurora, Nord_frost)
+  ) +
+  scale_x_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  scale_y_log10(
+    # limits = c(0.15, 1.5)
+  ) +
+  # ylim(NA,1.5)+
+  labs(
+    x = "Observed response",
+    y = "Predicted response"
+  ) +
+  theme_minimal()
+p_IADL
+
+calculate_predobs_stats <- function(df) {
+  df <- df |>
+    mutate(
+      Ratio_predobs = Predicted / Response,
+      Residuals = Predicted - Response
+    )
+  
+  per_fold2 <- round(mean(df$Ratio_predobs >= 0.5 & df$Ratio_predobs <= 2) * 100, 1)
+  per_fold5 <- round(mean(df$Ratio_predobs >= 0.2 & df$Ratio_predobs <= 5) * 100, 1)
+  
+  list(df = df, per_fold2 = per_fold2, per_fold5 = per_fold5)
+}
+
+f_calc_residuals <- function(df) {
+  df <- df |>
+    mutate(
+      Ratio_predobs = Predicted / Response,
+      Residuals = Predicted - Response
+    )
+}
+
+dfs <- list(
+  CA = f_calc_residuals(df_predobs_CA), "CA-SA" = f_calc_residuals(df_predobs_CASA), "CA-DL" = f_calc_residuals(df_predobs_CADL), "CA-DR" = f_calc_residuals(df_predobs_CADR),
+  IA = f_calc_residuals(df_predobs_IA), "IA-SA" = f_calc_residuals(df_predobs_IASA), "IA-DL" = f_calc_residuals(df_predobs_IADL), "IA-DR" = f_calc_residuals(df_predobs_IADR)
+)
+
+results <- lapply(dfs, calculate_predobs_stats)
+
+df_predobs_summary <- data.frame(
+  Reference_model = c(rep("CA", 4), rep("IA", 4)),
+  Model = names(dfs),
+  Per_fold2 = sapply(results, `[[`, "per_fold2"),
+  Per_fold5 = sapply(results, `[[`, "per_fold5")
+)
+df_predobs_summary |> datatable(options = list(dom = "t"), class = "hover")
+
+### 3.7.2. Residuals ----
+
+p_CA <- ggplot() +
+  geom_dotplot(
+    data = dfs$CA,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  theme_minimal()
+
+p_CA
+
+p_CASA <- ggplot() +
+  geom_dotplot(
+    data = dfs$`CA-SA`,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  # scale_x_log10()+
+  theme_minimal()
+p_CASA
+
+p_CADL <- ggplot() +
+  geom_dotplot(
+    data = dfs$`CA-DL`,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  # scale_x_log10()+
+  theme_minimal()
+p_CADL
+
+p_IA <- ggplot() +
+  geom_dotplot(
+    data = dfs$IA,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  # scale_x_log10()+
+  theme_minimal()
+p_IA
+
+p_IASA <- ggplot() +
+  geom_dotplot(
+    data = dfs$`IA-SA`,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  # scale_x_log10()+
+  theme_minimal()
+p_IASA
+
+p_IADL <- ggplot() +
+  geom_dotplot(
+    data = dfs$`IA-DL`,
+    aes(
+      x = paste0(Line, Ratio),
+      y = Residuals,
+      color = as.factor(Line),
+      fill = as.factor(Line)
+    ),
+    binaxis = "y",
+    stackdir = "center",
+    alpha = 0.5,
+    dotsize = 0.8
+  ) +
+  geom_abline(
+    slope = 0,
+    intercept = 0
+  ) +
+  scale_color_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  scale_fill_manual(name = "Line", values = c(Nord_aurora, rev(Nord_frost))) +
+  # scale_x_log10()+
+  theme_minimal()
+p_IADL
+
+# Summary ----
+
+df_expB_repro_plot_f <- df_expB_repro %>%
+  group_by(Condition) %>%
+  summarise(
+    mean = mean(Nb_cocoons),
+    sd = sd(Nb_cocoons),
+    q2.5 = quantile(Nb_cocoons, 0.025),
+    q97.5 = quantile(Nb_cocoons, 0.975),
+    Dose_IMD = Dose_IMD,
+    Dose_EPX = Dose_EPX,
+    .groups = "drop"
+  ) |>
+  mutate(
+    zmin = mean - sd,
+    zmax = mean + sd
+  )
+
+p_IASA <- plot_ly(
+  x = grid_C2,
+  y = grid_C1,
+  z = ~z_IASA,
+  colors = Nord_frost
+) %>%
+  add_surface(showlegend = FALSE, showscale = FALSE, opacity = .7) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "[IMD] (mg/kg)"),
+      yaxis = list(title = "[EPX] (mg/kg)"),
+      zaxis = list(title = "Cocoon production"),
+      camera = list(eye = list(x = 2.5, y = -1.2, z = 1))
+    ),
+    paper_bgcolor = "rgba(0, 0, 0, 0)",
+    plot_bgcolor = "rgba(0, 0, 0, 0)"
+  ) %>%
+  colorbar(title = list(text = "Production of cocoons per cosm")) %>%
+  add_markers(
+    y = df_expB_repro_mean$Dose_EPX,
+    x = df_expB_repro_mean$Dose_IMD,
+    z = df_expB_repro_mean$Nb_cocoons,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(size = 7, color = Nord_polar[1], symbol = 104),
+    showlegend = FALSE, opacity = 1
+  )
+
+# add error bars
+for (i in seq_len(nrow(df_expB_repro_plot_f))) {
+  p_IASA <- p_IASA %>%
+    add_trace(
+      x = df_expB_repro_plot_f$Dose_IMD[i],
+      y = df_expB_repro_plot_f$Dose_EPX[i],
+      z = c(df_expB_repro_plot_f$zmin[i], df_expB_repro_plot_f$zmax[i]),
+      type = "scatter3d",
+      mode = "lines",
+      line = list(color = Nord_polar[1], width = 2),
+      showlegend = FALSE
+    )
+}
+
+p_IASA
