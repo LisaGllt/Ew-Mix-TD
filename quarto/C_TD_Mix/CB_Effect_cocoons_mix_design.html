@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>6&nbsp; Experimental design construction for mixture effect on reproduction – **Toxic cocktails in soils** - Evidence for synergistic effects of a pesticide mixture on earthworm life-history traits</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -89,15 +92,14 @@ div.csl-indent {
 <link href="../../quarto/C_TD_Mix/CA_How_to_study_mixture.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-f45ea6631386e7416db8528681f7d0e2.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-4d58ae029ca8c4121063b1aa4ad523f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-2db59e49b92c67e8f585375d4d6f6eb3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-f33445dc21f9d0081efb0a8a5f242641.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -132,7 +134,7 @@ div.csl-indent {
 <script src="../../site_libs/girafe-binding-0.9.3/girafe.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -1142,29 +1144,31 @@ EPX/IMD:50/50   307.85 102.15 513.55</code></pre>
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>EPX_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  EPX_x,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>),</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>factor_design,</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>EPX_x, </span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>EPX_x</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>IMD_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  IMD_x,</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>),</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>factor_design,</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>IMD_x, </span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>IMD_x</span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>df_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">EPX=</span>EPX_x,</span>
-<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>                        <span class="at">IMD=</span>IMD_x,</span>
-<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Ratio=</span>EPX_x<span class="sc">/</span>IMD_x<span class="sc">*</span>IMD_EC50<span class="sc">/</span>EPX_EC50)</span>
-<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(df_design, <span class="at">file=</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/Design_mixture.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), <span class="co">#1</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), <span class="co">#2</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), <span class="co">#3</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>factor_design, <span class="co">#4</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>EPX_x, </span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>EPX_x</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>IMD_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  IMD_x,</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), </span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>factor_design,</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>IMD_x, </span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>IMD_x</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>df_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">EPX=</span>EPX_x,</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>                        <span class="at">IMD=</span>IMD_x,</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Ratio=</span>EPX_x<span class="sc">/</span>IMD_x<span class="sc">*</span>IMD_EC50<span class="sc">/</span>EPX_EC50)</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(df_design, <span class="at">file=</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/Design_mixture.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
@@ -2856,400 +2860,402 @@ Kappenberg, F., Brecklinghaus, T., Schürmeyer, L., Albrecht, W., Schorning, K.,
 <span id="cb40-744"><a href="#cb40-744" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb40-745"><a href="#cb40-745" aria-hidden="true" tabindex="-1"></a>EPX_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb40-746"><a href="#cb40-746" aria-hidden="true" tabindex="-1"></a>  EPX_x,</span>
-<span id="cb40-747"><a href="#cb40-747" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>),</span>
-<span id="cb40-748"><a href="#cb40-748" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
-<span id="cb40-749"><a href="#cb40-749" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
-<span id="cb40-750"><a href="#cb40-750" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>factor_design,</span>
-<span id="cb40-751"><a href="#cb40-751" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>EPX_x, </span>
-<span id="cb40-752"><a href="#cb40-752" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>EPX_x</span>
-<span id="cb40-753"><a href="#cb40-753" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-754"><a href="#cb40-754" aria-hidden="true" tabindex="-1"></a>IMD_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb40-755"><a href="#cb40-755" aria-hidden="true" tabindex="-1"></a>  IMD_x,</span>
-<span id="cb40-756"><a href="#cb40-756" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>),</span>
-<span id="cb40-757"><a href="#cb40-757" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
-<span id="cb40-758"><a href="#cb40-758" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
-<span id="cb40-759"><a href="#cb40-759" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>factor_design,</span>
-<span id="cb40-760"><a href="#cb40-760" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>IMD_x, </span>
-<span id="cb40-761"><a href="#cb40-761" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>IMD_x</span>
-<span id="cb40-762"><a href="#cb40-762" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-763"><a href="#cb40-763" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-764"><a href="#cb40-764" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-765"><a href="#cb40-765" aria-hidden="true" tabindex="-1"></a>df_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">EPX=</span>EPX_x,</span>
-<span id="cb40-766"><a href="#cb40-766" aria-hidden="true" tabindex="-1"></a>                        <span class="at">IMD=</span>IMD_x,</span>
-<span id="cb40-767"><a href="#cb40-767" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Ratio=</span>EPX_x<span class="sc">/</span>IMD_x<span class="sc">*</span>IMD_EC50<span class="sc">/</span>EPX_EC50)</span>
-<span id="cb40-768"><a href="#cb40-768" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-769"><a href="#cb40-769" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(df_design, <span class="at">file=</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/Design_mixture.csv"</span>))</span>
+<span id="cb40-747"><a href="#cb40-747" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), <span class="co">#1</span></span>
+<span id="cb40-748"><a href="#cb40-748" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), <span class="co">#2</span></span>
+<span id="cb40-749"><a href="#cb40-749" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), <span class="co">#3</span></span>
+<span id="cb40-750"><a href="#cb40-750" aria-hidden="true" tabindex="-1"></a>  EPX_x<span class="sc">/</span>factor_design, <span class="co">#4</span></span>
+<span id="cb40-751"><a href="#cb40-751" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-752"><a href="#cb40-752" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>EPX_x, </span>
+<span id="cb40-753"><a href="#cb40-753" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>EPX_x</span>
+<span id="cb40-754"><a href="#cb40-754" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-755"><a href="#cb40-755" aria-hidden="true" tabindex="-1"></a>IMD_x <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb40-756"><a href="#cb40-756" aria-hidden="true" tabindex="-1"></a>  IMD_x,</span>
+<span id="cb40-757"><a href="#cb40-757" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), </span>
+<span id="cb40-758"><a href="#cb40-758" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
+<span id="cb40-759"><a href="#cb40-759" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
+<span id="cb40-760"><a href="#cb40-760" aria-hidden="true" tabindex="-1"></a>  IMD_x<span class="sc">/</span>factor_design,</span>
+<span id="cb40-761"><a href="#cb40-761" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-762"><a href="#cb40-762" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">*</span>IMD_x, </span>
+<span id="cb40-763"><a href="#cb40-763" aria-hidden="true" tabindex="-1"></a>  factor_design<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>IMD_x</span>
+<span id="cb40-764"><a href="#cb40-764" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-765"><a href="#cb40-765" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-766"><a href="#cb40-766" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-767"><a href="#cb40-767" aria-hidden="true" tabindex="-1"></a>df_design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">EPX=</span>EPX_x,</span>
+<span id="cb40-768"><a href="#cb40-768" aria-hidden="true" tabindex="-1"></a>                        <span class="at">IMD=</span>IMD_x,</span>
+<span id="cb40-769"><a href="#cb40-769" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Ratio=</span>EPX_x<span class="sc">/</span>IMD_x<span class="sc">*</span>IMD_EC50<span class="sc">/</span>EPX_EC50)</span>
 <span id="cb40-770"><a href="#cb40-770" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-771"><a href="#cb40-771" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-771"><a href="#cb40-771" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(df_design, <span class="at">file=</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/Design_mixture.csv"</span>))</span>
 <span id="cb40-772"><a href="#cb40-772" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-773"><a href="#cb40-773" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=F, warning=F}</span></span>
-<span id="cb40-774"><a href="#cb40-774" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Experimental design for mixture effects on reproduction</span></span>
-<span id="cb40-775"><a href="#cb40-775" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-mixdesign</span></span>
-<span id="cb40-776"><a href="#cb40-776" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 5</span></span>
-<span id="cb40-777"><a href="#cb40-777" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 5</span></span>
-<span id="cb40-778"><a href="#cb40-778" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-779"><a href="#cb40-779" aria-hidden="true" tabindex="-1"></a>width_iso <span class="ot">&lt;-</span> <span class="fl">1.1</span></span>
-<span id="cb40-780"><a href="#cb40-780" aria-hidden="true" tabindex="-1"></a>size_points <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb40-781"><a href="#cb40-781" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-782"><a href="#cb40-782" aria-hidden="true" tabindex="-1"></a>df_design_plot <span class="ot">&lt;-</span> df_design <span class="sc">|&gt;</span> </span>
-<span id="cb40-783"><a href="#cb40-783" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb40-784"><a href="#cb40-784" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">paste</span>(</span>
-<span id="cb40-785"><a href="#cb40-785" aria-hidden="true" tabindex="-1"></a>      <span class="st">"[IMD] = "</span>, </span>
-<span id="cb40-786"><a href="#cb40-786" aria-hidden="true" tabindex="-1"></a>      <span class="fu">signif</span>(IMD, <span class="dv">3</span>), </span>
-<span id="cb40-787"><a href="#cb40-787" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mg/kg</span><span class="sc">\n</span><span class="st"> [EPX] = "</span>, </span>
-<span id="cb40-788"><a href="#cb40-788" aria-hidden="true" tabindex="-1"></a>      <span class="fu">signif</span>(EPX,<span class="dv">3</span>), <span class="st">"mg/kg"</span></span>
-<span id="cb40-789"><a href="#cb40-789" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb40-790"><a href="#cb40-790" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb40-791"><a href="#cb40-791" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-792"><a href="#cb40-792" aria-hidden="true" tabindex="-1"></a>plot_design <span class="ot">&lt;-</span> <span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb40-793"><a href="#cb40-793" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(EPX_x), <span class="fu">max</span>(EPX_x))<span class="sc">+</span></span>
-<span id="cb40-794"><a href="#cb40-794" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">min</span>(IMD_x), <span class="fu">max</span>(IMD_x))<span class="sc">+</span></span>
-<span id="cb40-795"><a href="#cb40-795" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ligne des ratios</span></span>
-<span id="cb40-796"><a href="#cb40-796" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-797"><a href="#cb40-797" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
-<span id="cb40-798"><a href="#cb40-798" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50<span class="sc">/</span><span class="dv">3</span>, </span>
-<span id="cb40-799"><a href="#cb40-799" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
-<span id="cb40-800"><a href="#cb40-800" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-801"><a href="#cb40-801" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-802"><a href="#cb40-802" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
-<span id="cb40-803"><a href="#cb40-803" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50<span class="sc">*</span><span class="dv">3</span>, </span>
-<span id="cb40-804"><a href="#cb40-804" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
-<span id="cb40-805"><a href="#cb40-805" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-806"><a href="#cb40-806" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-807"><a href="#cb40-807" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
-<span id="cb40-808"><a href="#cb40-808" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50, </span>
-<span id="cb40-809"><a href="#cb40-809" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
-<span id="cb40-810"><a href="#cb40-810" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-811"><a href="#cb40-811" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-812"><a href="#cb40-812" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
-<span id="cb40-813"><a href="#cb40-813" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="dv">0</span>, </span>
-<span id="cb40-814"><a href="#cb40-814" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
-<span id="cb40-815"><a href="#cb40-815" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-816"><a href="#cb40-816" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(</span>
-<span id="cb40-817"><a href="#cb40-817" aria-hidden="true" tabindex="-1"></a>    <span class="at">xintercept =</span> <span class="dv">0</span>, </span>
-<span id="cb40-818"><a href="#cb40-818" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
-<span id="cb40-819"><a href="#cb40-819" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-820"><a href="#cb40-820" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-821"><a href="#cb40-821" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Effect isoboles</span></span>
-<span id="cb40-822"><a href="#cb40-822" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-823"><a href="#cb40-823" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">*</span>factor_design<span class="sc">^</span><span class="dv">2</span>, </span>
-<span id="cb40-824"><a href="#cb40-824" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-825"><a href="#cb40-825" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-826"><a href="#cb40-826" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-827"><a href="#cb40-827" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-828"><a href="#cb40-828" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-829"><a href="#cb40-829" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">*</span>factor_design, </span>
-<span id="cb40-830"><a href="#cb40-830" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-831"><a href="#cb40-831" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-832"><a href="#cb40-832" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-833"><a href="#cb40-833" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-834"><a href="#cb40-834" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-835"><a href="#cb40-835" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50, </span>
-<span id="cb40-836"><a href="#cb40-836" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-837"><a href="#cb40-837" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-838"><a href="#cb40-838" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-839"><a href="#cb40-839" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-840"><a href="#cb40-840" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-841"><a href="#cb40-841" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>factor_design, </span>
-<span id="cb40-842"><a href="#cb40-842" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-843"><a href="#cb40-843" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-844"><a href="#cb40-844" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-845"><a href="#cb40-845" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-846"><a href="#cb40-846" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-847"><a href="#cb40-847" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
-<span id="cb40-848"><a href="#cb40-848" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-849"><a href="#cb40-849" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-850"><a href="#cb40-850" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-851"><a href="#cb40-851" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-852"><a href="#cb40-852" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-853"><a href="#cb40-853" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
-<span id="cb40-854"><a href="#cb40-854" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-855"><a href="#cb40-855" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-856"><a href="#cb40-856" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-857"><a href="#cb40-857" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-858"><a href="#cb40-858" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb40-859"><a href="#cb40-859" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), </span>
-<span id="cb40-860"><a href="#cb40-860" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
-<span id="cb40-861"><a href="#cb40-861" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
-<span id="cb40-862"><a href="#cb40-862" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
-<span id="cb40-863"><a href="#cb40-863" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-864"><a href="#cb40-864" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-865"><a href="#cb40-865" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ratios annotations</span></span>
-<span id="cb40-866"><a href="#cb40-866" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb40-867"><a href="#cb40-867" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
-<span id="cb40-868"><a href="#cb40-868" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="dv">30</span>, </span>
-<span id="cb40-869"><a href="#cb40-869" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
-<span id="cb40-870"><a href="#cb40-870" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"0:1"</span>, </span>
-<span id="cb40-871"><a href="#cb40-871" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
-<span id="cb40-872"><a href="#cb40-872" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
-<span id="cb40-873"><a href="#cb40-873" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-874"><a href="#cb40-874" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb40-875"><a href="#cb40-875" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
-<span id="cb40-876"><a href="#cb40-876" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="dv">200</span>, </span>
-<span id="cb40-877"><a href="#cb40-877" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
-<span id="cb40-878"><a href="#cb40-878" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"3:1"</span>, </span>
-<span id="cb40-879"><a href="#cb40-879" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
-<span id="cb40-880"><a href="#cb40-880" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
-<span id="cb40-881"><a href="#cb40-881" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-882"><a href="#cb40-882" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb40-883"><a href="#cb40-883" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
-<span id="cb40-884"><a href="#cb40-884" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x)<span class="sc">-</span><span class="dv">30</span>, </span>
-<span id="cb40-885"><a href="#cb40-885" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
-<span id="cb40-886"><a href="#cb40-886" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:1"</span>, </span>
-<span id="cb40-887"><a href="#cb40-887" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
-<span id="cb40-888"><a href="#cb40-888" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
-<span id="cb40-889"><a href="#cb40-889" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-890"><a href="#cb40-890" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb40-891"><a href="#cb40-891" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>,</span>
-<span id="cb40-892"><a href="#cb40-892" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x),</span>
-<span id="cb40-893"><a href="#cb40-893" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fl">0.8</span>,</span>
-<span id="cb40-894"><a href="#cb40-894" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:3"</span>, </span>
-<span id="cb40-895"><a href="#cb40-895" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
-<span id="cb40-896"><a href="#cb40-896" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
-<span id="cb40-897"><a href="#cb40-897" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-898"><a href="#cb40-898" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb40-899"><a href="#cb40-899" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
-<span id="cb40-900"><a href="#cb40-900" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x), </span>
-<span id="cb40-901"><a href="#cb40-901" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fl">0.1</span>, </span>
-<span id="cb40-902"><a href="#cb40-902" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:0"</span>, </span>
-<span id="cb40-903"><a href="#cb40-903" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
-<span id="cb40-904"><a href="#cb40-904" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
-<span id="cb40-905"><a href="#cb40-905" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-906"><a href="#cb40-906" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-907"><a href="#cb40-907" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Design points</span></span>
-<span id="cb40-908"><a href="#cb40-908" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(</span>
-<span id="cb40-909"><a href="#cb40-909" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>df_design_plot, </span>
-<span id="cb40-910"><a href="#cb40-910" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb40-911"><a href="#cb40-911" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>EPX, </span>
-<span id="cb40-912"><a href="#cb40-912" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>IMD,</span>
-<span id="cb40-913"><a href="#cb40-913" aria-hidden="true" tabindex="-1"></a>      <span class="at">tooltip =</span> label), </span>
-<span id="cb40-914"><a href="#cb40-914" aria-hidden="true" tabindex="-1"></a>    <span class="at">size=</span>size_points, </span>
-<span id="cb40-915"><a href="#cb40-915" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>Nord_polar[<span class="dv">1</span>]</span>
-<span id="cb40-916"><a href="#cb40-916" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-917"><a href="#cb40-917" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-918"><a href="#cb40-918" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb40-919"><a href="#cb40-919" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Epoxiconazole (mg/kg)"</span>,</span>
-<span id="cb40-920"><a href="#cb40-920" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Imidacloprid (mg/kg)"</span></span>
-<span id="cb40-921"><a href="#cb40-921" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-922"><a href="#cb40-922" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-923"><a href="#cb40-923" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="dv">12</span>)</span>
-<span id="cb40-924"><a href="#cb40-924" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-925"><a href="#cb40-925" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-773"><a href="#cb40-773" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-774"><a href="#cb40-774" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-775"><a href="#cb40-775" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=F, warning=F}</span></span>
+<span id="cb40-776"><a href="#cb40-776" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Experimental design for mixture effects on reproduction</span></span>
+<span id="cb40-777"><a href="#cb40-777" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-mixdesign</span></span>
+<span id="cb40-778"><a href="#cb40-778" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 5</span></span>
+<span id="cb40-779"><a href="#cb40-779" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 5</span></span>
+<span id="cb40-780"><a href="#cb40-780" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-781"><a href="#cb40-781" aria-hidden="true" tabindex="-1"></a>width_iso <span class="ot">&lt;-</span> <span class="fl">1.1</span></span>
+<span id="cb40-782"><a href="#cb40-782" aria-hidden="true" tabindex="-1"></a>size_points <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb40-783"><a href="#cb40-783" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-784"><a href="#cb40-784" aria-hidden="true" tabindex="-1"></a>df_design_plot <span class="ot">&lt;-</span> df_design <span class="sc">|&gt;</span> </span>
+<span id="cb40-785"><a href="#cb40-785" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-786"><a href="#cb40-786" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">paste</span>(</span>
+<span id="cb40-787"><a href="#cb40-787" aria-hidden="true" tabindex="-1"></a>      <span class="st">"[IMD] = "</span>, </span>
+<span id="cb40-788"><a href="#cb40-788" aria-hidden="true" tabindex="-1"></a>      <span class="fu">signif</span>(IMD, <span class="dv">3</span>), </span>
+<span id="cb40-789"><a href="#cb40-789" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mg/kg</span><span class="sc">\n</span><span class="st"> [EPX] = "</span>, </span>
+<span id="cb40-790"><a href="#cb40-790" aria-hidden="true" tabindex="-1"></a>      <span class="fu">signif</span>(EPX,<span class="dv">3</span>), <span class="st">"mg/kg"</span></span>
+<span id="cb40-791"><a href="#cb40-791" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb40-792"><a href="#cb40-792" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-793"><a href="#cb40-793" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-794"><a href="#cb40-794" aria-hidden="true" tabindex="-1"></a>plot_design <span class="ot">&lt;-</span> <span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb40-795"><a href="#cb40-795" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(EPX_x), <span class="fu">max</span>(EPX_x))<span class="sc">+</span></span>
+<span id="cb40-796"><a href="#cb40-796" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fu">min</span>(IMD_x), <span class="fu">max</span>(IMD_x))<span class="sc">+</span></span>
+<span id="cb40-797"><a href="#cb40-797" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ligne des ratios</span></span>
+<span id="cb40-798"><a href="#cb40-798" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-799"><a href="#cb40-799" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
+<span id="cb40-800"><a href="#cb40-800" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50<span class="sc">/</span><span class="dv">3</span>, </span>
+<span id="cb40-801"><a href="#cb40-801" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
+<span id="cb40-802"><a href="#cb40-802" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-803"><a href="#cb40-803" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-804"><a href="#cb40-804" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
+<span id="cb40-805"><a href="#cb40-805" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50<span class="sc">*</span><span class="dv">3</span>, </span>
+<span id="cb40-806"><a href="#cb40-806" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
+<span id="cb40-807"><a href="#cb40-807" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-808"><a href="#cb40-808" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-809"><a href="#cb40-809" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
+<span id="cb40-810"><a href="#cb40-810" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span>ratio_EC50, </span>
+<span id="cb40-811"><a href="#cb40-811" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
+<span id="cb40-812"><a href="#cb40-812" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-813"><a href="#cb40-813" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-814"><a href="#cb40-814" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span><span class="dv">0</span>, </span>
+<span id="cb40-815"><a href="#cb40-815" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="dv">0</span>, </span>
+<span id="cb40-816"><a href="#cb40-816" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
+<span id="cb40-817"><a href="#cb40-817" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-818"><a href="#cb40-818" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(</span>
+<span id="cb40-819"><a href="#cb40-819" aria-hidden="true" tabindex="-1"></a>    <span class="at">xintercept =</span> <span class="dv">0</span>, </span>
+<span id="cb40-820"><a href="#cb40-820" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>]</span>
+<span id="cb40-821"><a href="#cb40-821" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-822"><a href="#cb40-822" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-823"><a href="#cb40-823" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Effect isoboles</span></span>
+<span id="cb40-824"><a href="#cb40-824" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-825"><a href="#cb40-825" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">*</span>factor_design<span class="sc">^</span><span class="dv">2</span>, </span>
+<span id="cb40-826"><a href="#cb40-826" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-827"><a href="#cb40-827" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-828"><a href="#cb40-828" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-829"><a href="#cb40-829" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-830"><a href="#cb40-830" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-831"><a href="#cb40-831" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">*</span>factor_design, </span>
+<span id="cb40-832"><a href="#cb40-832" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-833"><a href="#cb40-833" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-834"><a href="#cb40-834" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-835"><a href="#cb40-835" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-836"><a href="#cb40-836" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-837"><a href="#cb40-837" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50, </span>
+<span id="cb40-838"><a href="#cb40-838" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-839"><a href="#cb40-839" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-840"><a href="#cb40-840" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-841"><a href="#cb40-841" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-842"><a href="#cb40-842" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-843"><a href="#cb40-843" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>factor_design, </span>
+<span id="cb40-844"><a href="#cb40-844" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-845"><a href="#cb40-845" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-846"><a href="#cb40-846" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-847"><a href="#cb40-847" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-848"><a href="#cb40-848" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-849"><a href="#cb40-849" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">2</span>), </span>
+<span id="cb40-850"><a href="#cb40-850" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-851"><a href="#cb40-851" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-852"><a href="#cb40-852" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-853"><a href="#cb40-853" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-854"><a href="#cb40-854" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-855"><a href="#cb40-855" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">5</span>), </span>
+<span id="cb40-856"><a href="#cb40-856" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-857"><a href="#cb40-857" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-858"><a href="#cb40-858" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-859"><a href="#cb40-859" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-860"><a href="#cb40-860" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb40-861"><a href="#cb40-861" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept=</span>IMD_EC50<span class="sc">/</span>(factor_design<span class="sc">^</span><span class="dv">9</span>), </span>
+<span id="cb40-862"><a href="#cb40-862" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope=</span><span class="sc">-</span>ratio_EC50, </span>
+<span id="cb40-863"><a href="#cb40-863" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">1</span>], </span>
+<span id="cb40-864"><a href="#cb40-864" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwd=</span>width_iso</span>
+<span id="cb40-865"><a href="#cb40-865" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-866"><a href="#cb40-866" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-867"><a href="#cb40-867" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ratios annotations</span></span>
+<span id="cb40-868"><a href="#cb40-868" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb40-869"><a href="#cb40-869" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
+<span id="cb40-870"><a href="#cb40-870" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="dv">30</span>, </span>
+<span id="cb40-871"><a href="#cb40-871" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
+<span id="cb40-872"><a href="#cb40-872" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"0:1"</span>, </span>
+<span id="cb40-873"><a href="#cb40-873" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
+<span id="cb40-874"><a href="#cb40-874" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
+<span id="cb40-875"><a href="#cb40-875" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-876"><a href="#cb40-876" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb40-877"><a href="#cb40-877" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
+<span id="cb40-878"><a href="#cb40-878" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="dv">200</span>, </span>
+<span id="cb40-879"><a href="#cb40-879" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
+<span id="cb40-880"><a href="#cb40-880" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"3:1"</span>, </span>
+<span id="cb40-881"><a href="#cb40-881" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
+<span id="cb40-882"><a href="#cb40-882" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
+<span id="cb40-883"><a href="#cb40-883" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-884"><a href="#cb40-884" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb40-885"><a href="#cb40-885" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
+<span id="cb40-886"><a href="#cb40-886" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x)<span class="sc">-</span><span class="dv">30</span>, </span>
+<span id="cb40-887"><a href="#cb40-887" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">max</span>(IMD_x), </span>
+<span id="cb40-888"><a href="#cb40-888" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:1"</span>, </span>
+<span id="cb40-889"><a href="#cb40-889" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
+<span id="cb40-890"><a href="#cb40-890" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
+<span id="cb40-891"><a href="#cb40-891" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-892"><a href="#cb40-892" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb40-893"><a href="#cb40-893" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>,</span>
+<span id="cb40-894"><a href="#cb40-894" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x),</span>
+<span id="cb40-895"><a href="#cb40-895" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fl">0.8</span>,</span>
+<span id="cb40-896"><a href="#cb40-896" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:3"</span>, </span>
+<span id="cb40-897"><a href="#cb40-897" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
+<span id="cb40-898"><a href="#cb40-898" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
+<span id="cb40-899"><a href="#cb40-899" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-900"><a href="#cb40-900" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb40-901"><a href="#cb40-901" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">"text"</span>, </span>
+<span id="cb40-902"><a href="#cb40-902" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">max</span>(EPX_x), </span>
+<span id="cb40-903"><a href="#cb40-903" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fl">0.1</span>, </span>
+<span id="cb40-904"><a href="#cb40-904" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="st">"1:0"</span>, </span>
+<span id="cb40-905"><a href="#cb40-905" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>pal_col[<span class="dv">2</span>], </span>
+<span id="cb40-906"><a href="#cb40-906" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface=</span><span class="st">"bold"</span></span>
+<span id="cb40-907"><a href="#cb40-907" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-908"><a href="#cb40-908" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-909"><a href="#cb40-909" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Design points</span></span>
+<span id="cb40-910"><a href="#cb40-910" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(</span>
+<span id="cb40-911"><a href="#cb40-911" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>df_design_plot, </span>
+<span id="cb40-912"><a href="#cb40-912" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb40-913"><a href="#cb40-913" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>EPX, </span>
+<span id="cb40-914"><a href="#cb40-914" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>IMD,</span>
+<span id="cb40-915"><a href="#cb40-915" aria-hidden="true" tabindex="-1"></a>      <span class="at">tooltip =</span> label), </span>
+<span id="cb40-916"><a href="#cb40-916" aria-hidden="true" tabindex="-1"></a>    <span class="at">size=</span>size_points, </span>
+<span id="cb40-917"><a href="#cb40-917" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>Nord_polar[<span class="dv">1</span>]</span>
+<span id="cb40-918"><a href="#cb40-918" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-919"><a href="#cb40-919" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-920"><a href="#cb40-920" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb40-921"><a href="#cb40-921" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Epoxiconazole (mg/kg)"</span>,</span>
+<span id="cb40-922"><a href="#cb40-922" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Imidacloprid (mg/kg)"</span></span>
+<span id="cb40-923"><a href="#cb40-923" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-924"><a href="#cb40-924" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-925"><a href="#cb40-925" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="dv">12</span>)</span>
 <span id="cb40-926"><a href="#cb40-926" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-927"><a href="#cb40-927" aria-hidden="true" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb40-928"><a href="#cb40-928" aria-hidden="true" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
-<span id="cb40-929"><a href="#cb40-929" aria-hidden="true" tabindex="-1"></a><span class="st">  color: #333;</span></span>
-<span id="cb40-930"><a href="#cb40-930" aria-hidden="true" tabindex="-1"></a><span class="st">  background-color: white;</span></span>
-<span id="cb40-931"><a href="#cb40-931" aria-hidden="true" tabindex="-1"></a><span class="st">  padding: 10px;</span></span>
-<span id="cb40-932"><a href="#cb40-932" aria-hidden="true" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
-<span id="cb40-933"><a href="#cb40-933" aria-hidden="true" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
-<span id="cb40-934"><a href="#cb40-934" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb40-935"><a href="#cb40-935" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-936"><a href="#cb40-936" aria-hidden="true" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">"</span></span>
-<span id="cb40-937"><a href="#cb40-937" aria-hidden="true" tabindex="-1"></a><span class="st">  filter: brightness(75%);</span></span>
-<span id="cb40-938"><a href="#cb40-938" aria-hidden="true" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
-<span id="cb40-939"><a href="#cb40-939" aria-hidden="true" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
-<span id="cb40-940"><a href="#cb40-940" aria-hidden="true" tabindex="-1"></a><span class="st">  filter: brightness(1.15);</span></span>
-<span id="cb40-941"><a href="#cb40-941" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
-<span id="cb40-942"><a href="#cb40-942" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-943"><a href="#cb40-943" aria-hidden="true" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(</span>
-<span id="cb40-944"><a href="#cb40-944" aria-hidden="true" tabindex="-1"></a>  <span class="at">ggobj=</span>plot_design,</span>
-<span id="cb40-945"><a href="#cb40-945" aria-hidden="true" tabindex="-1"></a>  <span class="at">height_svg =</span> <span class="dv">5</span>,</span>
-<span id="cb40-946"><a href="#cb40-946" aria-hidden="true" tabindex="-1"></a>  <span class="at">width_svg =</span> <span class="dv">5</span></span>
-<span id="cb40-947"><a href="#cb40-947" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb40-948"><a href="#cb40-948" aria-hidden="true" tabindex="-1"></a>  <span class="fu">girafe_options</span>(<span class="fu">opts_sizing</span>(<span class="at">rescale =</span> <span class="cn">FALSE</span>))</span>
-<span id="cb40-949"><a href="#cb40-949" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-950"><a href="#cb40-950" aria-hidden="true" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
-<span id="cb40-951"><a href="#cb40-951" aria-hidden="true" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
-<span id="cb40-952"><a href="#cb40-952" aria-hidden="true" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
-<span id="cb40-953"><a href="#cb40-953" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
-<span id="cb40-954"><a href="#cb40-954" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css),</span>
-<span id="cb40-955"><a href="#cb40-955" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">"opacity:0.3; transition: all 0.2s ease-out;"</span>)</span>
-<span id="cb40-956"><a href="#cb40-956" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-957"><a href="#cb40-957" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-958"><a href="#cb40-958" aria-hidden="true" tabindex="-1"></a>interactive_plot</span>
+<span id="cb40-927"><a href="#cb40-927" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-928"><a href="#cb40-928" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-929"><a href="#cb40-929" aria-hidden="true" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb40-930"><a href="#cb40-930" aria-hidden="true" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
+<span id="cb40-931"><a href="#cb40-931" aria-hidden="true" tabindex="-1"></a><span class="st">  color: #333;</span></span>
+<span id="cb40-932"><a href="#cb40-932" aria-hidden="true" tabindex="-1"></a><span class="st">  background-color: white;</span></span>
+<span id="cb40-933"><a href="#cb40-933" aria-hidden="true" tabindex="-1"></a><span class="st">  padding: 10px;</span></span>
+<span id="cb40-934"><a href="#cb40-934" aria-hidden="true" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
+<span id="cb40-935"><a href="#cb40-935" aria-hidden="true" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb40-936"><a href="#cb40-936" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb40-937"><a href="#cb40-937" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-938"><a href="#cb40-938" aria-hidden="true" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">"</span></span>
+<span id="cb40-939"><a href="#cb40-939" aria-hidden="true" tabindex="-1"></a><span class="st">  filter: brightness(75%);</span></span>
+<span id="cb40-940"><a href="#cb40-940" aria-hidden="true" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
+<span id="cb40-941"><a href="#cb40-941" aria-hidden="true" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb40-942"><a href="#cb40-942" aria-hidden="true" tabindex="-1"></a><span class="st">  filter: brightness(1.15);</span></span>
+<span id="cb40-943"><a href="#cb40-943" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb40-944"><a href="#cb40-944" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-945"><a href="#cb40-945" aria-hidden="true" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(</span>
+<span id="cb40-946"><a href="#cb40-946" aria-hidden="true" tabindex="-1"></a>  <span class="at">ggobj=</span>plot_design,</span>
+<span id="cb40-947"><a href="#cb40-947" aria-hidden="true" tabindex="-1"></a>  <span class="at">height_svg =</span> <span class="dv">5</span>,</span>
+<span id="cb40-948"><a href="#cb40-948" aria-hidden="true" tabindex="-1"></a>  <span class="at">width_svg =</span> <span class="dv">5</span></span>
+<span id="cb40-949"><a href="#cb40-949" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb40-950"><a href="#cb40-950" aria-hidden="true" tabindex="-1"></a>  <span class="fu">girafe_options</span>(<span class="fu">opts_sizing</span>(<span class="at">rescale =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb40-951"><a href="#cb40-951" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-952"><a href="#cb40-952" aria-hidden="true" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb40-953"><a href="#cb40-953" aria-hidden="true" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb40-954"><a href="#cb40-954" aria-hidden="true" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb40-955"><a href="#cb40-955" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb40-956"><a href="#cb40-956" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css),</span>
+<span id="cb40-957"><a href="#cb40-957" aria-hidden="true" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">"opacity:0.3; transition: all 0.2s ease-out;"</span>)</span>
+<span id="cb40-958"><a href="#cb40-958" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb40-959"><a href="#cb40-959" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-960"><a href="#cb40-960" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-960"><a href="#cb40-960" aria-hidden="true" tabindex="-1"></a>interactive_plot</span>
 <span id="cb40-961"><a href="#cb40-961" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-962"><a href="#cb40-962" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include=F}</span></span>
-<span id="cb40-963"><a href="#cb40-963" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb40-964"><a href="#cb40-964" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.png"</span>, </span>
-<span id="cb40-965"><a href="#cb40-965" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
-<span id="cb40-966"><a href="#cb40-966" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
-<span id="cb40-967"><a href="#cb40-967" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
-<span id="cb40-968"><a href="#cb40-968" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
-<span id="cb40-969"><a href="#cb40-969" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-970"><a href="#cb40-970" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-971"><a href="#cb40-971" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb40-972"><a href="#cb40-972" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.jpg"</span>, </span>
-<span id="cb40-973"><a href="#cb40-973" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
-<span id="cb40-974"><a href="#cb40-974" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
-<span id="cb40-975"><a href="#cb40-975" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
-<span id="cb40-976"><a href="#cb40-976" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
-<span id="cb40-977"><a href="#cb40-977" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-978"><a href="#cb40-978" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-979"><a href="#cb40-979" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb40-980"><a href="#cb40-980" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.svg"</span>, </span>
-<span id="cb40-981"><a href="#cb40-981" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
-<span id="cb40-982"><a href="#cb40-982" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
-<span id="cb40-983"><a href="#cb40-983" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
-<span id="cb40-984"><a href="#cb40-984" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
-<span id="cb40-985"><a href="#cb40-985" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-986"><a href="#cb40-986" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-987"><a href="#cb40-987" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-988"><a href="#cb40-988" aria-hidden="true" tabindex="-1"></a>Each effect isobole is supposed to give us a range of effects given by @fig-leveleffectdesign.</span>
+<span id="cb40-962"><a href="#cb40-962" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-963"><a href="#cb40-963" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-964"><a href="#cb40-964" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include=F}</span></span>
+<span id="cb40-965"><a href="#cb40-965" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb40-966"><a href="#cb40-966" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.png"</span>, </span>
+<span id="cb40-967"><a href="#cb40-967" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
+<span id="cb40-968"><a href="#cb40-968" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
+<span id="cb40-969"><a href="#cb40-969" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
+<span id="cb40-970"><a href="#cb40-970" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
+<span id="cb40-971"><a href="#cb40-971" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-972"><a href="#cb40-972" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-973"><a href="#cb40-973" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb40-974"><a href="#cb40-974" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.jpg"</span>, </span>
+<span id="cb40-975"><a href="#cb40-975" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
+<span id="cb40-976"><a href="#cb40-976" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
+<span id="cb40-977"><a href="#cb40-977" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
+<span id="cb40-978"><a href="#cb40-978" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
+<span id="cb40-979"><a href="#cb40-979" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-980"><a href="#cb40-980" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-981"><a href="#cb40-981" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb40-982"><a href="#cb40-982" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_exp.svg"</span>, </span>
+<span id="cb40-983"><a href="#cb40-983" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_design, </span>
+<span id="cb40-984"><a href="#cb40-984" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">5</span>, </span>
+<span id="cb40-985"><a href="#cb40-985" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
+<span id="cb40-986"><a href="#cb40-986" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
+<span id="cb40-987"><a href="#cb40-987" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-988"><a href="#cb40-988" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-989"><a href="#cb40-989" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-990"><a href="#cb40-990" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
-<span id="cb40-991"><a href="#cb40-991" aria-hidden="true" tabindex="-1"></a>IMD_point_design <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_design, EPX<span class="sc">==</span><span class="dv">0</span>)<span class="sc">$</span>IMD</span>
-<span id="cb40-992"><a href="#cb40-992" aria-hidden="true" tabindex="-1"></a>EPX_point_design <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_design, IMD<span class="sc">==</span><span class="dv">0</span>)<span class="sc">$</span>EPX</span>
-<span id="cb40-993"><a href="#cb40-993" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-994"><a href="#cb40-994" aria-hidden="true" tabindex="-1"></a>CI.design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb40-995"><a href="#cb40-995" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dose=</span><span class="fu">c</span>(EPX_point_design, IMD_point_design),</span>
-<span id="cb40-996"><a href="#cb40-996" aria-hidden="true" tabindex="-1"></a>  <span class="at">Molecule =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"EPX"</span>, <span class="fu">length</span>(EPX_point_design)), <span class="fu">rep</span>(<span class="st">"IMD"</span>, <span class="fu">length</span>(IMD_point_design)))</span>
-<span id="cb40-997"><a href="#cb40-997" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb40-998"><a href="#cb40-998" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-999"><a href="#cb40-999" aria-hidden="true" tabindex="-1"></a>pm.design <span class="ot">&lt;-</span> <span class="fu">predict</span>(drc<span class="fl">.1</span>, <span class="at">newdata=</span>CI.design, <span class="at">interval=</span><span class="st">"confidence"</span>)</span>
-<span id="cb40-1000"><a href="#cb40-1000" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>p <span class="ot">&lt;-</span> pm.design[,<span class="dv">1</span>]</span>
-<span id="cb40-1001"><a href="#cb40-1001" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>pmin <span class="ot">&lt;-</span> pm.design[,<span class="dv">2</span>]</span>
-<span id="cb40-1002"><a href="#cb40-1002" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>pmax <span class="ot">&lt;-</span> pm.design[,<span class="dv">3</span>]</span>
-<span id="cb40-1003"><a href="#cb40-1003" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-1004"><a href="#cb40-1004" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1005"><a href="#cb40-1005" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=F, warning=F}</span></span>
-<span id="cb40-1006"><a href="#cb40-1006" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Corresponding theorical range of effect tested with this design. Effects are calculated with the dose-response curves without common parameters (drc.1). Small points correspond to data from the single exposition experiment. Bold points are the predicted effect of the tested isobols. </span></span>
-<span id="cb40-1007"><a href="#cb40-1007" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-leveleffectdesign</span></span>
-<span id="cb40-1008"><a href="#cb40-1008" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 8</span></span>
-<span id="cb40-1009"><a href="#cb40-1009" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 6</span></span>
-<span id="cb40-1010"><a href="#cb40-1010" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1011"><a href="#cb40-1011" aria-hidden="true" tabindex="-1"></a><span class="co"># y_min &lt;- 0</span></span>
-<span id="cb40-1012"><a href="#cb40-1012" aria-hidden="true" tabindex="-1"></a><span class="co"># y_max &lt;- 35</span></span>
-<span id="cb40-1013"><a href="#cb40-1013" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1014"><a href="#cb40-1014" aria-hidden="true" tabindex="-1"></a>plot_drc_th <span class="ot">&lt;-</span> <span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb40-1015"><a href="#cb40-1015" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
-<span id="cb40-1016"><a href="#cb40-1016" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>CI<span class="fl">.1</span>, </span>
-<span id="cb40-1017"><a href="#cb40-1017" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb40-1018"><a href="#cb40-1018" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
-<span id="cb40-1019"><a href="#cb40-1019" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p, </span>
-<span id="cb40-1020"><a href="#cb40-1020" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin=</span>pmin, </span>
-<span id="cb40-1021"><a href="#cb40-1021" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax=</span>pmax,</span>
-<span id="cb40-1022"><a href="#cb40-1022" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> Molecule</span>
-<span id="cb40-1023"><a href="#cb40-1023" aria-hidden="true" tabindex="-1"></a>      ), </span>
-<span id="cb40-1024"><a href="#cb40-1024" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha=</span><span class="fl">0.2</span></span>
-<span id="cb40-1025"><a href="#cb40-1025" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-1026"><a href="#cb40-1026" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb40-1027"><a href="#cb40-1027" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>CI<span class="fl">.1</span>, </span>
-<span id="cb40-1028"><a href="#cb40-1028" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb40-1029"><a href="#cb40-1029" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
-<span id="cb40-1030"><a href="#cb40-1030" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p,</span>
-<span id="cb40-1031"><a href="#cb40-1031" aria-hidden="true" tabindex="-1"></a>      <span class="at">color=</span>Molecule</span>
-<span id="cb40-1032"><a href="#cb40-1032" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb40-1033"><a href="#cb40-1033" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-1034"><a href="#cb40-1034" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb40-1035"><a href="#cb40-1035" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>df_expA_repro, </span>
-<span id="cb40-1036"><a href="#cb40-1036" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb40-1037"><a href="#cb40-1037" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose_plot, </span>
-<span id="cb40-1038"><a href="#cb40-1038" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>r_Nb_cocoons,</span>
-<span id="cb40-1039"><a href="#cb40-1039" aria-hidden="true" tabindex="-1"></a>      <span class="at">color=</span>Molecule, </span>
-<span id="cb40-1040"><a href="#cb40-1040" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape=</span>Molecule, </span>
-<span id="cb40-1041"><a href="#cb40-1041" aria-hidden="true" tabindex="-1"></a>      ), </span>
-<span id="cb40-1042"><a href="#cb40-1042" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex=</span><span class="dv">2</span>, </span>
-<span id="cb40-1043"><a href="#cb40-1043" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha=</span><span class="fl">0.4</span></span>
-<span id="cb40-1044"><a href="#cb40-1044" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-1045"><a href="#cb40-1045" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1046"><a href="#cb40-1046" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb40-1047"><a href="#cb40-1047" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> CI.design,</span>
-<span id="cb40-1048"><a href="#cb40-1048" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb40-1049"><a href="#cb40-1049" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
-<span id="cb40-1050"><a href="#cb40-1050" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p,</span>
-<span id="cb40-1051"><a href="#cb40-1051" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape =</span> Molecule</span>
-<span id="cb40-1052"><a href="#cb40-1052" aria-hidden="true" tabindex="-1"></a>      ), </span>
-<span id="cb40-1053"><a href="#cb40-1053" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>col_red,</span>
-<span id="cb40-1054"><a href="#cb40-1054" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex=</span><span class="dv">3</span>,</span>
-<span id="cb40-1055"><a href="#cb40-1055" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span></span>
-<span id="cb40-1056"><a href="#cb40-1056" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-1057"><a href="#cb40-1057" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1058"><a href="#cb40-1058" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>col_molec)<span class="sc">+</span></span>
-<span id="cb40-1059"><a href="#cb40-1059" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>col_molec)<span class="sc">+</span></span>
-<span id="cb40-1060"><a href="#cb40-1060" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span>shape_molec)<span class="sc">+</span></span>
-<span id="cb40-1061"><a href="#cb40-1061" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1062"><a href="#cb40-1062" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Molecule, <span class="at">ncol=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb40-990"><a href="#cb40-990" aria-hidden="true" tabindex="-1"></a>Each effect isobole is supposed to give us a range of effects given by @fig-leveleffectdesign.</span>
+<span id="cb40-991"><a href="#cb40-991" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-992"><a href="#cb40-992" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=F, message=F}</span></span>
+<span id="cb40-993"><a href="#cb40-993" aria-hidden="true" tabindex="-1"></a>IMD_point_design <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_design, EPX<span class="sc">==</span><span class="dv">0</span>)<span class="sc">$</span>IMD</span>
+<span id="cb40-994"><a href="#cb40-994" aria-hidden="true" tabindex="-1"></a>EPX_point_design <span class="ot">&lt;-</span> <span class="fu">subset</span>(df_design, IMD<span class="sc">==</span><span class="dv">0</span>)<span class="sc">$</span>EPX</span>
+<span id="cb40-995"><a href="#cb40-995" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-996"><a href="#cb40-996" aria-hidden="true" tabindex="-1"></a>CI.design <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb40-997"><a href="#cb40-997" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dose=</span><span class="fu">c</span>(EPX_point_design, IMD_point_design),</span>
+<span id="cb40-998"><a href="#cb40-998" aria-hidden="true" tabindex="-1"></a>  <span class="at">Molecule =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"EPX"</span>, <span class="fu">length</span>(EPX_point_design)), <span class="fu">rep</span>(<span class="st">"IMD"</span>, <span class="fu">length</span>(IMD_point_design)))</span>
+<span id="cb40-999"><a href="#cb40-999" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-1000"><a href="#cb40-1000" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1001"><a href="#cb40-1001" aria-hidden="true" tabindex="-1"></a>pm.design <span class="ot">&lt;-</span> <span class="fu">predict</span>(drc<span class="fl">.1</span>, <span class="at">newdata=</span>CI.design, <span class="at">interval=</span><span class="st">"confidence"</span>)</span>
+<span id="cb40-1002"><a href="#cb40-1002" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>p <span class="ot">&lt;-</span> pm.design[,<span class="dv">1</span>]</span>
+<span id="cb40-1003"><a href="#cb40-1003" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>pmin <span class="ot">&lt;-</span> pm.design[,<span class="dv">2</span>]</span>
+<span id="cb40-1004"><a href="#cb40-1004" aria-hidden="true" tabindex="-1"></a>CI.design<span class="sc">$</span>pmax <span class="ot">&lt;-</span> pm.design[,<span class="dv">3</span>]</span>
+<span id="cb40-1005"><a href="#cb40-1005" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-1006"><a href="#cb40-1006" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1007"><a href="#cb40-1007" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, message=F, warning=F}</span></span>
+<span id="cb40-1008"><a href="#cb40-1008" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: Corresponding theorical range of effect tested with this design. Effects are calculated with the dose-response curves without common parameters (drc.1). Small points correspond to data from the single exposition experiment. Bold points are the predicted effect of the tested isobols. </span></span>
+<span id="cb40-1009"><a href="#cb40-1009" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-leveleffectdesign</span></span>
+<span id="cb40-1010"><a href="#cb40-1010" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 8</span></span>
+<span id="cb40-1011"><a href="#cb40-1011" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 6</span></span>
+<span id="cb40-1012"><a href="#cb40-1012" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1013"><a href="#cb40-1013" aria-hidden="true" tabindex="-1"></a><span class="co"># y_min &lt;- 0</span></span>
+<span id="cb40-1014"><a href="#cb40-1014" aria-hidden="true" tabindex="-1"></a><span class="co"># y_max &lt;- 35</span></span>
+<span id="cb40-1015"><a href="#cb40-1015" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1016"><a href="#cb40-1016" aria-hidden="true" tabindex="-1"></a>plot_drc_th <span class="ot">&lt;-</span> <span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb40-1017"><a href="#cb40-1017" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(</span>
+<span id="cb40-1018"><a href="#cb40-1018" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>CI<span class="fl">.1</span>, </span>
+<span id="cb40-1019"><a href="#cb40-1019" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb40-1020"><a href="#cb40-1020" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
+<span id="cb40-1021"><a href="#cb40-1021" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p, </span>
+<span id="cb40-1022"><a href="#cb40-1022" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymin=</span>pmin, </span>
+<span id="cb40-1023"><a href="#cb40-1023" aria-hidden="true" tabindex="-1"></a>      <span class="at">ymax=</span>pmax,</span>
+<span id="cb40-1024"><a href="#cb40-1024" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> Molecule</span>
+<span id="cb40-1025"><a href="#cb40-1025" aria-hidden="true" tabindex="-1"></a>      ), </span>
+<span id="cb40-1026"><a href="#cb40-1026" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha=</span><span class="fl">0.2</span></span>
+<span id="cb40-1027"><a href="#cb40-1027" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-1028"><a href="#cb40-1028" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb40-1029"><a href="#cb40-1029" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>CI<span class="fl">.1</span>, </span>
+<span id="cb40-1030"><a href="#cb40-1030" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb40-1031"><a href="#cb40-1031" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
+<span id="cb40-1032"><a href="#cb40-1032" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p,</span>
+<span id="cb40-1033"><a href="#cb40-1033" aria-hidden="true" tabindex="-1"></a>      <span class="at">color=</span>Molecule</span>
+<span id="cb40-1034"><a href="#cb40-1034" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb40-1035"><a href="#cb40-1035" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-1036"><a href="#cb40-1036" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb40-1037"><a href="#cb40-1037" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>df_expA_repro, </span>
+<span id="cb40-1038"><a href="#cb40-1038" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb40-1039"><a href="#cb40-1039" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose_plot, </span>
+<span id="cb40-1040"><a href="#cb40-1040" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>r_Nb_cocoons,</span>
+<span id="cb40-1041"><a href="#cb40-1041" aria-hidden="true" tabindex="-1"></a>      <span class="at">color=</span>Molecule, </span>
+<span id="cb40-1042"><a href="#cb40-1042" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape=</span>Molecule, </span>
+<span id="cb40-1043"><a href="#cb40-1043" aria-hidden="true" tabindex="-1"></a>      ), </span>
+<span id="cb40-1044"><a href="#cb40-1044" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex=</span><span class="dv">2</span>, </span>
+<span id="cb40-1045"><a href="#cb40-1045" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha=</span><span class="fl">0.4</span></span>
+<span id="cb40-1046"><a href="#cb40-1046" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-1047"><a href="#cb40-1047" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-1048"><a href="#cb40-1048" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb40-1049"><a href="#cb40-1049" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> CI.design,</span>
+<span id="cb40-1050"><a href="#cb40-1050" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb40-1051"><a href="#cb40-1051" aria-hidden="true" tabindex="-1"></a>      <span class="at">x=</span>Dose, </span>
+<span id="cb40-1052"><a href="#cb40-1052" aria-hidden="true" tabindex="-1"></a>      <span class="at">y=</span>p,</span>
+<span id="cb40-1053"><a href="#cb40-1053" aria-hidden="true" tabindex="-1"></a>      <span class="at">shape =</span> Molecule</span>
+<span id="cb40-1054"><a href="#cb40-1054" aria-hidden="true" tabindex="-1"></a>      ), </span>
+<span id="cb40-1055"><a href="#cb40-1055" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span>col_red,</span>
+<span id="cb40-1056"><a href="#cb40-1056" aria-hidden="true" tabindex="-1"></a>    <span class="at">cex=</span><span class="dv">3</span>,</span>
+<span id="cb40-1057"><a href="#cb40-1057" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span></span>
+<span id="cb40-1058"><a href="#cb40-1058" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-1059"><a href="#cb40-1059" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-1060"><a href="#cb40-1060" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>col_molec)<span class="sc">+</span></span>
+<span id="cb40-1061"><a href="#cb40-1061" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>col_molec)<span class="sc">+</span></span>
+<span id="cb40-1062"><a href="#cb40-1062" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span>shape_molec)<span class="sc">+</span></span>
 <span id="cb40-1063"><a href="#cb40-1063" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1064"><a href="#cb40-1064" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
-<span id="cb40-1065"><a href="#cb40-1065" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>),  </span>
-<span id="cb40-1066"><a href="#cb40-1066" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
-<span id="cb40-1067"><a href="#cb40-1067" aria-hidden="true" tabindex="-1"></a>   )<span class="sc">+</span></span>
-<span id="cb40-1068"><a href="#cb40-1068" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ylim(y_min, y_max)+</span></span>
-<span id="cb40-1069"><a href="#cb40-1069" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1070"><a href="#cb40-1070" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb40-1064"><a href="#cb40-1064" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Molecule, <span class="at">ncol=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb40-1065"><a href="#cb40-1065" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-1066"><a href="#cb40-1066" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(</span>
+<span id="cb40-1067"><a href="#cb40-1067" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="fu">c</span>(Val_Ctrl, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>),  </span>
+<span id="cb40-1068"><a href="#cb40-1068" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">c</span>(Label_Ctrl, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>)</span>
+<span id="cb40-1069"><a href="#cb40-1069" aria-hidden="true" tabindex="-1"></a>   )<span class="sc">+</span></span>
+<span id="cb40-1070"><a href="#cb40-1070" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ylim(y_min, y_max)+</span></span>
 <span id="cb40-1071"><a href="#cb40-1071" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-1072"><a href="#cb40-1072" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb40-1073"><a href="#cb40-1073" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Dose (mg/kg)"</span>, </span>
-<span id="cb40-1074"><a href="#cb40-1074" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Relative cocoon production"</span>))</span>
-<span id="cb40-1075"><a href="#cb40-1075" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
-<span id="cb40-1076"><a href="#cb40-1076" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb40-1077"><a href="#cb40-1077" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
-<span id="cb40-1078"><a href="#cb40-1078" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title=</span><span class="fu">element_text</span>(<span class="at">size=</span>sizetitle<span class="dv">-2</span>,<span class="at">face=</span><span class="st">"bold"</span>), </span>
-<span id="cb40-1079"><a href="#cb40-1079" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb40-1080"><a href="#cb40-1080" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span>sizetitle, <span class="at">face=</span><span class="st">"bold"</span>), </span>
+<span id="cb40-1072"><a href="#cb40-1072" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb40-1073"><a href="#cb40-1073" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-1074"><a href="#cb40-1074" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb40-1075"><a href="#cb40-1075" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Dose (mg/kg)"</span>, </span>
+<span id="cb40-1076"><a href="#cb40-1076" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Relative cocoon production"</span>))</span>
+<span id="cb40-1077"><a href="#cb40-1077" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb40-1078"><a href="#cb40-1078" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb40-1079"><a href="#cb40-1079" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span>, </span>
+<span id="cb40-1080"><a href="#cb40-1080" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title=</span><span class="fu">element_text</span>(<span class="at">size=</span>sizetitle<span class="dv">-2</span>,<span class="at">face=</span><span class="st">"bold"</span>), </span>
 <span id="cb40-1081"><a href="#cb40-1081" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb40-1082"><a href="#cb40-1082" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size=</span>sizetitle,<span class="at">face=</span><span class="st">"plain"</span>), </span>
-<span id="cb40-1083"><a href="#cb40-1083" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size=</span>sizetitle,<span class="at">face=</span><span class="st">"plain"</span>)</span>
-<span id="cb40-1084"><a href="#cb40-1084" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb40-1085"><a href="#cb40-1085" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1086"><a href="#cb40-1086" aria-hidden="true" tabindex="-1"></a>plot_drc_th</span>
-<span id="cb40-1087"><a href="#cb40-1087" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-1088"><a href="#cb40-1088" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1089"><a href="#cb40-1089" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include=F}</span></span>
-<span id="cb40-1090"><a href="#cb40-1090" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb40-1091"><a href="#cb40-1091" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_effect_range.png"</span>, </span>
-<span id="cb40-1092"><a href="#cb40-1092" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_drc_th, </span>
-<span id="cb40-1093"><a href="#cb40-1093" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">8</span>, </span>
-<span id="cb40-1094"><a href="#cb40-1094" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
-<span id="cb40-1095"><a href="#cb40-1095" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
-<span id="cb40-1096"><a href="#cb40-1096" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-1097"><a href="#cb40-1097" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb40-1098"><a href="#cb40-1098" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_effect_range.svg"</span>, </span>
-<span id="cb40-1099"><a href="#cb40-1099" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_drc_th, </span>
-<span id="cb40-1100"><a href="#cb40-1100" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">8</span>, </span>
-<span id="cb40-1101"><a href="#cb40-1101" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
-<span id="cb40-1102"><a href="#cb40-1102" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
-<span id="cb40-1103"><a href="#cb40-1103" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-1104"><a href="#cb40-1104" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-1105"><a href="#cb40-1105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1106"><a href="#cb40-1106" aria-hidden="true" tabindex="-1"></a><span class="in">```{r logistics, include=F}</span></span>
-<span id="cb40-1107"><a href="#cb40-1107" aria-hidden="true" tabindex="-1"></a>Q_clx_cosm <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># g</span></span>
-<span id="cb40-1108"><a href="#cb40-1108" aria-hidden="true" tabindex="-1"></a>Nb_rep <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb40-1109"><a href="#cb40-1109" aria-hidden="true" tabindex="-1"></a>Q_sample <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># g</span></span>
-<span id="cb40-1110"><a href="#cb40-1110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1111"><a href="#cb40-1111" aria-hidden="true" tabindex="-1"></a>Q_EPX <span class="ot">&lt;-</span> Nb_rep<span class="sc">*</span>Q_clx_cosm<span class="sc">/</span><span class="dv">1000</span><span class="sc">*</span><span class="fu">sum</span>(df_design<span class="sc">$</span>EPX)</span>
+<span id="cb40-1082"><a href="#cb40-1082" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span>sizetitle, <span class="at">face=</span><span class="st">"bold"</span>), </span>
+<span id="cb40-1083"><a href="#cb40-1083" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb40-1084"><a href="#cb40-1084" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size=</span>sizetitle,<span class="at">face=</span><span class="st">"plain"</span>), </span>
+<span id="cb40-1085"><a href="#cb40-1085" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size=</span>sizetitle,<span class="at">face=</span><span class="st">"plain"</span>)</span>
+<span id="cb40-1086"><a href="#cb40-1086" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-1087"><a href="#cb40-1087" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1088"><a href="#cb40-1088" aria-hidden="true" tabindex="-1"></a>plot_drc_th</span>
+<span id="cb40-1089"><a href="#cb40-1089" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-1090"><a href="#cb40-1090" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1091"><a href="#cb40-1091" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, include=F}</span></span>
+<span id="cb40-1092"><a href="#cb40-1092" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb40-1093"><a href="#cb40-1093" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_effect_range.png"</span>, </span>
+<span id="cb40-1094"><a href="#cb40-1094" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_drc_th, </span>
+<span id="cb40-1095"><a href="#cb40-1095" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">8</span>, </span>
+<span id="cb40-1096"><a href="#cb40-1096" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
+<span id="cb40-1097"><a href="#cb40-1097" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
+<span id="cb40-1098"><a href="#cb40-1098" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-1099"><a href="#cb40-1099" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb40-1100"><a href="#cb40-1100" aria-hidden="true" tabindex="-1"></a>  <span class="at">filename=</span><span class="st">"Mixture_design_effect_range.svg"</span>, </span>
+<span id="cb40-1101"><a href="#cb40-1101" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot=</span>plot_drc_th, </span>
+<span id="cb40-1102"><a href="#cb40-1102" aria-hidden="true" tabindex="-1"></a>  <span class="at">width=</span><span class="dv">8</span>, </span>
+<span id="cb40-1103"><a href="#cb40-1103" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="dv">4</span>, </span>
+<span id="cb40-1104"><a href="#cb40-1104" aria-hidden="true" tabindex="-1"></a>  <span class="at">path=</span>path_mixture</span>
+<span id="cb40-1105"><a href="#cb40-1105" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-1106"><a href="#cb40-1106" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-1107"><a href="#cb40-1107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1108"><a href="#cb40-1108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r logistics, include=F}</span></span>
+<span id="cb40-1109"><a href="#cb40-1109" aria-hidden="true" tabindex="-1"></a>Q_clx_cosm <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># g</span></span>
+<span id="cb40-1110"><a href="#cb40-1110" aria-hidden="true" tabindex="-1"></a>Nb_rep <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb40-1111"><a href="#cb40-1111" aria-hidden="true" tabindex="-1"></a>Q_sample <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># g</span></span>
 <span id="cb40-1112"><a href="#cb40-1112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1113"><a href="#cb40-1113" aria-hidden="true" tabindex="-1"></a>df_Q <span class="ot">&lt;-</span> df_design<span class="sc">%&gt;%</span></span>
-<span id="cb40-1114"><a href="#cb40-1114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb40-1115"><a href="#cb40-1115" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_clx_conc =</span> (Q_clx_cosm<span class="sc">*</span>Nb_rep<span class="sc">+</span>Q_sample)<span class="sc">/</span><span class="dv">1000</span>, <span class="co"># kg</span></span>
-<span id="cb40-1116"><a href="#cb40-1116" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_EPX_conc =</span> EPX<span class="sc">*</span>Q_clx_conc, </span>
-<span id="cb40-1117"><a href="#cb40-1117" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_IMD_conc =</span> IMD<span class="sc">*</span>Q_clx_conc</span>
-<span id="cb40-1118"><a href="#cb40-1118" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb40-1119"><a href="#cb40-1119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1120"><a href="#cb40-1120" aria-hidden="true" tabindex="-1"></a>Q_EPX_tot <span class="ot">&lt;-</span> <span class="fu">sum</span>(df_Q<span class="sc">$</span>Q_EPX_conc)</span>
-<span id="cb40-1121"><a href="#cb40-1121" aria-hidden="true" tabindex="-1"></a>Q_IMD_tot <span class="ot">&lt;-</span> <span class="fu">sum</span>(df_Q<span class="sc">$</span>Q_IMD_conc)</span>
-<span id="cb40-1122"><a href="#cb40-1122" aria-hidden="true" tabindex="-1"></a>Q_EPX_tot <span class="co"># 3.3 g</span></span>
-<span id="cb40-1123"><a href="#cb40-1123" aria-hidden="true" tabindex="-1"></a>Q_IMD_tot <span class="co"># 9.3 mg</span></span>
-<span id="cb40-1124"><a href="#cb40-1124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-1125"><a href="#cb40-1125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1126"><a href="#cb40-1126" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> class</span><span class="op">=</span><span class="st">"accordion-button"</span><span class="ot"> type</span><span class="op">=</span><span class="st">"button"</span><span class="ot"> data-bs-toggle</span><span class="op">=</span><span class="st">"collapse"</span><span class="ot"> data-bs-target</span><span class="op">=</span><span class="st">"#collapseOne"</span><span class="dt">&gt;</span></span>
+<span id="cb40-1113"><a href="#cb40-1113" aria-hidden="true" tabindex="-1"></a>Q_EPX <span class="ot">&lt;-</span> Nb_rep<span class="sc">*</span>Q_clx_cosm<span class="sc">/</span><span class="dv">1000</span><span class="sc">*</span><span class="fu">sum</span>(df_design<span class="sc">$</span>EPX)</span>
+<span id="cb40-1114"><a href="#cb40-1114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1115"><a href="#cb40-1115" aria-hidden="true" tabindex="-1"></a>df_Q <span class="ot">&lt;-</span> df_design<span class="sc">%&gt;%</span></span>
+<span id="cb40-1116"><a href="#cb40-1116" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-1117"><a href="#cb40-1117" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_clx_conc =</span> (Q_clx_cosm<span class="sc">*</span>Nb_rep<span class="sc">+</span>Q_sample)<span class="sc">/</span><span class="dv">1000</span>, <span class="co"># kg</span></span>
+<span id="cb40-1118"><a href="#cb40-1118" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_EPX_conc =</span> EPX<span class="sc">*</span>Q_clx_conc, </span>
+<span id="cb40-1119"><a href="#cb40-1119" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q_IMD_conc =</span> IMD<span class="sc">*</span>Q_clx_conc</span>
+<span id="cb40-1120"><a href="#cb40-1120" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-1121"><a href="#cb40-1121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1122"><a href="#cb40-1122" aria-hidden="true" tabindex="-1"></a>Q_EPX_tot <span class="ot">&lt;-</span> <span class="fu">sum</span>(df_Q<span class="sc">$</span>Q_EPX_conc)</span>
+<span id="cb40-1123"><a href="#cb40-1123" aria-hidden="true" tabindex="-1"></a>Q_IMD_tot <span class="ot">&lt;-</span> <span class="fu">sum</span>(df_Q<span class="sc">$</span>Q_IMD_conc)</span>
+<span id="cb40-1124"><a href="#cb40-1124" aria-hidden="true" tabindex="-1"></a>Q_EPX_tot <span class="co"># 3.3 g</span></span>
+<span id="cb40-1125"><a href="#cb40-1125" aria-hidden="true" tabindex="-1"></a>Q_IMD_tot <span class="co"># 9.3 mg</span></span>
+<span id="cb40-1126"><a href="#cb40-1126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb40-1127"><a href="#cb40-1127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1128"><a href="#cb40-1128" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span> Session Information <span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span></span>
+<span id="cb40-1128"><a href="#cb40-1128" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> class</span><span class="op">=</span><span class="st">"accordion-button"</span><span class="ot"> type</span><span class="op">=</span><span class="st">"button"</span><span class="ot"> data-bs-toggle</span><span class="op">=</span><span class="st">"collapse"</span><span class="ot"> data-bs-target</span><span class="op">=</span><span class="st">"#collapseOne"</span><span class="dt">&gt;</span></span>
 <span id="cb40-1129"><a href="#cb40-1129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1130"><a href="#cb40-1130" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
+<span id="cb40-1130"><a href="#cb40-1130" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span> Session Information <span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span></span>
 <span id="cb40-1131"><a href="#cb40-1131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1132"><a href="#cb40-1132" aria-hidden="true" tabindex="-1"></a>:::: {#collapseOne .accordion-collapse .collapse}</span>
-<span id="cb40-1133"><a href="#cb40-1133" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb40-1134"><a href="#cb40-1134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1137"><a href="#cb40-1137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb40-1138"><a href="#cb40-1138" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
-<span id="cb40-1139"><a href="#cb40-1139" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb40-1140"><a href="#cb40-1140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-1141"><a href="#cb40-1141" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="cb40-1142"><a href="#cb40-1142" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb40-1132"><a href="#cb40-1132" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
+<span id="cb40-1133"><a href="#cb40-1133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1134"><a href="#cb40-1134" aria-hidden="true" tabindex="-1"></a>:::: {#collapseOne .accordion-collapse .collapse}</span>
+<span id="cb40-1135"><a href="#cb40-1135" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb40-1136"><a href="#cb40-1136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1139"><a href="#cb40-1139" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-1140"><a href="#cb40-1140" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb40-1141"><a href="#cb40-1141" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-1142"><a href="#cb40-1142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-1143"><a href="#cb40-1143" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb40-1144"><a href="#cb40-1144" aria-hidden="true" tabindex="-1"></a>::::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
